@@ -11,24 +11,24 @@ classdef cPathGen < handle
     methods
         function obj = cPathGen(filename)
             obj.filename_ = filename;
-        end
+        end % cPathGen(filename)
         
         function ret = openFile(obj)
         % create the nc file              
             obj.fid_ = fopen(obj.filename_, 'w+');
-        end    
+        end % openFile(obj)   
         
         function ret = closeFile(obj)
             fclose(obj.fid_);
             ret = 1;
-        end            
+        end % closeFile(obj)           
         
         function ret = closeDoor(obj)
         % close the door of the machine tool            
             fprintf(obj.fid_, "M64\r\n");
             fprintf(obj.fid_, "M66\r\n");
             ret = 1;
-        end
+        end % closeDoor(obj)
 
         function ret = openDoor(obj)
         % open the door of the machine tool
@@ -64,7 +64,7 @@ classdef cPathGen < handle
             fprintf(obj.fid_, "M142\r\n");   
             obj.curMode_ = 1;            
             ret = 1;
-        end        
+        end % printingMode(obj)       
         
         function ret = enableLaser(obj, powderMode, delay)
         % powerTurnOnMode = 0, close all; 1 = left powder, 2 = right, 3 = left + right;
@@ -84,7 +84,7 @@ classdef cPathGen < handle
             fprintf(obj.fid_, "M351P600 ;;开启激光\r\n");     
             fprintf(obj.fid_, ";;;;;;;;;;;;;;;;;;;;;;;;;;;运动程序开始\r\n");                 
             ret = 1;
-        end       
+        end  % enableLaser(obj, powderMode, delay)     
         
         function ret = disableLaser(obj, powderMode)
         % powerTurnOnMode = 0, close all powder; 1 = close left poweder, 2 = right, 3 = left + right;
@@ -102,17 +102,17 @@ classdef cPathGen < handle
                 fprintf(obj.fid_, ";M351P607 ;;关闭左右路送粉，暂不使用\r\n");
             end        
             ret = 1;
-        end              
+        end  % disableLaser(obj, powderMode)            
         
         function ret = setLaser(obj, pwr, lenPos, flowL, speedL, flowR, speedR)
             fprintf(obj.fid_, "G01 I%d J%d V%d K%d W%d U%d\r\n", pwr, lenPos, flowL, speedL, flowR, speedR);     
             ret = 1;
-        end 
+        end % setLaser(obj, pwr, lenPos, flowL, speedL, flowR, speedR)
         
         function ret = addCmd(obj, cmd)
             fprintf(obj.fid_, "%s\r\n",cmd);     
             ret = 1;
-        end    
+        end  % addCmd(obj, cmd)  
         
         function ret = saftyToStart(obj, safetyPath, feedrate)
         % safetyPath is a 3*3 array, with its cols are xyz 
@@ -126,7 +126,7 @@ classdef cPathGen < handle
                 safetyPath(1,2), safetyPath(1,3), feedrate);  
             fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", safetyPath(1,1), ...
                 safetyPath(1,2), safetyPath(1,3), feedrate);                  
-        end
+        end % saftyToStart(obj, safetyPath, feedrate)
 
         function ret = saftyToPt(obj, pt1, ptDst, feedrate)
         % pt1 is the pt in safety area, ptDst is the dst pt,
@@ -140,7 +140,7 @@ classdef cPathGen < handle
                 ptDst(2), pt1(3), feedrate);  
             fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", ptDst(1), ...
                 ptDst(2), ptDst(3), feedrate);    
-        end        
+        end % saftyToPt(obj, pt1, ptDst, feedrate)       
         
         function ret = addPathPt(obj, pt)
             fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f\r\n", pt(1), pt(2), pt(3));  
@@ -166,7 +166,7 @@ classdef cPathGen < handle
                 return;
             end                        
             fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f I%d J%d F%d\r\n", pt(1), pt(2), pt(3), pwr, lenPos, feedrate);  
-        end        
+        end  % addPathPtWithPwr(obj, pt, pwr, lenPos, feedrate)      
         
         function ret = addPathPtsWithPwr(obj, pts, pwr, lenPos, feedrate)
             constantFeed = 1;
@@ -189,27 +189,11 @@ classdef cPathGen < handle
             
             if(constantFeed == 1)
                 fprintf(obj.fid_,"G01 X%.3f Y%.3f Z%.3f I%d J%d F%d\r\n", pts(1,1), pts(1,2), pts(1,3), pwr(1), lenPos(1), feedrate);
-                for i = 2:length(pts)
-%                     if(pwr(i) < 0)
-%                         obj.addPathPt(pts(i,:));
-%                         continue;
-%                     end
-%                     if(lenPos(i) < 0)
-%                         obj.addPathPt(pts(i,:));
-%                         continue;
-%                     end                
+                for i = 2:length(pts)          
                     obj.addPathPtWithPwr(pts(i,:), pwr(i), lenPos(i), feedrate);                  
                 end
             else
-                for i = 1:length(pts)
-%                     if(pwr(i) < 0)
-%                         obj.addPathPt(pts(i,:), feedrate(i));
-%                         continue;
-%                     end
-%                     if(lenPos(i) < 0)
-%                         obj.addPathPt(pts(i,:), feedrate(i));
-%                         continue;
-%                     end                
+                for i = 1:length(pts)           
                     obj.addPathPtWithPwr(pts(i,:), pwr(i), lenPos(i), feedrate(i));                  
                 end
             end

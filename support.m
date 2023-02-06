@@ -4,20 +4,29 @@ filename = './supportTestV2.txt';
 
 
 % process param
-pwr = 300; % 1.2KW / 4kw *1000;
+% pwr = 300; % 1.2KW / 4kw *1000;
+% lenPos = 900;
+% flowL = 300; % 6 L/min / 20L/min * 1000;
+% speedL = 200;% 2 r/min / 10r/min * 1000;
+% flowR = 300;% 6 L/min / 20L/min * 1000;
+% speedR = 200;% 2 r/min / 10r/min * 1000;
+% feedrate = 760; % mm/min
+
+% support process param
+pwr = 100; % 1.2KW / 4kw *1000;
 lenPos = 900;
-flowL = 300; % 6 L/min / 20L/min * 1000;
-speedL = 200;% 2 r/min / 10r/min * 1000;
-flowR = 300;% 6 L/min / 20L/min * 1000;
-speedR = 200;% 2 r/min / 10r/min * 1000;
+flowL = 200; % 6 L/min / 20L/min * 1000;
+speedL = 100;% 2 r/min / 10r/min * 1000;
+flowR = 200;% 6 L/min / 20L/min * 1000;
+speedR = 100;% 2 r/min / 10r/min * 1000;
 feedrate = 760; % mm/min
 
 %  geometry param
-startCenter = [50,50];
-inclinationAgl = 30; % degree
+startCenter = [20,-60];
+inclinationAgl = 20; % degree
 lyrNum = 40;
 lyrHeight = 0.5;
-radius = 3;
+radius = 2;
 tol = 0.3;
 
 
@@ -28,8 +37,8 @@ pathSeq = [];
 for lyrIdx = 1:lyrNum
     centerXOffset = ((lyrIdx - 1) * lyrHeight) * tan(inclinationAgl/180 * pi); 
     for j = 1 : lyrPtNum
-        x = cos(aglStep * j) + startCenter(1) + centerXOffset;
-        y = sin(aglStep * j) + startCenter(2);
+        x = cos(aglStep * j) * radius + startCenter(1) + centerXOffset;
+        y = sin(aglStep * j) * radius + startCenter(2);
         z = (lyrIdx - 1) * lyrHeight;
         pathSeq = [pathSeq; x,y,z];
     end        
@@ -37,7 +46,7 @@ end
 
 % generate the sequence for pwr / lenPos
 lenPosSeq = ones(length(pathSeq),1) * lenPos;
-pwrSeq = ones(length(pathSeq),1) * 300;
+pwrSeq = ones(length(pathSeq),1) * pwr;
 
 
 
@@ -53,7 +62,7 @@ pg.openFile();  % open the file
 % the regular code for DED
 pg.closeDoor(); % close door
 pg.changeMode(1); % change to printing mode
-pg.setLaser(300, 900, 250, 100, 250, 100); % set a init process param (in case of overshoot)
+pg.setLaser(300, 900, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
 
 pg.saftyToPt([nan, nan, 200], [startCenter(1) - 5, startCenter(2), 0], 3000); % safety move the start pt
 pg.pauseProgram();% pause and wait for start (the button)
