@@ -65,11 +65,6 @@ pg.saftyToPt([nan, nan, 200], [startX - 5, startY, 0], 3000);
 pg.pauseProgram();
 pg.enableLaser(1, 10);
 
-% pts = zeros(100,3);
-% for i = 1:100
-%     pts(i,:) = [i, i*2,i*3];
-% end
-
 pg.addPathPtsWithPwr(Path, Power, lenPos, feedrate);
 
 pg.disableLaser(1);
