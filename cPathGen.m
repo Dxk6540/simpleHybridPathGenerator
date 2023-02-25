@@ -21,29 +21,35 @@ classdef cPathGen < handle
         function ret = closeFile(obj)
             fclose(obj.fid_);
             ret = 1;
-        end % closeFile(obj)           
+        end % closeFile(obj)  
+
+        function ret = recordGenTime(obj)
+        % create the nc file     
+            timeStr = datestr(datetime, 'yyyy.mm.dd - HH:MM:SS');
+            fprintf(obj.fid_, ";;;;;;;;;;;;;generate Time: %s ;;;;;;;;\r\n", timeStr);
+        end % openFile(obj)   
         
         function ret = closeDoor(obj)
         % close the door of the machine tool            
-            fprintf(obj.fid_, "M64\r\n");
-            fprintf(obj.fid_, "M66\r\n");
+            fprintf(obj.fid_, "M64  ;;关侧门\r\n");
+            fprintf(obj.fid_, "M66  ;;关主门\r\n");
             ret = 1;
         end % closeDoor(obj)
 
         function ret = openDoor(obj)
         % open the door of the machine tool
-            fprintf(obj.fid_, "M63\r\n");
-            fprintf(obj.fid_, "M65\r\n");
+            fprintf(obj.fid_, "M63  ;;开侧门\r\n");
+            fprintf(obj.fid_, "M65  ;;开主门\r\n");
             ret = 1;
         end % openDoor(obj)
         
         function ret = pauseProgram(obj)
-            fprintf(obj.fid_, "M00\r\n");
+            fprintf(obj.fid_, "M00 ;;程序暂停，按启动重新启动\r\n");
             ret = 1;
         end % pauseProgram(obj)
                 
         function ret = endProgram(obj)
-            fprintf(obj.fid_, "M30\r\n");
+            fprintf(obj.fid_, "M30  ;; end program.\r\n");
             ret = 1;
         end % endProgram(obj)
         
@@ -65,10 +71,10 @@ classdef cPathGen < handle
         
         function ret = printingMode(obj)
         % printing mode along with G55 CS + update AIO
-            fprintf(obj.fid_, "M94\r\n");
-            fprintf(obj.fid_, "G55\r\n");
-            fprintf(obj.fid_, "G49\r\n");
-            fprintf(obj.fid_, "M142\r\n");   
+            fprintf(obj.fid_, "M94 ;;选择激光模式\r\n");
+            fprintf(obj.fid_, "G55 ;; 激光打印选择G55坐标系\r\n");
+            fprintf(obj.fid_, "G49  ;;关闭T0的长度补偿\r\n");
+            fprintf(obj.fid_, "M142 ;;开启模拟量插补\r\n");   
             obj.curMode_ = 1;            
             ret = 1;
         end % printingMode(obj)       
@@ -76,7 +82,7 @@ classdef cPathGen < handle
         function ret = machiningMode(obj)
         % printing mode along with G55 CS + update AIO
             fprintf(obj.fid_, "M93 ;;选择主轴模式\r\n");
-            fprintf(obj.fid_, "M143 ;;关闭模拟量更新\r\n");
+            fprintf(obj.fid_, "M143 ;;关闭模拟量插补\r\n");
             fprintf(obj.fid_, "G54 ;;主轴选择G54坐标系\r\n");
             obj.curMode_ = 2;            
             ret = 1;
@@ -89,15 +95,15 @@ classdef cPathGen < handle
         function ret = enableLaser(obj, powderMode, delay)
         % powerTurnOnMode = 0, close all; 1 = left powder, 2 = right, 3 = left + right;
         % delay: delay time, unit is second.
-            fprintf(obj.fid_, "M351P610\r\n");
+            fprintf(obj.fid_, "M351P610  ;;开启熔覆头位置调整(上升沿触发)\r\n");
             if(powderMode == 1)
-                fprintf(obj.fid_, "M351P602\r\n");
+                fprintf(obj.fid_, "M351P602  ;;开启左路送粉\r\n");
             end
             if(powderMode == 2)
-                fprintf(obj.fid_, "M351P604\r\n");
+                fprintf(obj.fid_, "M351P604  ;;开启右路送粉，暂不使用\r\n");
             end
             if(powderMode == 3)
-                fprintf(obj.fid_, "M351P606\r\n");
+                fprintf(obj.fid_, "M351P606  ;;开启左右路送粉，暂不使用\r\n");
             end
             
             fprintf(obj.fid_, "G04X%d ;;延时10秒，等待出粉\r\n", delay);
@@ -150,7 +156,7 @@ classdef cPathGen < handle
   
 
         function ret = changeTool(obj, toolNum)
-           if(obj.curMode_ != 1)
+           if(obj.curMode_ ~= 2)
                disp("changeTool() err! current mode is not machining mode!");
                ret = 0;
                return;
@@ -218,6 +224,7 @@ classdef cPathGen < handle
         end % ddPathPtFeed(obj, pt, feedrate)
         
         function ret = addPathPts(obj, pts, feedrate)
+            ret = 1;            
             fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", pts(1,1), pts(1,2), pts(1,3), feedrate);  
             for i = 2:length(pts)
                 obj.addPathPt(pts(i,:));
@@ -225,6 +232,7 @@ classdef cPathGen < handle
         end % addPathPts(obj, pts, feedrate)
 
         function ret = addPathPtWithPwr(obj, pt, pwr, lenPos, feedrate)
+            ret = 1;
             if(pwr < 0)
                 obj.addPathPt(pt, feedrate);
                 return;

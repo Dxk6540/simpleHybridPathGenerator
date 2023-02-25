@@ -4,7 +4,7 @@
 
 
 % file param:
-filename = './cylinderTest0225.txt';
+filename = './supportTestV2.txt';
 
 
 % process param
@@ -28,7 +28,7 @@ feedrate = 760; % mm/min
 %  geometry param
 startCenter = [20,-60];
 % inclinationAgl = 0; % degree
-lyrNum = 20;
+lyrNum = 40;
 lyrHeight = 0.5;
 radius = 2;
 tol = 0.3;
@@ -70,7 +70,6 @@ pg = cPathGen(filename); % create the path generator object
 pg.openFile();  % open the file
 
 % the regular code for DED
-pg.recordGenTime();
 pg.closeDoor(); % close door
 pg.changeMode(1); % change to printing mode
 pg.setLaser(300, 900, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
@@ -95,14 +94,12 @@ axis equal
 
 %%
 %%%%%%%%%%%%%% machining path
-mFilename = './cylinderTestMachinig0225.txt';
 
-mFeedrate = 1000; % mm/min
+
 wallOffset = 0.2;
 
 % planar circle path
 lyrPtNum = floor(2 * radius * pi / tol)+1;
-wpHeight = lyrNum * lyrHeight;
 aglStep = 2 * pi / lyrPtNum;
 mPathSeq = [];
 for lyrIdx = 1:lyrNum
@@ -111,31 +108,30 @@ for lyrIdx = 1:lyrNum
 %         x = cos(aglStep * j) * radius + startCenter(1) + centerXOffset;
         x = cos(aglStep * j) * (radius + wallOffset) + startCenter(1);
         y = sin(aglStep * j) * (radius + wallOffset) + startCenter(2);
-        z = wpHeight - (lyrIdx - 1) * lyrHeight;
+        z = (lyrIdx - 1) * lyrHeight;
         mPathSeq = [mPathSeq; x,y,z];
     end
 end
 
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 
-% the regular code for DED
-pg = cPathGen(mFilename); % create the path generator object
+pg = cPathGen(filename); % create the path generator object
 pg.openFile();  % open the file
-pg.recordGenTime();
+
+% the regular code for DED
 pg.closeDoor(); % close door
 pg.changeMode(2); % change to printing mode
+pg.setLaser(300, 900, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
 
-pg.changeTool(1);
-pg.saftyToPt([nan, nan, 200], [startCenter(1) - 5, startCenter(2), wpHeight], 3000); % safety move the start pt
+pg.saftyToPt([nan, nan, 200], [startCenter(1) - 5, startCenter(2), 0], 3000); % safety move the start pt
 pg.pauseProgram();% pause and wait for start (the button)
-pg.enableSpindle(10000,1); % set a init process param (in case of overshoot)
+pg.enableLaser(1, 10);
 
 
-ret = pg.addPathPts(mPathSeq, mFeedrate);
+ret = pg.addPathPtsWithPwr(pathSeq, pwrSeq, lenPosSeq, feedrate);
 ret 
 
-pg.disableSpindle();
-pg.addCmd("G01 Z200 F3000 ;;抬刀至安全平面");
+pg.disableLaser(1);
 pg.openDoor();
 pg.endProgram();
 
@@ -149,4 +145,57 @@ axis equal
 
 
 
+
+
+
+
+
+
+
+
+
+int machiningTest(){
+  double wpHeight = 10;
+  double lyrHeight = 0.5;
+  double tol = 0.1;
+  double circleRad = 20;
+  double centerX = 50;
+  double centerY = 50;
+  double feed = 600;
+
+  path.createOutputFile("./machineTest.txt");
+  path.closeDoor();
+  path.changeMode(cGcodeGen::MACHINING);
+
+  path.changeTool(1);
+  path.addCmd("G01 Z200 F3000 ;;抬刀至安全平面");  
+  path.pauseProgram();
+  path.turnOnSpindle(10000);
+
+  int lyrNum = (int)(wpHeight/lyrHeight); 
+  double lyrPtNum = (int)(2 * 3.1415926535 * circleRad / tol + 1);
+  double step = -2 * 3.1415926535 / lyrPtNum;
+
+  for(int i = 0; i < lyrNum; i++){
+    double curHeight = wpHeight - i * lyrHeight;
+    for (int j = 0; j < lyrPtNum; j++){
+    double x = centerX + circleRad * cos(step * j);
+    double y = centerY + circleRad * sin(step * j);
+    path.addPathPt(x, y, curHeight, feed);
+    }
+  }
+
+  path.turnOffSpindle();
+  path.addCmd("G01 Z200 F3000 ;;抬刀至安全平面");
+  path.openDoor();
+  path.endProgram();    
+}
+
+
+int main(){
+
+  printingTest();
+  machiningTest();
+  return 0;
+}
 
