@@ -35,26 +35,33 @@ classdef cPathGen < handle
             fprintf(obj.fid_, "M63\r\n");
             fprintf(obj.fid_, "M65\r\n");
             ret = 1;
-        end
+        end % openDoor(obj)
         
         function ret = pauseProgram(obj)
             fprintf(obj.fid_, "M00\r\n");
             ret = 1;
-        end
+        end % pauseProgram(obj)
                 
         function ret = endProgram(obj)
             fprintf(obj.fid_, "M30\r\n");
             ret = 1;
-        end
+        end % endProgram(obj)
         
         function ret = changeMode(obj, mode)
         % 0 is idle, 1 is printing, 2 machining
             if(mode == 1)
                 obj.printingMode();
-                ret = 0;
-            end            
+                ret = 1;
+                return;
+            end
+            
+            if(mode == 2)
+                obj.machiningMode();
+                ret = 1;
+                return;
+            end                                    
             ret = 0;
-        end
+        end % changeMode(obj, mode)
         
         function ret = printingMode(obj)
         % printing mode along with G55 CS + update AIO
@@ -66,6 +73,19 @@ classdef cPathGen < handle
             ret = 1;
         end % printingMode(obj)       
         
+        function ret = machiningMode(obj)
+        % printing mode along with G55 CS + update AIO
+            fprintf(obj.fid_, "M93 ;;选择主轴模式\r\n");
+            fprintf(obj.fid_, "M143 ;;关闭模拟量更新\r\n");
+            fprintf(obj.fid_, "G54 ;;主轴选择G54坐标系\r\n");
+            obj.curMode_ = 2;            
+            ret = 1;
+        end % machiningMode(obj)               
+        
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%% tool control %%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      
+        
         function ret = enableLaser(obj, powderMode, delay)
         % powerTurnOnMode = 0, close all; 1 = left powder, 2 = right, 3 = left + right;
         % delay: delay time, unit is second.
@@ -74,10 +94,10 @@ classdef cPathGen < handle
                 fprintf(obj.fid_, "M351P602\r\n");
             end
             if(powderMode == 2)
-                fprintf(obj.fid_, ";M351P604\r\n");
+                fprintf(obj.fid_, "M351P604\r\n");
             end
             if(powderMode == 3)
-                fprintf(obj.fid_, ";M351P606\r\n");
+                fprintf(obj.fid_, "M351P606\r\n");
             end
             
             fprintf(obj.fid_, "G04X%d ;;延时10秒，等待出粉\r\n", delay);
@@ -96,10 +116,10 @@ classdef cPathGen < handle
                 fprintf(obj.fid_, "M351P603 ;;关闭左路送粉\r\n");
             end
             if(powderMode == 2)
-                fprintf(obj.fid_, ";M351P605 ;;关闭右路送粉，暂不使用\r\n");
+                fprintf(obj.fid_, "M351P605 ;;关闭右路送粉，暂不使用\r\n");
             end
             if(powderMode == 3)
-                fprintf(obj.fid_, ";M351P607 ;;关闭左右路送粉，暂不使用\r\n");
+                fprintf(obj.fid_, "M351P607 ;;关闭左右路送粉，暂不使用\r\n");
             end        
             ret = 1;
         end  % disableLaser(obj, powderMode)            
@@ -109,10 +129,58 @@ classdef cPathGen < handle
             ret = 1;
         end % setLaser(obj, pwr, lenPos, flowL, speedL, flowR, speedR)
         
+        
+        function ret = enableSpindle(obj, spindleSpeed, wcsPath)
+%             fprintf(obj.fid_, "T1M6 ;;选刀取刀\r\n");
+            fprintf(obj.fid_, "S%dM3 ;;启动主轴\r\n", spindleSpeed);     
+            fprintf(obj.fid_, "G04X5 ;;等待主轴达到目标转速\r\n");               
+%             fprintf(obj.fid_, "G43H1 ;;开刀补\r\n");   
+            fprintf(obj.fid_, "M69 ;;开吹气\r\n");               
+            fprintf(obj.fid_, ";;;;;;;;;;;;;;;;;;;;;;;;;;;运动程序开始\r\n");               
+            ret = 1;
+        end  % enableSpindle(obj, spindleSpeed, wcsPath)   
+        
+        function ret = disableSpindle(obj)
+            fprintf(obj.fid_, ";;;;;;;;;;;;;;;;;;;;;;;;;;;运动程序结束\r\n");
+            fprintf(obj.fid_,  "M70 ;;关吹气\r\n");
+            fprintf(obj.fid_, "M05;;关主轴\r\n");     
+               
+            ret = 1;
+        end  % disableSpindle(obj)   
+  
+
+        function ret = changeTool(obj, toolNum)
+           if(obj.curMode_ != 1)
+               disp("changeTool() err! current mode is not machining mode!");
+               ret = 0;
+               return;
+           end
+           if(toolNum < 0 || toolNum > 3)
+            disp("changeTool() err! toolNum can't find!")
+               ret = 0;
+               return;               
+           end
+           if(toolNum == 0)
+            fprintf(obj.fid_,  "M7 ;;放刀\r\n");
+            fprintf(obj.fid_,  "G49 ;;关闭T0的长度补偿\r\n" );     
+            ret = 1;
+            return;
+           end
+            fprintf(obj.fid_, "T%dM6 ;;选刀取刀\r\n", toolNum);     
+            fprintf(obj.fid_, "G43H%d ;;开刀补\r\n", toolNum);                 
+            ret = 1;            
+        end % changeTool(obj, toolNum)
+        
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%% path control %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         function ret = addCmd(obj, cmd)
             fprintf(obj.fid_, "%s\r\n",cmd);     
             ret = 1;
         end  % addCmd(obj, cmd)  
+        
         
         function ret = saftyToStart(obj, safetyPath, feedrate)
         % safetyPath is a 3*3 array, with its cols are xyz 
@@ -144,17 +212,17 @@ classdef cPathGen < handle
         
         function ret = addPathPt(obj, pt)
             fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f\r\n", pt(1), pt(2), pt(3));  
-        end
+        end % addPathPt(obj, pt)
         function ret = addPathPtFeed(obj, pt, feedrate)
             fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", pt(1), pt(2), pt(3), feedrate);  
-        end
+        end % ddPathPtFeed(obj, pt, feedrate)
         
         function ret = addPathPts(obj, pts, feedrate)
             fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", pts(1,1), pts(1,2), pts(1,3), feedrate);  
             for i = 2:length(pts)
                 obj.addPathPt(pts(i,:));
             end
-        end
+        end % addPathPts(obj, pts, feedrate)
 
         function ret = addPathPtWithPwr(obj, pt, pwr, lenPos, feedrate)
             if(pwr < 0)
@@ -203,4 +271,12 @@ classdef cPathGen < handle
         
     end
 end
+
+
+
+
+
+
+
+
 
