@@ -39,7 +39,7 @@ tol = 0.3;
 % planar circle path
 lyrPtNum = floor(2 * radius * pi / tol)+1;
 aglStep = 2 * pi / lyrPtNum;
-pathSeq = [];
+pPathSeq = [];
 pwrSeq = [];
 for lyrIdx = 1:lyrNum
 %     centerXOffset = ((lyrIdx - 1) * lyrHeight) * tan(inclinationAgl/180 * pi); 
@@ -48,14 +48,14 @@ for lyrIdx = 1:lyrNum
         x = cos(aglStep * j) * radius + startCenter(1);
         y = sin(aglStep * j) * radius + startCenter(2);
         z = (lyrIdx - 1) * lyrHeight;
-        pathSeq = [pathSeq; x,y,z];
+        pPathSeq = [pPathSeq; x,y,z];
         pwrSeq = [pwrSeq; pwr];
     end
     pwrSeq(end) = 0;
 end
 
 % generate the sequence for pwr / lenPos
-lenPosSeq = ones(length(pathSeq),1) * lenPos;
+lenPosSeq = ones(length(pPathSeq),1) * lenPos;
 % pwrSeq = ones(length(pathSeq),1) * pwr;
 
 
@@ -80,7 +80,7 @@ pg.pauseProgram();% pause and wait for start (the button)
 pg.enableLaser(1, 10);
 
 
-ret = pg.addPathPtsWithPwr(pathSeq, pwrSeq, lenPosSeq, feedrate);
+ret = pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, feedrate);
 ret 
 
 pg.disableLaser(1);
@@ -89,7 +89,7 @@ pg.endProgram();
 
 pg.closeFile();
 
-plot3(pathSeq(:,1),pathSeq(:,2),pathSeq(:,3))
+plot3(pPathSeq(:,1),pPathSeq(:,2),pPathSeq(:,3))
 axis equal
 
 
@@ -98,6 +98,7 @@ axis equal
 mFilename = './cylinderTestMachinig0225.txt';
 
 mFeedrate = 1000; % mm/min
+toolRadiu = 4;
 wallOffset = 0.2;
 
 % planar circle path
@@ -109,8 +110,8 @@ for lyrIdx = 1:lyrNum
 %     centerXOffset = ((lyrIdx - 1) * lyrHeight) * tan(inclinationAgl/180 * pi); 
     for j = 1 : lyrPtNum
 %         x = cos(aglStep * j) * radius + startCenter(1) + centerXOffset;
-        x = cos(aglStep * j) * (radius + wallOffset) + startCenter(1);
-        y = sin(aglStep * j) * (radius + wallOffset) + startCenter(2);
+        x = cos(aglStep * j) * (radius + toolRadiu + wallOffset) + startCenter(1);
+        y = sin(aglStep * j) * (radius + toolRadiu + wallOffset) + startCenter(2);
         z = wpHeight - (lyrIdx - 1) * lyrHeight;
         mPathSeq = [mPathSeq; x,y,z];
     end
@@ -141,12 +142,34 @@ pg.endProgram();
 
 pg.closeFile();
 
-plot3(pathSeq(:,1),pathSeq(:,2),pathSeq(:,3))
+figure(2)
+plot3(mPathSeq(:,1),mPathSeq(:,2),mPathSeq(:,3))
 axis equal
 
 
 
+function path = genCylinderMachiningPath(cylinderR, tol, wpHeight, lyrThickness, toolRadiu, wallOffset)
 
+% planar circle path
+lyrPtNum = floor(2 * cylinderR * pi / tol)+1;
+% wpHeight = lyrNum * lyrHeight;
+lyrNum = floor(wpHeight/lyrThickness) + 1;
+lyrHeight = wpHeight/lyrNum;
+aglStep = 2 * pi / lyrPtNum;
+mPathSeq = [];
+for lyrIdx = 1:lyrNum
+%     centerXOffset = ((lyrIdx - 1) * lyrHeight) * tan(inclinationAgl/180 * pi); 
+    for j = 1 : lyrPtNum
+%         x = cos(aglStep * j) * radius + startCenter(1) + centerXOffset;
+        x = cos(aglStep * j) * (cylinderR + toolRadiu + wallOffset) + startCenter(1);
+        y = sin(aglStep * j) * (cylinderR + toolRadiu + wallOffset) + startCenter(2);
+        z = wpHeight - (lyrIdx - 1) * lyrHeight;
+        mPathSeq = [mPathSeq; x,y,z];
+    end
+end
+
+
+end
 
 
 
