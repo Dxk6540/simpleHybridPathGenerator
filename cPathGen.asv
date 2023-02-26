@@ -85,7 +85,7 @@ classdef cPathGen < handle
             fprintf(obj.fid_, "M94 ;;选择激光模式\r\n");
             fprintf(obj.fid_, "G55 ;; 激光打印选择G55坐标系\r\n");
             fprintf(obj.fid_, "G49  ;;关闭T0的长度补偿\r\n");
-            fprintf(obj.fid_, "M144 ;;装保护头\r\n");           
+            fprintf(obj.fid_, "M144 ;;保护头\r\n");           
 
             fprintf(obj.fid_, "M93 ;;选择主轴模式\r\n");
             fprintf(obj.fid_, "M143 ;;关闭模拟量插补\r\n");
