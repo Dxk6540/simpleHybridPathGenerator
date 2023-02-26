@@ -16,23 +16,31 @@ mFilename = './cylinderTestMachinig0226.txt';
 % speedR = 200;% 2 r/min / 10r/min * 1000;
 % feedrate = 760; % mm/min
 
-% support process param
+% printing process param
 pwr = 300; % 1.2KW / 4kw *1000;
 lenPos = 900;
 flowL = 300; % 6 L/min / 20L/min * 1000;
 speedL = 250;% 2 r/min / 10r/min * 1000;
 flowR = 300;% 6 L/min / 20L/min * 1000;
 speedR = 250;% 2 r/min / 10r/min * 1000;
-feedrate = 720; % mm/min
+pFeedrate = 720; % mm/min
+
+% machining process param
+mFeedrate = 1000; % mm/min
+spindleSpeed = 10000;
+toolNum = 1;
+toolRadiu = 4;
+wallOffset = 1.9;
 
 %  geometry param
 startCtr = [0,40];
 % inclinationAgl = 0; % degree
-lyrNum = 20;
+wpH = 10;
 lyrHeight = 0.5;
-wpH = lyrNum * lyrHeight;
 radius = 20;
 tol = 0.1;
+safetyHeight = 230;
+
 
 %%
 %%%%%%%%%%%%%% printing path
@@ -52,13 +60,13 @@ pg.openFile();  % open the file
 pg.recordGenTime();
 pg.closeDoor(); % close door
 pg.changeMode(1); % change to printing mode
-pg.setLaser(300, 900, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
+pg.setLaser(pwr, lenPos, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
 
-pg.saftyToPt([nan, nan, 200], [startCtr(1) + radius + 5, startCtr(2), 0], 3000); % safety move the start pt
+pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) + radius + 5, startCtr(2), 0], 3000); % safety move the start pt
 pg.pauseProgram();% pause and wait for start (the button)
 pg.enableLaser(1, 10);
 
-ret = pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, feedrate);
+ret = pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrate);
 
 pg.disableLaser(1);
 pg.openDoor();
@@ -74,33 +82,30 @@ axis equal
 %%%%%%%%%%%%%% machining path
 
 
-mFeedrate = 1000; % mm/min
-toolRadiu = 4;
-wallOffset = 0.2;
-
 mPathSeq = genCylinderMachiningPath(radius, startCtr, tol, wpH, lyrHeight, toolRadiu, wallOffset);
 
 
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 
-% the regular code for DED
+% the regular code for machining
 pg = cPathGen(mFilename); % create the path generator object
 pg.openFile();  % open the file
 pg.recordGenTime();
 pg.closeDoor(); % close door
 pg.changeMode(2); % change to printing mode
 
-pg.changeTool(1);
-pg.saftyToPt([nan, nan, 200], [startCtr(1) - 5, startCtr(2), wpH], 3000); % safety move the start pt
+pg.changeTool(toolNum);
+pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) - 5, startCtr(2), wpH], 3000); % safety move the start pt
 pg.pauseProgram();% pause and wait for start (the button)
-pg.enableSpindle(10000,1); % set a init process param (in case of overshoot)
+pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
 
 
 ret = pg.addPathPts(mPathSeq, mFeedrate);
 ret 
 
 pg.disableSpindle();
-pg.addCmd("G01 Z200 F3000 ;;抬刀至安全平面");
+% pg.addCmd("G01 Z200 F3000 ;;抬刀至安全平面");
+pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) - 5, startCtr(2), safetyHeight], 3000); % safety move the start pt
 pg.openDoor();
 pg.endProgram();
 
@@ -111,6 +116,18 @@ plot3(mPathSeq(:,1),mPathSeq(:,2),mPathSeq(:,3))
 axis equal
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [path,pwrSeq] = genCylinderPrintingPath(cylinderR, startCenter, tol, wpHeight, lyrThickness, pwr)
@@ -118,7 +135,12 @@ function [path,pwrSeq] = genCylinderPrintingPath(cylinderR, startCenter, tol, wp
 
     lyrPtNum = floor(2 * cylinderR * pi / tol)+1;
     % wpHeight = lyrNum * lyrHeight;
-    lyrNum = floor(wpHeight/lyrThickness) + 1;
+    if floor(wpHeight/lyrThickness) == wpHeight/lyrThickness
+        lyrNum = floor(wpHeight/lyrThickness);            
+    else
+        lyrNum = floor(wpHeight/lyrThickness) + 1;    
+    end
+
     lyrHeight = wpHeight/lyrNum;
     aglStep = 2 * pi / lyrPtNum;    
 
@@ -134,7 +156,10 @@ function [path,pwrSeq] = genCylinderPrintingPath(cylinderR, startCenter, tol, wp
             pPathSeq = [pPathSeq; x,y,z];
             pwrSeq = [pwrSeq; pwr];
         end
-        pwrSeq(end) = 0;
+%         pwrSeq(end) = 0;
+        % stop the power when lift the tool 
+        pPathSeq = [pPathSeq; x,y,z];
+        pwrSeq = [pwrSeq; 0];     
         pPathSeq = [pPathSeq; x,y,z + lyrHeight];
         pwrSeq = [pwrSeq; 0];          
     end
@@ -149,7 +174,11 @@ function path = genCylinderMachiningPath(cylinderR, startCenter, tol, wpHeight, 
     % planar circle path
     lyrPtNum = floor(2 * cylinderR * pi / tol)+1;
     % wpHeight = lyrNum * lyrHeight;
-    lyrNum = floor(wpHeight/lyrThickness) + 1;
+    if floor(wpHeight/lyrThickness) == wpHeight/lyrThickness
+        lyrNum = floor(wpHeight/lyrThickness);            
+    else
+        lyrNum = floor(wpHeight/lyrThickness) + 1;    
+    end
     lyrHeight = wpHeight/lyrNum;
     aglStep = 2 * pi / lyrPtNum;
     mPathSeq = [];
