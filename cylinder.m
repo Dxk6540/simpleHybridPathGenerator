@@ -24,6 +24,8 @@ speedL = 250;% 2 r/min / 10r/min * 1000;
 flowR = 300;% 6 L/min / 20L/min * 1000;
 speedR = 250;% 2 r/min / 10r/min * 1000;
 pFeedrate = 720; % mm/min
+channel = 2;
+step = 1;
 
 % machining process param
 mFeedrate = 1000; % mm/min
@@ -45,7 +47,7 @@ zOffset = 0;
 
 %%
 %%%%%%%%%%%%%% printing path
-[pPathSeq,pwrSeq] = genCylinderPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset);
+[pPathSeq,pwrSeq] = genCylinderPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
 % generate the sequence for pwr / lenPos
 lenPosSeq = ones(length(pPathSeq),1) * lenPos;
 
@@ -116,122 +118,44 @@ figure(2)
 plot3(mPathSeq(:,1),mPathSeq(:,2),mPathSeq(:,3))
 axis equal
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% function [path,pwrSeq] = genCylinderPrintingPath(cylinderR, startCenter, tol, wpHeight, lyrThickness, pwr, zOffset)
-%     % planar circle path
-% 
-%     lyrPtNum = floor(2 * cylinderR * pi / tol)+1;
-%     % wpHeight = lyrNum * lyrHeight;
-%     if floor(wpHeight/lyrThickness) == wpHeight/lyrThickness
-%         lyrNum = floor(wpHeight/lyrThickness);            
-%     else
-%         lyrNum = floor(wpHeight/lyrThickness) + 1;    
-%     end
-% 
-%     lyrHeight = wpHeight/lyrNum;
-%     aglStep = 2 * pi / lyrPtNum;    
-% 
-%     pPathSeq = [];
-%     pwrSeq = [];
-%     for lyrIdx = 1:lyrNum    
-%     %     centerXOffset = ((lyrIdx - 1) * lyrHeight) * tan(inclinationAgl/180 * pi); 
-%         for j = 1 : lyrPtNum
-%     %         x = cos(aglStep * j) * radius + startCenter(1) + centerXOffset;
-%             x = cos(aglStep * j) * cylinderR + startCenter(1);
-%             y = sin(aglStep * j) * cylinderR + startCenter(2);
-%             z = (lyrIdx - 1) * lyrHeight + zOffset;
-%             pPathSeq = [pPathSeq; x,y,z];
-%             pwrSeq = [pwrSeq; pwr];
-%         end
-% %         pwrSeq(end) = 0;
-%         % stop the power when lift the tool 
-%         pPathSeq = [pPathSeq; x,y,z];
-%         pwrSeq = [pwrSeq; 0];     
-%         pPathSeq = [pPathSeq; x,y,z + lyrHeight];
-%         pwrSeq = [pwrSeq; 0];          
-%     end
-% 
-%     path = pPathSeq;
-% end
-
-% function path = genCylinderMachiningPath(cylinderR, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset)
-%     % planar circle path
-%     lyrPtNum = floor(2 * cylinderR * pi / tol)+1;
-%     % wpHeight = lyrNum * lyrHeight;
-%     if floor(wpHeight/lyrThickness) == wpHeight/lyrThickness
-%         lyrNum = floor(wpHeight/lyrThickness);            
-%     else
-%         lyrNum = floor(wpHeight/lyrThickness) + 1;    
-%     end
-%     lyrHeight = wpHeight/lyrNum;
-%     aglStep = 2 * pi / lyrPtNum;
-%     mPathSeq = [];
-%     for lyrIdx = 1:lyrNum
-%     %     centerXOffset = ((lyrIdx - 1) * lyrHeight) * tan(inclinationAgl/180 * pi); 
-%         for j = 1 : lyrPtNum
-%     %         x = cos(aglStep * j) * radius + startCenter(1) + centerXOffset;
-%             x = cos(aglStep * j) * (cylinderR + toolRadiu + wallOffset) + startCenter(1);
-%             y = sin(aglStep * j) * (cylinderR + toolRadiu + wallOffset) + startCenter(2);
-%             z = wpHeight - (lyrIdx - 1) * lyrHeight;
-%             mPathSeq = [mPathSeq; x,y,z];
-%         end
-%     end
-%     path = mPathSeq;
-% end
-
-
-
-
-function [path,pwrSeq] = genCylinderPrintingPath(cylinderR, startCenter, tol, lyrNum, lyrThickness, pwr, zOffset)
+%% printing and machining functions
+function [path,pwrSeq] = genCylinderPrintingPath(cylinderR, startCenter, tol, lyrNum, lyrThickness, pwr, zOffset, channel, step)
     % planar circle path
-
     lyrPtNum = floor(2 * cylinderR * pi / tol)+1;
-%     % wpHeight = lyrNum * lyrHeight;
-%     if floor(wpHeight/lyrThickness) == wpHeight/lyrThickness
-%         lyrNum = floor(wpHeight/lyrThickness);            
-%     else
-%         lyrNum = floor(wpHeight/lyrThickness) + 1;    
-%     end
-%     lyrHeight = wpHeight/lyrNum;
-    lyrHeight = lyrThickness;
-    aglStep = 2 * pi / lyrPtNum;    
-
-    pPathSeq = [];
+    aglStep = 2 * pi / lyrPtNum; 
+    path = [];
     pwrSeq = [];
-    for lyrIdx = 1:lyrNum    
-    %     centerXOffset = ((lyrIdx - 1) * lyrHeight) * tan(inclinationAgl/180 * pi); 
-        for j = 1 : lyrPtNum
-    %         x = cos(aglStep * j) * radius + startCenter(1) + centerXOffset;
-            x = cos(aglStep * j) * cylinderR + startCenter(1);
-            y = sin(aglStep * j) * cylinderR + startCenter(2);
-            z = (lyrIdx - 1) * lyrHeight + zOffset;
-            pPathSeq = [pPathSeq; x,y,z];
-            pwrSeq = [pwrSeq; pwr];
+    for lyrIdx = 0 : lyrNum - 1    
+        tPathSeq = [];
+        tPwrSeq = [];
+        if channel > 1
+            for chnIdx = 0 : channel - 1
+                for j = 0 : lyrPtNum - 1
+                    x = cos(aglStep * j) * (cylinderR - chnIdx * step) + startCenter(1);
+                    y = sin(aglStep * j) * (cylinderR - chnIdx * step) + startCenter(2);
+                    z = lyrIdx * lyrThickness + zOffset;
+                    tPathSeq = [tPathSeq; x,y,z];
+                    tPwrSeq = [tPwrSeq; pwr];
+                end
+                tPwrSeq(1)= 0;
+                tPwrSeq(end) = 0;                
+            end
+        else
+           for j = 0 : lyrPtNum - 1
+                x = cos(aglStep * j) * cylinderR + startCenter(1);
+                y = sin(aglStep * j) * cylinderR + startCenter(2);
+                z = lyrIdx * lyrThickness + zOffset + j * lyrThickness / lyrPtNum;
+                tPathSeq = [tPathSeq; x,y,z];
+                tPwrSeq = [tPwrSeq; pwr];
+            end
         end
-%         pwrSeq(end) = 0;
         % stop the power when lift the tool 
-%         pPathSeq = [pPathSeq; x,y,z];
-%         pwrSeq = [pwrSeq; 0];     
-%         pPathSeq = [pPathSeq; x,y,z + lyrHeight];
-%         pwrSeq = [pwrSeq; 0];          
+        path = [path;tPathSeq];
+        pwrSeq = [pwrSeq;tPwrSeq];
     end
-
-    path = pPathSeq;
+    pwrSeq(1) = pwr;
 end
+
 
 
 
