@@ -94,7 +94,7 @@ pg.closeDoor(); % close door
 %%% start machining mode
 pg.changeMode(2); % change to printing mode
 pg.changeTool(toolNum);
-pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) - 5, startCtr(2), wpH], 3000); % safety move the start pt
+pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) - 5, startCtr(2), pLyrNum * lyrHeight], 3000); % safety move the start pt
 pg.pauseProgram();% pause and wait for start (the button)
 pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
 
