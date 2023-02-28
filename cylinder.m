@@ -35,7 +35,8 @@ wallOffset = 1.9;
 %  geometry param
 startCtr = [0,40];
 % inclinationAgl = 0; % degree
-wpH = 10;
+pLyrNum = 20;
+% wpH = 10;
 lyrHeight = 0.5;
 radius = 20;
 tol = 0.1;
@@ -44,10 +45,9 @@ zOffset = 0;
 
 %%
 %%%%%%%%%%%%%% printing path
-[pPathSeq,pwrSeq] = genCylinderPrintingPath(radius, startCtr, tol, wpH, lyrHeight, pwr, zOffset);
+[pPathSeq,pwrSeq] = genCylinderPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset);
 % generate the sequence for pwr / lenPos
 lenPosSeq = ones(length(pPathSeq),1) * lenPos;
-
 
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%%% the regular code for generate a script
@@ -80,10 +80,7 @@ axis equal
 
 %%
 %%%%%%%%%%%%%% machining path
-
-
-mPathSeq = genCylinderMachiningPath(radius, startCtr, tol, wpH, lyrHeight, toolRadiu, wallOffset, zOffset);
-
+mPathSeq = genCylinderMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset);
 
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%%% the regular code for generate a script
