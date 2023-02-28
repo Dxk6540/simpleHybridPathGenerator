@@ -194,6 +194,12 @@ classdef cPathGen < handle
         end  % addCmd(obj, cmd)  
         
         
+        function ret = returnToSafety(obj, zDist, feedrate)
+        % safetyPath is a 3*3 array, with its cols are xyz 
+            fprintf(obj.fid_, "G01 Z%.3f F%d\r\n", zDist, feedrate);                 
+        end % returnToSafety(obj, safetyPath, feedrate)
+        
+
         function ret = saftyToStart(obj, safetyPath, feedrate)
         % safetyPath is a 3*3 array, with its cols are xyz 
             if(isnan( sum(safetyPath(1,:)) ))
@@ -208,6 +214,7 @@ classdef cPathGen < handle
                 safetyPath(1,2), safetyPath(1,3), feedrate);                  
         end % saftyToStart(obj, safetyPath, feedrate)
 
+        
         function ret = saftyToPt(obj, pt1, ptDst, feedrate)
         % pt1 is the pt in safety area, ptDst is the dst pt,
             if(isnan( sum(pt1(1,:)) ))
@@ -222,12 +229,16 @@ classdef cPathGen < handle
                 ptDst(2), ptDst(3), feedrate);    
         end % saftyToPt(obj, pt1, ptDst, feedrate)       
         
+        
         function ret = addPathPt(obj, pt)
             fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f\r\n", pt(1), pt(2), pt(3));  
         end % addPathPt(obj, pt)
+        
+        
         function ret = addPathPtFeed(obj, pt, feedrate)
             fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", pt(1), pt(2), pt(3), feedrate);  
         end % ddPathPtFeed(obj, pt, feedrate)
+        
         
         function ret = addPathPts(obj, pts, feedrate)
             ret = 1;            
@@ -237,6 +248,7 @@ classdef cPathGen < handle
             end
         end % addPathPts(obj, pts, feedrate)
 
+        
         function ret = addPathPtWithPwr(obj, pt, pwr, lenPos, feedrate)
             ret = 1;
             if(pwr < 0)
@@ -249,6 +261,7 @@ classdef cPathGen < handle
             end                        
             fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f I%d J%d F%d\r\n", pt(1), pt(2), pt(3), pwr, lenPos, feedrate);  
         end  % addPathPtWithPwr(obj, pt, pwr, lenPos, feedrate)      
+        
         
         function ret = addPathPtsWithPwr(obj, pts, pwr, lenPos, feedrate)
             constantFeed = 1;
