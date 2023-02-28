@@ -19,11 +19,11 @@ mFilename = './cylinderTestMachinig0226.txt';
 % printing process param
 pwr = 300; % 1.2KW / 4kw *1000;
 lenPos = 900;
-flowL = 300; % 6 L/min / 20L/min * 1000;
-speedL = 250;% 2 r/min / 10r/min * 1000;
-flowR = 300;% 6 L/min / 20L/min * 1000;
-speedR = 250;% 2 r/min / 10r/min * 1000;
-pFeedrate = 720; % mm/min
+flowL = 250; % 6 L/min / 20L/min * 1000;
+speedL = 100;% 2 r/min / 10r/min * 1000;
+flowR = 250;% 6 L/min / 20L/min * 1000;
+speedR = 100;% 2 r/min / 10r/min * 1000;
+pFeedrate = 600; % mm/min
 channel = 2;
 step = 1;
 
