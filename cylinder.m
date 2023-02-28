@@ -4,8 +4,8 @@
 
 
 % file param:
-pFilename = './cylinderTest0226.txt';
-mFilename = './cylinderTestMachinig0226.txt';
+pFilename = strcat('./cylinderTest',date,'.txt');
+mFilename = strcat('./cylinderTestMachinig',date,'.txt');
 
 % process param
 % pwr = 300; % 1.2KW / 4kw *1000;
