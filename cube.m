@@ -1,6 +1,6 @@
 % date: 20230226
-% functions for alternative hybrid manufactuing a cylinder
-% author: Xiaoke DENG
+% functions for alternative hybrid manufactuing a cube
+% author: Yuanzhi CHEN
 
 classdef cube
     methods(Static)
@@ -38,7 +38,7 @@ classdef cube
             pwrSeq(1) = pwr;
         end
         
-        function path = genMachiningPath(cylinderR, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset)
+        function path = genMachiningPath(cubeLength, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset)
             path=[0,0,0];
         end
     end

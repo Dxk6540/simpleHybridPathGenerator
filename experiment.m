@@ -32,16 +32,16 @@ wallOffset = 1.9;
 %  geometry param
 startCtr = [0,40];
 % inclinationAgl = 0; % degree
-pLyrNum = 20;
+pLyrNum = 300;
 % wpH = 10;
 lyrHeight = 0.5;
-radius = 20;
+radius = 1;
 tol = 0.1;
 safetyHeight = 230;
 zOffset = 0;
 
 % shape
-handle=cube;
+handle=vase;
 
 %%
 %%%%%%%%%%%%%% printing path
