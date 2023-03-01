@@ -241,10 +241,13 @@ classdef cPathGen < handle
         
         
         function ret = addPathPts(obj, pts, feedrate)
-            ret = 1;            
-            fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", pts(1,1), pts(1,2), pts(1,3), feedrate);  
-            for i = 2:length(pts)
-                obj.addPathPt(pts(i,:));
+            ret = 1;             
+            for i = 1:size(pts,1)
+                if i==1
+                    fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", pts(1,1), pts(1,2), pts(1,3), feedrate); 
+                else
+                    obj.addPathPt(pts(i,:));
+                end
             end
         end % addPathPts(obj, pts, feedrate)
 
@@ -295,7 +298,17 @@ classdef cPathGen < handle
             ret = 1;
         end % addPathPtsWithPwr
         
-        
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% draw path %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+        function drawPath(obj, pPathSeq, mPathSeq)
+            close all;
+            plot3(pPathSeq(:,1),pPathSeq(:,2),pPathSeq(:,3))
+            axis equal
+            figure(2);
+            plot3(mPathSeq(:,1),mPathSeq(:,2),mPathSeq(:,3))
+            axis equal
+        end
     end
 end
 
