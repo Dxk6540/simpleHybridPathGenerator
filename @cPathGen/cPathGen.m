@@ -13,9 +13,18 @@ classdef cPathGen < handle
             obj.filename_ = filename;
         end % cPathGen(filename)
         
+
+
+        
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%% file control %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%             
+        
         function ret = openFile(obj)
         % create the nc file              
             obj.fid_ = fopen(obj.filename_, 'w+');
+            ret = 1;
         end % openFile(obj)   
         
         function ret = closeFile(obj)
@@ -27,11 +36,15 @@ classdef cPathGen < handle
         % create the nc file     
             timeStr = datestr(datetime, 'yyyy.mm.dd - HH:MM:SS');
             fprintf(obj.fid_, ";;;;;;;;;;;;;generate Time: %s ;;;;;;;;\r\n", timeStr);
+            ret = 1;
         end % openFile(obj)   
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%% perpherical control %%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%             
+        
+        ret = genNewScript(obj);
+        ret = closeScript(obj);
+                        
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%% peripheral control %%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%             
         
         function ret = closeDoor(obj)
         % close the door of the machine tool            
@@ -122,7 +135,7 @@ classdef cPathGen < handle
         
         
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%% tool control %%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%% tool control %%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      
         
         function ret = enableLaser(obj, powderMode, delay)
@@ -212,7 +225,7 @@ classdef cPathGen < handle
         
   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%% path control %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%% path control %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function ret = addCmd(obj, cmd)
