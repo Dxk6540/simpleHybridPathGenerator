@@ -23,25 +23,26 @@ channel = 2;
 step = 1;
 
 % machining process param
-mFeedrate = 1000; % mm/min
+mFeedrate = 800; % mm/min
 spindleSpeed = 10000;
 toolNum = 1;
 toolRadiu = 4;
-wallOffset = 1.9;
+wallOffset = 1.1;
+side = 1; % machining inside is -1 and outside is 1
 
 %  geometry param
-startCtr = [0,40];
+startCtr = [0,0];
 % inclinationAgl = 0; % degree
-pLyrNum = 300;
+pLyrNum = 20;
 % wpH = 10;
 lyrHeight = 0.5;
-radius = 1;
+radius = 20;
 tol = 0.1;
 safetyHeight = 230;
 zOffset = 0;
 
 % shape
-handle=vase;
+handle=cylinder;
 
 %%
 %%%%%%%%%%%%%% printing path
@@ -59,7 +60,7 @@ pg.closeDoor(); % close door
 %%% start printing mode
 pg.changeMode(1); % change to printing mode
 pg.setLaser(pwr, lenPos, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
-pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) + radius + 5, startCtr(2), 0], 3000); % safety move the start pt
+pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) + radius, startCtr(2), 0], 3000); % safety move the start pt
 pg.pauseProgram();% pause and wait for start (the button)
 pg.enableLaser(1, 10);
 
@@ -76,7 +77,7 @@ pg.closeFile();
 
 %%
 %%%%%%%%%%%%%% machining path
-mPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset);
+mPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
 
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%%% the regular code for generate a script
@@ -86,9 +87,9 @@ pg.recordGenTime();
 pg.closeDoor(); % close door
 
 %%% start machining mode
-pg.changeMode(2); % change to printing mode
+pg.changeMode(2); % change to machining mode
 pg.changeTool(toolNum);
-pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) - 5, startCtr(2), pLyrNum * lyrHeight], 3000); % safety move the start pt
+pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) + side*(radius + toolRadiu + wallOffset + 5), startCtr(2), pLyrNum * lyrHeight], 3000); % safety move the start pt
 pg.pauseProgram();% pause and wait for start (the button)
 pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
 

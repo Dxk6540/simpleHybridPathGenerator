@@ -44,9 +44,9 @@ classdef cylinder
 
 
 
-        function path = genMachiningPath(cylinderR, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset)
+        function path = genMachiningPath(cylinderR, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, side)
             % planar circle path
-            lyrPtNum = floor(2 * (cylinderR + toolRadiu + wallOffset) * pi / tol)+1;
+            lyrPtNum = floor(2 * (cylinderR + side*(toolRadiu + wallOffset)) * pi / tol)+1;
             % wpHeight = lyrNum * lyrHeight;
             if floor(wpHeight/lyrThickness) == wpHeight/lyrThickness
                 lyrNum = floor(wpHeight/lyrThickness);            
@@ -65,8 +65,8 @@ classdef cylinder
             %     centerXOffset = ((lyrIdx - 1) * lyrHeight) * tan(inclinationAgl/180 * pi); 
                 for j = 1 : lyrPtNum
             %         x = cos(aglStep * j) * radius + startCenter(1) + centerXOffset;
-                    x = cos(aglStep * j) * (cylinderR + toolRadiu + wallOffset) + startCenter(1);
-                    y = sin(aglStep * j) * (cylinderR + toolRadiu + wallOffset) + startCenter(2);
+                    x = cos(aglStep * j) * (cylinderR + side*(toolRadiu + wallOffset)) + startCenter(1);
+                    y = sin(aglStep * j) * (cylinderR + side*(toolRadiu + wallOffset)) + startCenter(2);
                     z = wpHeight - (lyrIdx - 1) * lyrHeight + zOffset;
                     mPathSeq = [mPathSeq; x,y,z];
                 end
