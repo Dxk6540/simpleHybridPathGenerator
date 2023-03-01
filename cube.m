@@ -38,7 +38,7 @@ classdef cube
             pwrSeq(1) = pwr;
         end
         
-        function path = genMachiningPath(cubeLength, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset)
+        function path = genMachiningPath(cubeLength, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset,side)
             path=[0,0,0];
         end
     end

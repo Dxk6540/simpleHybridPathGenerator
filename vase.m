@@ -42,7 +42,7 @@ classdef vase
             pwrSeq(1) = pwr;
         end
         
-        function path = genMachiningPath(vaseEnlarge, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset)
+        function path = genMachiningPath(vaseEnlarge, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, side)
             path=[0,0,0];
         end
         
