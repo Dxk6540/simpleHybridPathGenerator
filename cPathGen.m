@@ -28,6 +28,10 @@ classdef cPathGen < handle
             timeStr = datestr(datetime, 'yyyy.mm.dd - HH:MM:SS');
             fprintf(obj.fid_, ";;;;;;;;;;;;;generate Time: %s ;;;;;;;;\r\n", timeStr);
         end % openFile(obj)   
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%% perpherical control %%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%             
         
         function ret = closeDoor(obj)
         % close the door of the machine tool            
@@ -75,7 +79,7 @@ classdef cPathGen < handle
             fprintf(obj.fid_, "G55 ;; 激光打印选择G55坐标系\r\n");
             fprintf(obj.fid_, "G49  ;;关闭T0的长度补偿\r\n");
             fprintf(obj.fid_, "M142 ;;开启模拟量插补\r\n");   
-            fprintf(obj.fid_, "M145 ;;放保护头\r\n");               
+%             fprintf(obj.fid_, "M145 ;;放保护头\r\n");               
             obj.curMode_ = 1;            
             ret = 1;
         end % printingMode(obj)       
@@ -85,14 +89,37 @@ classdef cPathGen < handle
             fprintf(obj.fid_, "M94 ;;选择激光模式\r\n");
             fprintf(obj.fid_, "G55 ;; 激光打印选择G55坐标系\r\n");
             fprintf(obj.fid_, "G49  ;;关闭T0的长度补偿\r\n");
-            fprintf(obj.fid_, "M144 ;;装保护头\r\n");           
+%             fprintf(obj.fid_, "M144 ;;装保护头\r\n");           
 
             fprintf(obj.fid_, "M93 ;;选择主轴模式\r\n");
             fprintf(obj.fid_, "M143 ;;关闭模拟量插补\r\n");
             fprintf(obj.fid_, "G54 ;;主轴选择G54坐标系\r\n");
             obj.curMode_ = 2;            
             ret = 1;
-        end % machiningMode(obj)               
+        end % machiningMode(obj)   
+        
+
+        function ret = laserProtection(obj, status)
+        % printing mode along with G55 CS + update AIO
+            if status == 1
+                fprintf(obj.fid_, "M144 ;;装保护头\r\n");           
+            elseif status == 0
+                fprintf(obj.fid_, "M145 ;;放保护头\r\n");                
+            end
+            ret = 1;
+        end % laserProtection(obj, status)   
+                
+        function ret = stay(obj, time)
+        % printing mode along with G55 CS + update AIO
+            if time > 0
+                fprintf(obj.fid_, "G04X%d ;;延时\r\n", time);     
+            else 
+                fprintf(obj.fid_, "G04X5 ;;延时\r\n");                 
+            end
+            ret = 1;
+        end % laserProtection(obj, status)   
+
+        
         
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%% tool control %%%%%%%%%%%%%%
