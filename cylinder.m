@@ -56,7 +56,7 @@ classdef cylinder
             lyrHeight = wpHeight/lyrNum;
 
             if zOffset > 0
-                lyrNum = lyrNum + 4;
+                lyrNum = lyrNum + 6;
             end
 
             aglStep = 2 * pi / lyrPtNum;
