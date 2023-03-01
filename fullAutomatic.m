@@ -24,7 +24,7 @@ side = 1; % machining inside is -1 and outside is 1
 %  geometry param
 startCtr = [-60,0];
 % inclinationAgl = 0; % degree
-pLyrNum = 20;
+pLyrNum = 30;
 % wpH = 10;
 lyrHeight = 0.5;
 radius = 20;
@@ -54,24 +54,13 @@ for zOffset = zOffsetRng(1): lyrHeight*pLyrNum: zOffsetRng(2)
     [printPathSeq,pwrSeq] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
     genPrintingProcess(pg, safetyHeight, printPathSeq, pwrSeq, pFeedrate);
 
-    % % planar machining
-%     disp("planar machining top")
-%     depthRng = [pLyrNum * lyrHeight+zOffset+5, pLyrNum * lyrHeight+zOffset];
-%     planarSideLen = radius * 2 * 1.5;
-%     planarPathSeq = planarMachining(startCtr, depthRng, planarSideLen, machiningLyrThickness, toolRadiu);
-%     genMachiningProcess(pg, safetyHeight, toolNum, planarPathSeq, mFeedrate);    
-%     pg.drawPath(printPathSeq, planarPathSeq);
-% %     pause
-
+    % plannar circle machining 
     disp("planar machining top")
     depthRng = [pLyrNum * lyrHeight+zOffset+3, pLyrNum * lyrHeight+zOffset];
-    radiuRng = [15,25];
-    planarSideLen = radius * 2 * 1.5;
+    radiuRng = [20,25];
     planarPathSeq = planarCircleMachining(startCtr, depthRng, radiuRng, machiningLyrThickness, toolRadiu);
-%     planarPathSeq = planarMachining(startCtr, depthRng, planarSideLen, machiningLyrThickness, toolRadiu);
     genMachiningProcess(pg, safetyHeight, toolNum, planarPathSeq, planarFeed);    
     pg.drawPath(printPathSeq, planarPathSeq);
-%     pause
 
     disp("machining outter/inner wall")
     % machining outter wall
