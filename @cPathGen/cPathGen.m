@@ -339,10 +339,11 @@ classdef cPathGen < handle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% draw path %%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
         function drawPath(obj, pPathSeq, mPathSeq)
-            close all;
+%             close all;
+            figure()
             plot3(pPathSeq(:,1),pPathSeq(:,2),pPathSeq(:,3))
             axis equal
-            figure(2);
+            figure()
             plot3(mPathSeq(:,1),mPathSeq(:,2),mPathSeq(:,3))
             axis equal
         end
