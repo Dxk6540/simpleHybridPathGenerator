@@ -64,7 +64,7 @@ pg.pauseProgram();% pause and wait for start (the button)
 pg.enableLaser(1, 10);
 
 %%% add path pts
-ret = pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrate);
+pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrate);
 
 %%% exist printing mode
 pg.disableLaser(1);
@@ -93,8 +93,7 @@ pg.pauseProgram();% pause and wait for start (the button)
 pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
 
 %%% add path pts
-ret = pg.addPathPts(mPathSeq, mFeedrate);
-ret 
+pg.addPathPts(mPathSeq, mFeedrate);
 
 %%% exist machining mode
 pg.disableSpindle();
