@@ -1,6 +1,5 @@
 % file param:
-pFilename = strcat('./fullAutoCylinderTest',date,'.txt');
-mFilename = strcat('./fullAutoCylinderMachineTest',date,'.txt');
+filename = strcat('./fullAutoCylinderTest',date,'.txt');
 
 % printing process param
 pwr = 300; % 1.2KW / 4kw *1000;
@@ -37,28 +36,132 @@ handle=cylinder;
 
 
 %%
+pg = cPathGen(filename); % create the path generator object
+pg.genNewScript();
+
+% %%%%%%%%%%%%%% printing path
+% [pPathSeq,pwrSeq] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
+% genPrintingProcess(pg, safetyHeight, pPathSeq, pwrSeq, pFeedrate);
+% 
+% %%%%%%%%%%%%%% machining path
+% mPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
+% genMachiningProcess(pg, safetyHeight, toolNum, mPathSeq, mFeedrate);
+% 
+
+
+
+
+
+% alternativeCylinderProcess([3,1], [3,1], 0);
+
+outterWallRange = [3,1];
+innerWallRange = [3,1];
+zOffset = 0;
+
+
+
+lyrThickness = -0.1;
 %%%%%%%%%%%%%% printing path
-[pPathSeq,pwrSeq] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
-pg = cPathGen(pFilename); % create the path generator object
-pg.genNewScript();
-genPrintingProcess(pg, safetyHeight, pPathSeq, pwrSeq, pFeedrate);
-pg.closeScript();
+[printPathSeq,pwrSeq] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
+genPrintingProcess(pg, safetyHeight, printPathSeq, pwrSeq, pFeedrate);
 
+% planar machining
+planarPathSeq = planarMachining(pg, startCtr, [pLyrNum * lyrHeight+zOffset+5, pLyrNum * lyrHeight+zOffset], radius*1.5, safetyHeight, toolRadiu, toolNum, mFeedrate);
+pg.drawPath(printPathSeq, planarPathSeq);
+pause
 
-%%
+% machining outter wall
+side = 1;
+for wallOffset = outterWallRange(1): lyrThickness : outterWallRange(2)
 %%%%%%%%%%%%%% machining path
-mPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
-%%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
-%%%% the regular code for generate a script
-pg = cPathGen(mFilename); % create the path generator object
-pg.genNewScript();
-genMachiningProcess(pg, safetyHeight, toolNum, mPathSeq, mFeedrate);
-%%% end the script
+    outMachiningPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
+    genMachiningProcess(pg, safetyHeight, toolNum, outMachiningPathSeq, mFeedrate);
+end
+
+% machining inner wall
+side = -1;
+for wallOffset = innerWallRange(1): lyrThickness : innerWallRange(2)
+%%%%%%%%%%%%%% machining path
+    inMachiningPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
+    genMachiningProcess(pg, safetyHeight, toolNum, inMachiningPathSeq, mFeedrate);
+end
+pg.drawPath(outMachiningPathSeq, inMachiningPathSeq);
+pause
+
+
+
+
 pg.closeScript();
 
 
-
+%% 
 %%% draw the path
-pg.drawPath(pPathSeq, mPathSeq);
+% pg.drawPath(pPathSeq, mPathSeq);
+
+
+
+% function ret = alternativeCylinderProcess(outterWallRange, innerWallRange, zOffset)
+% 
+% lyrThickness = -0.1;
+% %%%%%%%%%%%%%% printing path
+% [pPathSeq,pwrSeq] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
+% genPrintingProcess(pg, safetyHeight, pPathSeq, pwrSeq, pFeedrate);
+% 
+% 
+% % planar machining
+% planarMachining(startCtr, [pLyrNum * lyrHeight+zOffset+5, pLyrNum * lyrHeight+zOffset], radius*1.5);
+% 
+% % machining outter wall
+% side = 1;
+% for wallOffset = outterWallRange(1): lyrThickness : outterWallRange(2)
+% %%%%%%%%%%%%%% machining path
+%     mPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
+%     genMachiningProcess(pg, safetyHeight, toolNum, mPathSeq, mFeedrate);
+% end
+% 
+% % machining inner wall
+% side = -1;
+% for wallOffset = innerWallRange(1): lyrThickness : innerWallRange(2)
+% %%%%%%%%%%%%%% machining path
+%     mPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
+%     genMachiningProcess(pg, safetyHeight, toolNum, mPathSeq, mFeedrate);
+% end
+% 
+% end
+
+
+
+function ret = planarMachining(pg, cntr, depthRange, side, safetyHeight, toolRadiu, toolNum, mFeedrate)
+    lyrThickness = -0.1;
+    
+    passStepOver = toolRadiu/2;    
+    if floor(side/passStepOver) == side/passStepOver
+        passNum = floor(side/passStepOver);            
+    else
+        passNum = floor(side/passStepOver) + 1;    
+    end
+    passStepOver = side / passNum;
+    
+    xRange = [cntr(1) - side/2, cntr(1) + side/2];
+    yRange = [cntr(2) - side/2, cntr(2) + side/2];
+    planarPathSeq = [];    
+    for zPos = depthRange(1): lyrThickness: depthRange(2)
+        for yPos = yRange(1): passStepOver: yRange(2)
+            planarPathSeq = [planarPathSeq; 
+                             xRange(1), yPos, zPos;
+                             xRange(2), yPos, zPos;
+                             xRange(1), yPos, zPos];            
+        end
+    end
+
+    genMachiningProcess(pg, safetyHeight, toolNum, planarPathSeq, mFeedrate);    
+%     pg.drawPath(planarPathSeq, planarPathSeq);
+%     pause
+    ret = planarPathSeq;
+end
+
+
+
+
 
 
