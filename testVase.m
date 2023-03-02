@@ -34,26 +34,28 @@ side = 1; % machining inside is -1 and outside is 1
 startCtr = [0,0];
 % inclinationAgl = 0; % degree
 pLyrNum = 300;
-% wpH = 10;
 lyrHeight = 0.5;
 radius = 20;
 tol = 0.1;
 safetyHeight = 230;
 zOffset = 0;
 
-% shape
-handle=vase;
 
+wpHeight = pLyrNum * lyrHeight;
+zOffset = 0;
+[printPathSeq,pwrSeq] = vase.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
+[toolContactPts, toolCntrPts, toolAxisSeq, fcNormalSeq] = vase.genMachiningPath(radius, startCtr, tol, wpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
 
-xPos = [];
-zPos = [];
+figure()
+scatter3(printPathSeq(:,1), printPathSeq(:,2), printPathSeq(:,3),2)
+hold on
+scatter3(toolContactPts(:,1), toolContactPts(:,2), toolContactPts(:,3),1)
+
 pos = [];
 tanVec = [];
-for curZ = 0:5:150
-    curX = handle.genVaseRadius(curZ);
-    curTan = handle.getVaseTangent(curZ);
-    xPos = [xPos, curX];
-    zPos = [zPos, curZ]; 
+for curZ = 0:5:wpHeight
+    curX = vase.genVaseRadius(curZ);
+    curTan = vase.getVaseTangent(curZ);
     pos = [pos; curX, curZ];
     tanVec = [tanVec;curTan];
 end
