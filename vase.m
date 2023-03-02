@@ -77,9 +77,9 @@ classdef vase
         end
         
         function tangent2D = getVaseTangent(zValue)
-            delta = 0.0001;
-            pe = [zValue + delta, vase.genVaseRadius(zValue + delta)];
-            p0 = [zValue - delta, vase.genVaseRadius(zValue - delta)];
+            delta = 1e-9;
+            pe = [vase.genVaseRadius(zValue + delta), zValue + delta];
+            p0 = [vase.genVaseRadius(zValue - delta), zValue - delta];
             tangent2D = pe - p0;
             tangent2D = tangent2D/norm(tangent2D);
         end

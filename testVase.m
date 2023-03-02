@@ -47,19 +47,47 @@ handle=vase;
 
 xPos = [];
 zPos = [];
-for curZ = 0:0.1:150
+pos = [];
+tanVec = [];
+for curZ = 0:1:150
     curX = handle.genVaseRadius(curZ);
+    curTan = handle.getVaseTangent(curZ);
     xPos = [xPos, curX];
     zPos = [zPos, curZ]; 
+    pos = [pos; curX, curZ];
+    tanVec = [tanVec;curTan];
 end
 
 plot(xPos, zPos)
 hold on
 plot(-xPos, zPos)
+hold on
+ax = gca;
+drawTanVec(ax, pos, tanVec)
+% for i = 1:length(tanVec)
+%     plot(xPos, zPos)
+%     hold on    
+% end
+
 axis equal
 
 
+function drawTanVec(ax, origPos, tanVec)
+    tanVecLen  = 40;
+    for i = 1:length(tanVec)
+        p0 = origPos(i,:);
+        curTan = tanVec(i,:); 
+        pe = p0 + tanVecLen*curTan;
+        plot([p0(1), pe(1)], [p0(2), pe(2)])
+        hold on    
+    end
+end
+
+
+function getToolRect(pos, vec, toolRad, toolLen)
 
 
 
+
+end
 
