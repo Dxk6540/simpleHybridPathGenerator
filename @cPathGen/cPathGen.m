@@ -235,7 +235,6 @@ classdef cPathGen < handle
         
         
         function ret = returnToSafety(obj, zDist, feedrate)
-        % safetyPath is a 3*3 array, with its cols are xyz 
             fprintf(obj.fid_, "G01 Z%.3f F%d\r\n", zDist, feedrate);                 
         end % returnToSafety(obj, safetyPath, feedrate)
         
@@ -278,19 +277,7 @@ classdef cPathGen < handle
         function ret = addPathPtFeed(obj, pt, feedrate)
             fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", pt(1), pt(2), pt(3), feedrate);  
         end % ddPathPtFeed(obj, pt, feedrate)
-        
-        
-        function ret = addPathPts(obj, pts, feedrate)
-            ret = 1;             
-            for i = 1:size(pts,1)
-                if i==1
-                    fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", pts(1,1), pts(1,2), pts(1,3), feedrate); 
-                else
-                    obj.addPathPt(pts(i,:));
-                end
-            end
-        end % addPathPts(obj, pts, feedrate)
-
+               
         
         function ret = addPathPtWithPwr(obj, pt, pwr, lenPos, feedrate)
             ret = 1;
@@ -305,7 +292,7 @@ classdef cPathGen < handle
             fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f I%d J%d F%d\r\n", pt(1), pt(2), pt(3), pwr, lenPos, feedrate);  
         end  % addPathPtWithPwr(obj, pt, pwr, lenPos, feedrate)      
         
-        
+        ret = addPathPts(obj, pts, feedrate);
         ret = addPathPtsWithPwr(obj, pts, pwr, lenPos, feedrate);
         
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

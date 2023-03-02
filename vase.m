@@ -42,7 +42,7 @@ classdef vase
             pwrSeq(1) = pwr;
         end
         
-        function path = genMachiningPath(baseRadiu, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, side)
+        function [cntrPath, toolAxis] = genMachiningPath(baseRadiu, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, side)
 
             % roughing circle path   
             if floor(wpHeight/lyrThickness) == wpHeight/lyrThickness
@@ -56,20 +56,40 @@ classdef vase
                 lyrNum = lyrNum + 6;
             end
 
-            aglStep = 2 * pi / lyrPtNum;
-            mPathSeq = [];
+
+            toolContactPts = [];
+            toolAxis = [];
+            fcNormal = [];
             for lyrIdx = 1:lyrNum
                 z = wpHeight - lyrIdx * lyrHeight + zOffset;
                 vaseRadius = baseRadiu * vase.genVaseRadius(z); 
-                lyrPtNum = floor(2 * (vaseRadius + side*(toolRadiu + wallOffset)) * pi / tol)+1;                
+                tanVec2 = vase.getVaseTangent(z);
+%                 mtRadiu = vaseRadius + side*(toolRadiu + wallOffset);
+                mtRadiu = vaseRadius + side * wallOffset;
+                lyrPtNum = floor(2 * mtRadiu * pi / tol)+1;                
+                aglStep = 2 * pi / lyrPtNum;                
                 for j = 1 : lyrPtNum
-                    x = cos(aglStep * j) * (vaseRadius + side*(toolRadiu + wallOffset)) + startCenter(1);
-                    y = sin(aglStep * j) * (vaseRadius + side*(toolRadiu + wallOffset)) + startCenter(2); 
-                    mPathSeq = [mPathSeq; x,y,z];
+                    x = cos(aglStep * j) * mtRadiu + startCenter(1);
+                    y = sin(aglStep * j) * mtRadiu + startCenter(2); 
+                    toolContactPts = [toolContactPts; x,y,z];
                 end
             end
-            path = mPathSeq;
             
+            
+            
+            path = mPathSeq;            
+        end
+        
+        
+        function ctrPt = getToolCenterPt(ccPt, toolAxis, fcNormal, toolRadiu)
+            mtDir = cross(toolAxis, cross(fcNormal, toolAxis));
+            mtDir = mtDir/ norm(mtDir);
+            ctrPt = ccPt + mtDir * toolRadiu;            
+        end
+        
+        function vec3d = convertTo3DVec(xzVec2d, agl)
+            % xzVec2d is the vec with cord [x, 0, z]
+            vec3d = [cos(agl)*xzVec2d(1), sin(agl)*xzVec2d(1), xzVec2d(2)];            
         end
         
         function radius = genVaseRadius(zValue)
@@ -84,5 +104,9 @@ classdef vase
             tangent2D = tangent2D/norm(tangent2D);
         end
         
+        function normal2D = getVaseNormal(zValue)
+            tg = vase.getVaseTangent(zValue);
+            normal2D = (rot2(pi/2) * tg')';
+        end        
     end
 end

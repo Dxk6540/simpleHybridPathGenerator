@@ -49,7 +49,7 @@ xPos = [];
 zPos = [];
 pos = [];
 tanVec = [];
-for curZ = 0:1:150
+for curZ = 0:5:150
     curX = handle.genVaseRadius(curZ);
     curTan = handle.getVaseTangent(curZ);
     xPos = [xPos, curX];
@@ -63,13 +63,14 @@ hold on
 plot(-xPos, zPos)
 hold on
 ax = gca;
+axis equal
+
 drawTanVec(ax, pos, tanVec)
 % for i = 1:length(tanVec)
 %     plot(xPos, zPos)
 %     hold on    
 % end
 
-axis equal
 
 
 function drawTanVec(ax, origPos, tanVec)
@@ -78,16 +79,30 @@ function drawTanVec(ax, origPos, tanVec)
         p0 = origPos(i,:);
         curTan = tanVec(i,:); 
         pe = p0 + tanVecLen*curTan;
-        plot([p0(1), pe(1)], [p0(2), pe(2)])
+        plot(ax, [p0(1), pe(1)], [p0(2), pe(2)])
         hold on    
+        rect = getToolRect(p0, curTan, 4, 50);
+        drawRect(ax, rect);
+        pause
     end
 end
 
 
-function getToolRect(pos, vec, toolRad, toolLen)
+function drawRect(ax, rect)
+    for i = 1:4
+        plot(ax, [rect(i,1), rect(i+1,1)], [rect(i,2), rect(i+1,2)])
+        hold on           
+    end
+end
 
 
-
-
+function rect = getToolRect(pos, vec, toolRad, toolLen, side)
+        toolContactPt = pos;
+%         vert = rot90(vec)';
+        vert = (rot2(pi/2) * vec')';
+        toolEdge2 = toolContactPt + vert * toolRad * 2;
+        upToolEdge = toolContactPt + vec*toolLen;
+        upToolEdge2 = toolEdge2 + vec*toolLen;     
+        rect = [toolContactPt; toolEdge2; upToolEdge2; upToolEdge; toolContactPt];
 end
 
