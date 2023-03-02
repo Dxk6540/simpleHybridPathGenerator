@@ -24,7 +24,7 @@ side = 1; % machining inside is -1 and outside is 1
 %  geometry param
 startCtr = [60,0];
 % inclinationAgl = 0; % degree
-pLyrNum = 20;
+pLyrNum = 30;
 lyrHeight = 0.5;
 radius = 20;
 tol = 0.1;
