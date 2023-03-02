@@ -24,13 +24,11 @@ side = 1; % machining inside is -1 and outside is 1
 %  geometry param
 startCtr = [60,0];
 % inclinationAgl = 0; % degree
-pLyrNum = 30;
-% wpH = 10;
+pLyrNum = 20;
 lyrHeight = 0.5;
 radius = 20;
 tol = 0.1;
 safetyHeight = 230;
-zOffset = 0;
 
 % shape
 handle=cylinder;
@@ -38,11 +36,17 @@ handle=cylinder;
 % alternative
 outterWallRange = [1.2,0.4];
 innerWallRange = [2.6,2.1];
+
 alternativeNum = 1;
 machiningLyrThickness = -0.1;
-
-
+planarMachiningDepth = 3;
+planarRadiuRng = [18,24];
+    
 %%
+sglWpHeight = lyrHeight * pLyrNum;
+allWpHeight = sglWpHeight * alternativeNum;
+zOffsetRng = [0, allWpHeight];
+
 pg = cPathGen(filename); % create the path generator object
 pg.genNewScript();
 pg.draw_ = false;
@@ -50,27 +54,29 @@ pg.experiment_ = false;
 pg.alternation_ = 1;
 
 zOffsetRng = [0, lyrHeight*pLyrNum*alternativeNum];
-for zOffset = zOffsetRng(1): lyrHeight*pLyrNum: zOffsetRng(2)
+
+for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     %%%%%%%%%%%%%% printing path
     disp("printing volume")    
     [printPathSeq,pwrSeq] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
     genPrintingProcess(pg, safetyHeight, printPathSeq, pwrSeq, pFeedrate);
 
-    % plannar circle machining 
+    %%%%%%%%%%%%%%%%%%%%% plannar circle machining %%%%%%%%%%%%%%%%%%%%
     disp("planar machining top")
-    depthRng = [pLyrNum * lyrHeight+zOffset+3, pLyrNum * lyrHeight+zOffset];
-    radiuRng = [20,25];
-    planarPathSeq = planarCircleMachining(startCtr, depthRng, radiuRng, machiningLyrThickness, toolRadiu);
+    depthRng = [sglWpHeight+zOffset+planarMachiningDepth, sglWpHeight+zOffset];
+%     planarSide = 50;
+%     planarPathSeq = planarMachining(startCtr, depthRng, planarSide, machiningLyrThickness, toolRadiu);
+    planarPathSeq = planarCircleMachining(startCtr, depthRng, planarRadiuRng, machiningLyrThickness, toolRadiu);
     genMachiningProcess(pg, safetyHeight, toolNum, planarPathSeq, planarFeed);    
     pg.drawPath(printPathSeq, planarPathSeq);
-
+    
     disp("machining outter/inner wall")
-    % machining outter wall
+    %%%%%%%%%%%%%%%%%%%%%%%%% machining outter wall %%%%%%%%%%%%%%%%%%%%%%%%
     side = 1;
     allOutterPath = [];
     for wallOffset = outterWallRange(1): machiningLyrThickness : outterWallRange(2)
     %%%%%%%%%%%%%% machining path
-        outMachiningPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
+        outMachiningPathSeq = handle.genMachiningPath(radius, startCtr, tol, sglWpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
         allOutterPath = [allOutterPath; outMachiningPathSeq];
     end
 	genMachiningProcess(pg, safetyHeight, toolNum, allOutterPath, mFeedrate);
@@ -79,7 +85,7 @@ for zOffset = zOffsetRng(1): lyrHeight*pLyrNum: zOffsetRng(2)
     allInnerPath = [];
     for wallOffset = innerWallRange(1): machiningLyrThickness : innerWallRange(2)
     %%%%%%%%%%%%%% machining path
-        inMachiningPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
+        inMachiningPathSeq = handle.genMachiningPath(radius, startCtr, tol, sglWpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
         allInnerPath = [allInnerPath; inMachiningPathSeq];   
     end
     genMachiningProcess(pg, safetyHeight, toolNum, allInnerPath, mFeedrate);
@@ -98,7 +104,7 @@ pg.closeScript();
 function ret = planarMachining(cntr, depthRange, side, machiningLyrThickness, toolRadiu)
     lyrThickness = machiningLyrThickness;
     
-    passStepOver = toolRadiu*0.8;    
+    passStepOver = toolRadiu*3.5;    
     if floor(side/passStepOver) == side/passStepOver
         passNum = floor(side/passStepOver);            
     else
@@ -114,7 +120,8 @@ function ret = planarMachining(cntr, depthRange, side, machiningLyrThickness, to
             planarPathSeq = [planarPathSeq; 
                              xRange(1), yPos, zPos;
                              xRange(2), yPos, zPos;
-                             xRange(1), yPos, zPos];            
+                             xRange(2), yPos + passStepOver/2, zPos;                             
+                             xRange(1), yPos + passStepOver/2, zPos];            
         end
     end
 
@@ -122,54 +129,32 @@ function ret = planarMachining(cntr, depthRange, side, machiningLyrThickness, to
 end
 
 
-
-
-
-
-
 function ret = planarCircleMachining(cntr, depthRange, radiuRng, mLyrThick, toolRadiu)
     lyrThickness = mLyrThick;
     
-    passStepOver = toolRadiu*0.8; 
+    passStepOver = toolRadiu*1.6; 
     radiuDiffLen = abs(radiuRng(1) - radiuRng(2));
     if floor(radiuDiffLen/passStepOver) == radiuDiffLen/passStepOver
         passNum = floor(radiuDiffLen/passStepOver);            
     else
         passNum = floor(radiuDiffLen/passStepOver) + 1;    
     end
-    passStepOver = radiuDiffLen / passNum;
-    
+    passStepOver = radiuDiffLen / passNum;    
     tol = 1;
     mPathSeq = [];
-    for curR = radiuRng(1): passStepOver: radiuRng(2)
-        % planar circle path
-        lyrPtNum = floor(2 * curR * pi / tol)+1;
-%         % wpHeight = lyrNum * lyrHeight;
-%         if floor(wpHeight/lyrThickness) == wpHeight/lyrThickness
-%             lyrNum = floor(wpHeight/lyrThickness);            
-%         else
-%             lyrNum = floor(wpHeight/lyrThickness) + 1;    
-%         end
-%         lyrHeight = wpHeight/lyrNum;
-% 
-% %         if zOffset > 0
-% %             lyrNum = lyrNum + 6;
-% %         end
-
-        aglStep = 2 * pi / lyrPtNum;
-    for zPos = depthRange(1): lyrThickness: depthRange(2)
+    for zPos = depthRange(1): lyrThickness: depthRange(2)    
+        for curR = radiuRng(1): passStepOver: radiuRng(2)
+            % planar circle path
+            lyrPtNum = floor(2 * curR * pi / tol)+1;
+            aglStep = 2 * pi / lyrPtNum;
             for j = 1 : lyrPtNum
                 x = cos(aglStep * j) * curR + cntr(1);
                 y = sin(aglStep * j) * curR + cntr(2);
                 mPathSeq = [mPathSeq; x,y,zPos];
             end
-        end       
-        
+        end               
     end
-
-
     ret = mPathSeq;  
-
 end
 
 
