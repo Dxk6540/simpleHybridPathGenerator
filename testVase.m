@@ -1,0 +1,65 @@
+% file param:
+pFilename = strcat('./cylinderTest',date,'.txt');
+mFilename = strcat('./cylinderTestMachinig',date,'.txt');
+
+% process param
+% pwr = 300; % 1.2KW / 4kw *1000;
+% lenPos = 900;
+% flowL = 300; % 6 L/min / 20L/min * 1000;
+% speedL = 200;% 2 r/min / 10r/min * 1000;
+% flowR = 300;% 6 L/min / 20L/min * 1000;
+% speedR = 200;% 2 r/min / 10r/min * 1000;
+% feedrate = 760; % mm/min
+
+% printing process param
+pwr = 300; % 1.2KW / 4kw *1000;
+lenPos = 900;
+flowL = 250; % 6 L/min / 20L/min * 1000;
+speedL = 100;% 2 r/min / 10r/min * 1000;
+flowR = 250;% 6 L/min / 20L/min * 1000;
+speedR = 100;% 2 r/min / 10r/min * 1000;
+pFeedrate = 600; % mm/min
+channel = 2;
+step = 1;
+
+% machining process param
+mFeedrate = 800; % mm/min
+spindleSpeed = 10000;
+toolNum = 1;
+toolRadiu = 4;
+wallOffset = 1.1;
+side = 1; % machining inside is -1 and outside is 1
+
+%  geometry param
+startCtr = [0,0];
+% inclinationAgl = 0; % degree
+pLyrNum = 300;
+% wpH = 10;
+lyrHeight = 0.5;
+radius = 20;
+tol = 0.1;
+safetyHeight = 230;
+zOffset = 0;
+
+% shape
+handle=vase;
+
+
+xPos = [];
+zPos = [];
+for curZ = 0:0.1:150
+    curX = handle.genVaseRadius(curZ);
+    xPos = [xPos, curX];
+    zPos = [zPos, curZ]; 
+end
+
+plot(xPos, zPos)
+hold on
+plot(-xPos, zPos)
+axis equal
+
+
+
+
+
+

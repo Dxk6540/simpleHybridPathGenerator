@@ -33,7 +33,7 @@ side = 1; % machining inside is -1 and outside is 1
 %  geometry param
 startCtr = [0,0];
 % inclinationAgl = 0; % degree
-pLyrNum = 20;
+pLyrNum = 300;
 % wpH = 10;
 lyrHeight = 0.5;
 radius = 20;
@@ -42,7 +42,7 @@ safetyHeight = 230;
 zOffset = 0;
 
 % shape
-handle=cylinder;
+handle=vase;
 
 %%
 %%%%%%%%%%%%%% printing path
