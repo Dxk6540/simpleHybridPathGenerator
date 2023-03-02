@@ -12,7 +12,11 @@ function ret = genPrintingProcess(pg, safetyHeight, pPathSeq, pwrSeq, pFeedrate)
     pg.setLaser(pwr, lenPos, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
 %     pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) + radius, startCtr(2), 0], 3000); % safety move the start pt
     pg.saftyToPt([nan, nan, safetyHeight], pPathSeq(1,:), 3000); % safety move the start pt
-    pg.pauseProgram();% pause and wait for start (the button)
+    if pg.alternation_==1
+        pg.pauseProgramMust();
+    else
+        pg.pauseProgram();% pause and wait for start (the button)
+    end
     pg.enableLaser(1, 10);
     %%% add path pts
     pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrate);

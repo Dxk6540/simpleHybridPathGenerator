@@ -13,8 +13,8 @@ channel = 2;
 step = 1;
 
 % machining process param
-mFeedrate = 800; % mm/min
-planarFeed = 2000;
+mFeedrate = 300; % mm/min
+planarFeed = 300;
 spindleSpeed = 10000;
 toolNum = 1;
 toolRadiu = 4;
@@ -22,7 +22,7 @@ wallOffset = 1.1;
 side = 1; % machining inside is -1 and outside is 1
 
 %  geometry param
-startCtr = [-60,0];
+startCtr = [60,0];
 % inclinationAgl = 0; % degree
 pLyrNum = 30;
 % wpH = 10;
@@ -36,8 +36,8 @@ zOffset = 0;
 handle=cylinder;
 
 % alternative
-outterWallRange = [1.5,1];
-innerWallRange = [2.5,2];
+outterWallRange = [1.2,0.4];
+innerWallRange = [2.6,2.1];
 alternativeNum = 1;
 machiningLyrThickness = -0.1;
 
@@ -45,7 +45,9 @@ machiningLyrThickness = -0.1;
 %%
 pg = cPathGen(filename); % create the path generator object
 pg.genNewScript();
-
+pg.draw_ = false;
+pg.experiment_ = false;
+pg.alternation_ = 1;
 
 zOffsetRng = [0, lyrHeight*pLyrNum*alternativeNum];
 for zOffset = zOffsetRng(1): lyrHeight*pLyrNum: zOffsetRng(2)
@@ -65,25 +67,26 @@ for zOffset = zOffsetRng(1): lyrHeight*pLyrNum: zOffsetRng(2)
     disp("machining outter/inner wall")
     % machining outter wall
     side = 1;
-    allInnerPath = [];
+    allOutterPath = [];
     for wallOffset = outterWallRange(1): machiningLyrThickness : outterWallRange(2)
     %%%%%%%%%%%%%% machining path
         outMachiningPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
-        genMachiningProcess(pg, safetyHeight, toolNum, outMachiningPathSeq, mFeedrate);
-        allInnerPath = [allInnerPath; outMachiningPathSeq];
+        allOutterPath = [allOutterPath; outMachiningPathSeq];
     end
+	genMachiningProcess(pg, safetyHeight, toolNum, allOutterPath, mFeedrate);
     % machining inner wall
     side = -1;
-    allOutterPath = [];
+    allInnerPath = [];
     for wallOffset = innerWallRange(1): machiningLyrThickness : innerWallRange(2)
     %%%%%%%%%%%%%% machining path
         inMachiningPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
-        genMachiningProcess(pg, safetyHeight, toolNum, inMachiningPathSeq, mFeedrate);
-        allOutterPath = [allOutterPath; inMachiningPathSeq];    
+        allInnerPath = [allInnerPath; inMachiningPathSeq];   
     end
-    pg.drawPath(allOutterPath, allInnerPath);
+    genMachiningProcess(pg, safetyHeight, toolNum, allInnerPath, mFeedrate);
+    pg.drawPath(allInnerPath, allOutterPath);
 %     pause
     disp(['cycle with offset ', num2str(zOffset), 'mm is generated']);
+    pg.alternation_ = pg.alternation_ + 1;
 end
 
 

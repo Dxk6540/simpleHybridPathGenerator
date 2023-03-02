@@ -61,7 +61,7 @@ classdef cylinder
 
             aglStep = 2 * pi / lyrPtNum;
             mPathSeq = [];
-            for lyrIdx = 1:2:lyrNum+1
+            for lyrIdx = 1:3:lyrNum+1
             %     centerXOffset = ((lyrIdx - 1) * lyrHeight) * tan(inclinationAgl/180 * pi); 
                 for j = 1 : lyrPtNum
             %         x = cos(aglStep * j) * radius + startCenter(1) + centerXOffset;

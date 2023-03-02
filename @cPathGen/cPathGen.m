@@ -6,6 +6,9 @@ classdef cPathGen < handle
         filename_
         fid_
         curMode_
+        draw_
+        experiment_
+        alternation_
     end
     
     methods
@@ -58,9 +61,16 @@ classdef cPathGen < handle
         end % openDoor(obj)
         
         function ret = pauseProgram(obj)
-            fprintf(obj.fid_, "M00 ;;程序暂停，按启动重新启动\r\n");
+            if obj.experiment_
+                fprintf(obj.fid_, "M00 ;;程序暂停，按启动重新启动\r\n");
+            end
             ret = 1;
         end % pauseProgram(obj)
+        
+        function ret = pauseProgramMust(obj)
+            fprintf(obj.fid_, "M00 ;;程序暂停，按启动重新启动\r\n");
+            ret = 1;
+        end
                 
         function ret = endProgram(obj)
             fprintf(obj.fid_, "M30  ;; end program.\r\n");
@@ -88,19 +98,12 @@ classdef cPathGen < handle
             fprintf(obj.fid_, "M94 ;;选择激光模式\r\n");
             fprintf(obj.fid_, "G55 ;; 激光打印选择G55坐标系\r\n");
             fprintf(obj.fid_, "G49  ;;关闭T0的长度补偿\r\n");
-            fprintf(obj.fid_, "M142 ;;开启模拟量插补\r\n");   
-%             fprintf(obj.fid_, "M145 ;;放保护头\r\n");               
+            fprintf(obj.fid_, "M142 ;;开启模拟量插补\r\n");                 
             obj.curMode_ = 1;            
             ret = 1;
         end % printingMode(obj)       
         
         function ret = machiningMode(obj)
-        % printing mode along with G55 CS + update AIO
-            fprintf(obj.fid_, "M94 ;;选择激光模式\r\n");
-            fprintf(obj.fid_, "G55 ;; 激光打印选择G55坐标系\r\n");
-            fprintf(obj.fid_, "G49  ;;关闭T0的长度补偿\r\n");
-%             fprintf(obj.fid_, "M144 ;;装保护头\r\n");           
-
             fprintf(obj.fid_, "M93 ;;选择主轴模式\r\n");
             fprintf(obj.fid_, "M143 ;;关闭模拟量插补\r\n");
             fprintf(obj.fid_, "G54 ;;主轴选择G54坐标系\r\n");
@@ -339,13 +342,14 @@ classdef cPathGen < handle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% draw path %%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
         function drawPath(obj, pPathSeq, mPathSeq)
-%             close all;
-            figure()
-            plot3(pPathSeq(:,1),pPathSeq(:,2),pPathSeq(:,3))
-            axis equal
-            figure()
-            plot3(mPathSeq(:,1),mPathSeq(:,2),mPathSeq(:,3))
-            axis equal
+            if obj.draw_
+            figure();
+            plot3(pPathSeq(:,1),pPathSeq(:,2),pPathSeq(:,3));
+            axis equal;
+            figure();
+            plot3(mPathSeq(:,1),mPathSeq(:,2),mPathSeq(:,3));
+            axis equal;
+            end
         end
     end
 end
