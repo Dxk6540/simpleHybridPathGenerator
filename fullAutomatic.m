@@ -14,7 +14,8 @@ step = 1;
 
 % machining process param
 mFeedrate = 300; % mm/min
-planarFeed = 300;
+planarFeed = 800;
+planarSlowFeed = 200;
 spindleSpeed = 10000;
 toolNum = 1;
 toolRadiu = 4;
@@ -31,7 +32,7 @@ tol = 0.1;
 safetyHeight = 230;
 
 % shape
-handle=cylinder;
+handle = cylinder;
 
 % alternative
 outterWallRange = [1.2,0.4];
@@ -40,7 +41,7 @@ innerWallRange = [2.6,2.1];
 alternativeNum = 1;
 machiningLyrThickness = -0.1;
 planarMachiningDepth = 3;
-planarRadiuRng = [18,24];
+planarRadiuRng = [17,22];
     
 %%
 sglWpHeight = lyrHeight * pLyrNum;
@@ -49,7 +50,7 @@ zOffsetRng = [0, allWpHeight];
 
 pg = cPathGen(filename); % create the path generator object
 pg.genNewScript();
-pg.draw_ = false;
+pg.draw_ = true;
 pg.experiment_ = false;
 pg.alternation_ = 1;
 
@@ -66,8 +67,8 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     depthRng = [sglWpHeight+zOffset+planarMachiningDepth, sglWpHeight+zOffset];
 %     planarSide = 50;
 %     planarPathSeq = planarMachining(startCtr, depthRng, planarSide, machiningLyrThickness, toolRadiu);
-    planarPathSeq = planarCircleMachining(startCtr, depthRng, planarRadiuRng, machiningLyrThickness, toolRadiu);
-    genMachiningProcess(pg, safetyHeight, toolNum, planarPathSeq, planarFeed);    
+    [planarPathSeq, planarFeedSeq]  = planarCircleMachining(startCtr, depthRng, planarRadiuRng, machiningLyrThickness, toolRadiu, planarFeed, planarSlowFeed);
+    genMachiningProcess(pg, safetyHeight, toolNum, planarPathSeq, planarFeedSeq);    
     pg.drawPath(printPathSeq, planarPathSeq);
     
     disp("machining outter/inner wall")
@@ -95,15 +96,4 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     pg.alternation_ = pg.alternation_ + 1;
 end
 
-
-
 pg.closeScript();
-
-
-%% printing & machining functions
-
-
-
-
-
-

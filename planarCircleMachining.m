@@ -17,7 +17,7 @@ function [path, feedSeq] = planarCircleMachining(cntr, depthRange, radiuRng, mLy
             % planar circle path
             lyrPtNum = floor(2 * curR * pi / tol)+1;
             aglStep = 2 * pi / lyrPtNum;
-            for j = 1 : lyrPtNum
+            for j = 0 : lyrPtNum
                 x = cos(aglStep * j) * curR + cntr(1);
                 y = sin(aglStep * j) * curR + cntr(2);
                 mPathSeq = [mPathSeq; x,y,zPos];
