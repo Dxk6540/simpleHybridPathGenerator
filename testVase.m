@@ -2,15 +2,6 @@
 pFilename = strcat('./cylinderTest',date,'.txt');
 mFilename = strcat('./cylinderTestMachinig',date,'.txt');
 
-% process param
-% pwr = 300; % 1.2KW / 4kw *1000;
-% lenPos = 900;
-% flowL = 300; % 6 L/min / 20L/min * 1000;
-% speedL = 200;% 2 r/min / 10r/min * 1000;
-% flowR = 300;% 6 L/min / 20L/min * 1000;
-% speedR = 200;% 2 r/min / 10r/min * 1000;
-% feedrate = 760; % mm/min
-
 % printing process param
 pwr = 300; % 1.2KW / 4kw *1000;
 lenPos = 900;
@@ -33,19 +24,20 @@ side = -1; % machining inside is -1 and outside is 1
 %  geometry param
 startCtr = [0,0];
 % inclinationAgl = 0; % degree
-pLyrNum = 5;
-lyrHeight = 4;
+pLyrNum = 40;
+lyrHeight = 0.5;
 radius = 20;
-tol = 20;
+tol = 0.2;
 safetyHeight = 230;
-zOffset = 0;
+zOffset = 80;
 
 
 wpHeight = pLyrNum * lyrHeight;
 % zOffset = 60;
 [printPathSeq,pwrSeq] = vase.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
-rollAgl = pi/6;
-rollAgl = 0;
+
+rollAgl = pi/6; %the rot angle is the angle between the tool axis and tangent
+% rollAgl = 0;
 [toolContactPts, toolCntrPts, toolAxisSeq, fcNormalSeq] = vase.genMachiningPath(radius, startCtr, tol, wpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, rollAgl, side);
 
 figure()
@@ -68,13 +60,16 @@ scatter3(toolContactPts(1:10:end,1), toolContactPts(1:10:end,2), toolContactPts(
 % >>>>>>> d4795cec086837ff6e45786c567666713af48592
 hold on
 ax = gca;
-drawTools(ax, toolCntrPts, toolAxisSeq);
+drawTools(ax, toolCntrPts, toolAxisSeq, 100);
 % hold on
 % drawTools(ax, toolContactPts, toolAxisSeq);
+axis equal
 
-function drawTools(ax, origPosSeq, toolAxisSeq)
-    toolLen  = 40;
-    for i = 1:length(toolAxisSeq)
+
+
+function drawTools(ax, origPosSeq, toolAxisSeq, step)
+    toolLen  = 25;
+    for i = 1:step:length(toolAxisSeq)
         p0 = origPosSeq(i,:);
         curAxis = toolAxisSeq(i,:); 
         pe = p0 + toolLen*curAxis;

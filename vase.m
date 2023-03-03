@@ -13,7 +13,7 @@ classdef vase
                 tPathSeq = [];
                 tPwrSeq = [];
 %                 radius = baseRadiu * vase.genVaseRadius(lyrIdx * lyrThickness);
-                radius = vase.genVaseRadius(lyrIdx * lyrThickness);
+                radius = vase.genVaseRadius(lyrIdx * lyrThickness + zOffset);
                 lyrPtNum = floor(2 * radius * pi / tol)+1;
                 aglStep = 2 * pi / lyrPtNum;
                 if channel > 1
