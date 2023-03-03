@@ -46,12 +46,26 @@ wpHeight = pLyrNum * lyrHeight;
 [printPathSeq,pwrSeq] = vase.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
 rollAgl = pi/6;
 rollAgl = 0;
-[toolContactPts, toolCntrPts, toolAxisSeq, fcNormalSeq] = vase.genMachiningPath(startCtr, tol, wpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, rollAgl, side);
+[toolContactPts, toolCntrPts, toolAxisSeq, fcNormalSeq] = vase.genMachiningPath(radius, startCtr, tol, wpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, rollAgl, side);
 
 figure()
-scatter3(printPathSeq(:,1), printPathSeq(:,2), printPathSeq(:,3),2)
+scatter3(printPathSeq(1:10:end,1), printPathSeq(1:10:end,2), printPathSeq(1:10:end,3),2)
 hold on
-scatter3(toolContactPts(:,1), toolContactPts(:,2), toolContactPts(:,3),1)
+scatter3(toolContactPts(1:10:end,1), toolContactPts(1:10:end,2), toolContactPts(1:10:end,3),1)
+
+% pos = [];
+% tanVec = [];
+% for curZ = 0:5:wpHeight
+%     curX = vase.genVaseRadius(curZ);
+%     curTan = vase.getVaseTangent(curZ);
+%     pos = [pos; curX, curZ];
+%     tanVec = [tanVec;curTan];
+% end
+% 
+% plot(xPos, zPos)
+% hold on
+% plot(-xPos, zPos)
+% >>>>>>> d4795cec086837ff6e45786c567666713af48592
 hold on
 ax = gca;
 drawTools(ax, toolCntrPts, toolAxisSeq);

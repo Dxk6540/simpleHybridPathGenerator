@@ -29,6 +29,7 @@ function [path, feedSeq] = planarCircleMachining(cntr, depthRange, radiuRng, mLy
         mPathSeq = [mPathSeq; x,y,zPos + lyrThickness];
         feedSeq = [feedSeq; slowFeed];        
     end
-    path = mPathSeq;  
+    path = mPathSeq(1:end-1,:);
+    feedSeq = feedSeq(1:end-1,:);
 end
 

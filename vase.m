@@ -4,9 +4,8 @@
 
 classdef vase
     methods(Static)
-        function [path,pwrSeq] = genPrintingPath(baseRadiu, startCenter, tol, lyrNum, lyrThickness, pwr, zOffset, channel, step)
+        function [path,pwrSeq] = genPrintingPath(~, startCenter, tol, lyrNum, lyrThickness, pwr, zOffset, channel, step)
             % planar circle path
-            data = cell(lyrNum, 2);
             path = [];
             pwrSeq = [];
             for lyrIdx = 0 : lyrNum - 1    
@@ -44,12 +43,10 @@ classdef vase
 %                 data{lyrIdx+1, 1} = tPathSeq;
 %                 data{lyrIdx+1, 2} = tPwrSeq;               
             end
-%             path = cell2mat(data(:,1));
-%             pwrSeq = cell2mat(data(:,2));                       
             pwrSeq(1) = pwr;
         end
         
-        function [toolContactPtSeq, toolCntrPtSeq, toolAxisSeq, fcNormalSeq] = genMachiningPath(startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, rollAgl, side)
+        function [toolContactPtSeq, toolCntrPtSeq, toolAxisSeq, fcNormalSeq] = genMachiningPath(~, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, rollAgl, side)
             % roughing circle path   
             if floor(wpHeight/lyrThickness) == wpHeight/lyrThickness
                 lyrNum = floor(wpHeight/lyrThickness);            
@@ -131,10 +128,7 @@ classdef vase
         end
         
         function tangent2D = getVaseTangent(zValue)
-            delta = 1e-9;
-            pe = [vase.genVaseRadius(zValue + delta), zValue + delta];
-            p0 = [vase.genVaseRadius(zValue - delta), zValue - delta];
-            tangent2D = pe - p0;
+            tangent2D = [((1)/(360))* (63 * cos(((1)/(4)) * (((2)/(15)) * zValue+46)+45)+84 * cos(((1)/(2)) * (((2)/(15)) * zValue + 46))- 56 * sin(((1)/(6)) * (((2)/(15)) * zValue+46))),1];
             tangent2D = tangent2D/norm(tangent2D);
         end
         
