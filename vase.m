@@ -4,9 +4,8 @@
 
 classdef vase
     methods(Static)
-        function [path,pwrSeq] = genPrintingPath(baseRadiu, startCenter, tol, lyrNum, lyrThickness, pwr, zOffset, channel, step)
+        function [path,pwrSeq] = genPrintingPath(~, startCenter, tol, lyrNum, lyrThickness, pwr, zOffset, channel, step)
             % planar circle path
-            data = cell(lyrNum, 2);
             path = [];
             pwrSeq = [];
             for lyrIdx = 0 : lyrNum - 1    
@@ -49,7 +48,7 @@ classdef vase
             pwrSeq(1) = pwr;
         end
         
-        function [toolContactPtSeq, toolCntrPtSeq, toolAxisSeq, fcNormalSeq] = genMachiningPath(baseRadiu, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, side)
+        function [toolContactPtSeq, toolCntrPtSeq, toolAxisSeq, fcNormalSeq] = genMachiningPath(~, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, side)
             % roughing circle path   
             if floor(wpHeight/lyrThickness) == wpHeight/lyrThickness
                 lyrNum = floor(wpHeight/lyrThickness);            
