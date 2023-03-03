@@ -18,8 +18,8 @@
             end
             
             if(constantFeed == 1)
-                fprintf(obj.fid_,"G01 X%.3f Y%.3f Z%.3f I%d J%d F%d\r\n", pts(1,1), pts(1,2), pts(1,3), pwr(1), lenPos(1), feedrate);
-                for i = 2:length(pts)          
+%                 fprintf(obj.fid_,"G01 X%.3f Y%.3f Z%.3f I%d J%d F%d\r\n", pts(1,1), pts(1,2), pts(1,3), pwr(1), lenPos(1), feedrate);
+                for i = 1:length(pts)          
                     obj.addPathPtWithPwr(pts(i,:), pwr(i), lenPos(i), feedrate);                  
                 end
             else

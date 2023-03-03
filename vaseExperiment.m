@@ -1,15 +1,13 @@
-% file param:
-pFilename = strcat('./cylinderTest',date,'.txt');
-mFilename = strcat('./cylinderTestMachinig',date,'.txt');
+%%%%%%%%%%%%%%%%%%%
+%
+% with RTCP function.
+% date: 2023-3-3
+%
+%%%%%%%%%%%%%%%%%%
 
-% process param
-% pwr = 300; % 1.2KW / 4kw *1000;
-% lenPos = 900;
-% flowL = 300; % 6 L/min / 20L/min * 1000;
-% speedL = 200;% 2 r/min / 10r/min * 1000;
-% flowR = 300;% 6 L/min / 20L/min * 1000;
-% speedR = 200;% 2 r/min / 10r/min * 1000;
-% feedrate = 760; % mm/min
+% file param:
+pFilename = strcat('./vaseTest',date,'.txt');
+mFilename = strcat('./vaseTestMachinig',date,'.txt');
 
 % printing process param
 pwr = 300; % 1.2KW / 4kw *1000;
@@ -27,26 +25,29 @@ mFeedrate = 800; % mm/min
 spindleSpeed = 10000;
 toolNum = 1;
 toolRadiu = 4;
-wallOffset = 1.1;
-side = 1; % machining inside is -1 and outside is 1
+toolLen = 30;
 
 %  geometry param
 startCtr = [0,0];
-% inclinationAgl = 0; % degree
-pLyrNum = 30;
-% wpH = 10;
+pLyrNum = 100;
 lyrHeight = 0.5;
 radius = 20;
-tol = 0.1;
+tol = 3;
 safetyHeight = 230;
 zOffset = 0;
+side = -1; % machining inside is -1 and outside is 1
+wallOffset = 1.1;
+rollAgl = pi/6; %the rot angle is the angle between the tool axis and tangent
+% rollAgl = 0;
+
+
 
 % shape
 handle=cylinder;
 
 %%
 %%%%%%%%%%%%%% printing path
-[pPathSeq,pwrSeq] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
+[pPathSeq,pwrSeq] = vase.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
 lenPosSeq = ones(length(pPathSeq),1) * lenPos;
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%%% the regular code for generate a script
@@ -69,14 +70,18 @@ pg.closeScript();
 
 %%
 %%%%%%%%%%%%%% machining path
-mPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
-%%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
+[toolContactPts, toolCntrPts, toolAxisSeq, fcNormalSeq] = vase.genMachiningPath(radius, startCtr, tol, wpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, rollAgl, side);
+bcSeq = sequentialSolveBC(toolAxisSeq, [0,0]);
+mPathSeq = [toolCntrPts, bcSeq];
+
+%%%%%%%%%%%%% following for RTCP path Gen %%%%%%%%%%%%%%%%%%%%%
 %%%% the regular code for generate a script
 pg = cPathGen(mFilename); % create the path generator object
 pg.genNewScript();
 %%% start machining mode
 pg.changeMode(2); % change to machining mode
 pg.changeTool(toolNum);
+pg.startRTCP(safetyHeight, toolNum);
 pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) + side*(radius + toolRadiu + wallOffset + 5), startCtr(2), pLyrNum * lyrHeight], 3000); % safety move the start pt
 pg.pauseProgram();% pause and wait for start (the button)
 pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
@@ -84,7 +89,8 @@ pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of 
 pg.addPathPts(mPathSeq, mFeedrate);
 %%% exist machining mode
 pg.disableSpindle();
-pg.returnToSafety(220, 3000);
+pg.stopRTCP(safetyHeight);
+pg.returnToSafety(safetyHeight, 3000);
 %%% end the script
 pg.closeScript();
 

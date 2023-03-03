@@ -11,7 +11,8 @@ function ret = addPathPts(obj, pts, feedrate)
     end    
                 
     if(constantFeed == 1)
-        fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", pts(1,1), pts(1,2), pts(1,3), feedrate); 
+%         fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", pts(1,1), pts(1,2), pts(1,3), feedrate); 
+        obj.addPathPtFeed(pts(1,:), feedrate);
         for i = 2:size(pts,1)         
             obj.addPathPt(pts(i,:));               
         end

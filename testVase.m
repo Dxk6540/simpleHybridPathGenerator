@@ -1,4 +1,8 @@
 % file param:
+clc
+clear
+close all
+
 pFilename = strcat('./cylinderTest',date,'.txt');
 mFilename = strcat('./cylinderTestMachinig',date,'.txt');
 
@@ -18,26 +22,27 @@ mFeedrate = 800; % mm/min
 spindleSpeed = 10000;
 toolNum = 1;
 toolRadiu = 4;
-wallOffset = 1.1;
-side = -1; % machining inside is -1 and outside is 1
 
 %  geometry param
 startCtr = [0,0];
 % inclinationAgl = 0; % degree
-pLyrNum = 40;
+pLyrNum = 50;
 lyrHeight = 0.5;
 radius = 20;
-tol = 0.2;
+tol = 0.5;
 safetyHeight = 230;
-zOffset = 80;
+zOffset = 0;
 
+side = -1; % machining inside is -1 and outside is 1
+wallOffset = 3.1;
+rollAgl = pi/6; %the rot angle is the angle between the tool axis and tangent
+% rollAgl = 0;
 
 wpHeight = pLyrNum * lyrHeight;
 % zOffset = 60;
 [printPathSeq,pwrSeq] = vase.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
 
-rollAgl = pi/6; %the rot angle is the angle between the tool axis and tangent
-% rollAgl = 0;
+
 [toolContactPts, toolCntrPts, toolAxisSeq, fcNormalSeq] = vase.genMachiningPath(radius, startCtr, tol, wpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, rollAgl, side);
 
 figure()
@@ -45,26 +50,18 @@ scatter3(printPathSeq(1:10:end,1), printPathSeq(1:10:end,2), printPathSeq(1:10:e
 hold on
 scatter3(toolContactPts(1:10:end,1), toolContactPts(1:10:end,2), toolContactPts(1:10:end,3),1)
 
-% pos = [];
-% tanVec = [];
-% for curZ = 0:5:wpHeight
-%     curX = vase.genVaseRadius(curZ);
-%     curTan = vase.getVaseTangent(curZ);
-%     pos = [pos; curX, curZ];
-%     tanVec = [tanVec;curTan];
-% end
-% 
-% plot(xPos, zPos)
-% hold on
-% plot(-xPos, zPos)
-% >>>>>>> d4795cec086837ff6e45786c567666713af48592
+
 hold on
 ax = gca;
 drawTools(ax, toolCntrPts, toolAxisSeq, 100);
-% hold on
-% drawTools(ax, toolContactPts, toolAxisSeq);
 axis equal
 
+
+bcSeq = sequentialSolveBC(toolAxisSeq, [0,0]);
+figure()
+plot(bcSeq(:,1))
+figure()
+plot(bcSeq(:,2))
 
 
 function drawTools(ax, origPosSeq, toolAxisSeq, step)
@@ -75,60 +72,6 @@ function drawTools(ax, origPosSeq, toolAxisSeq, step)
         pe = p0 + toolLen*curAxis;
         plot3(ax, [p0(1), pe(1)], [p0(2), pe(2)], [p0(3), pe(3)])
         hold on    
-%         rect = getToolRect(p0, curAxis, 4, 50);
-%         drawRect(ax, rect);
-%         pause
     end
 end
-
-
-% %%%%%%%%%%%%%%% follow  for 2D %%%%%%%%%%%%%%
-% pos = [];
-% tanVec = [];
-% for curZ = 0:5:wpHeight
-%     curX = vase.genVaseRadius(curZ);
-%     curTan = vase.getVaseTangent(curZ);
-%     pos = [pos; curX, curZ];
-%     tanVec = [tanVec;curTan];
-% end
-% 
-% plot(xPos, zPos)
-% hold on
-% plot(-xPos, zPos)
-% hold on
-% ax = gca;
-% axis equal
-% 
-% drawTanVec(ax, pos, tanVec)
-% 
-% function drawTanVec(ax, origPos, tanVec)
-%     tanVecLen  = 40;
-%     for i = 1:length(tanVec)
-%         p0 = origPos(i,:);
-%         curTan = tanVec(i,:); 
-%         pe = p0 + tanVecLen*curTan;
-%         plot(ax, [p0(1), pe(1)], [p0(2), pe(2)])
-%         hold on    
-%         rect = getToolRect(p0, curTan, 4, 50);
-%         drawRect(ax, rect);
-%         pause
-%     end
-% end
-% 
-% function drawRect(ax, rect)
-%     for i = 1:4
-%         plot(ax, [rect(i,1), rect(i+1,1)], [rect(i,2), rect(i+1,2)])
-%         hold on           
-%     end
-% end
-% 
-% function rect = getToolRect(pos, vec, toolRad, toolLen, side)
-%         toolContactPt = pos;
-% %         vert = rot90(vec)';
-%         vert = (rot2(pi/2) * vec')';
-%         toolEdge2 = toolContactPt + vert * toolRad * 2;
-%         upToolEdge = toolContactPt + vec*toolLen;
-%         upToolEdge2 = toolEdge2 + vec*toolLen;     
-%         rect = [toolContactPt; toolEdge2; upToolEdge2; upToolEdge; toolContactPt];
-% end
 
