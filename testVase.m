@@ -28,83 +28,98 @@ spindleSpeed = 10000;
 toolNum = 1;
 toolRadiu = 4;
 wallOffset = 1.1;
-side = 1; % machining inside is -1 and outside is 1
+side = -1; % machining inside is -1 and outside is 1
 
 %  geometry param
 startCtr = [0,0];
 % inclinationAgl = 0; % degree
-pLyrNum = 300;
-lyrHeight = 0.5;
+pLyrNum = 5;
+lyrHeight = 4;
 radius = 20;
-tol = 0.1;
+tol = 20;
 safetyHeight = 230;
 zOffset = 0;
 
 
 wpHeight = pLyrNum * lyrHeight;
-zOffset = 0;
+% zOffset = 60;
 [printPathSeq,pwrSeq] = vase.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
-[toolContactPts, toolCntrPts, toolAxisSeq, fcNormalSeq] = vase.genMachiningPath(radius, startCtr, tol, wpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
+rollAgl = pi/6;
+rollAgl = 0;
+[toolContactPts, toolCntrPts, toolAxisSeq, fcNormalSeq] = vase.genMachiningPath(startCtr, tol, wpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, rollAgl, side);
 
 figure()
 scatter3(printPathSeq(:,1), printPathSeq(:,2), printPathSeq(:,3),2)
 hold on
 scatter3(toolContactPts(:,1), toolContactPts(:,2), toolContactPts(:,3),1)
-
-pos = [];
-tanVec = [];
-for curZ = 0:5:wpHeight
-    curX = vase.genVaseRadius(curZ);
-    curTan = vase.getVaseTangent(curZ);
-    pos = [pos; curX, curZ];
-    tanVec = [tanVec;curTan];
-end
-
-plot(xPos, zPos)
-hold on
-plot(-xPos, zPos)
 hold on
 ax = gca;
-axis equal
+drawTools(ax, toolCntrPts, toolAxisSeq);
+% hold on
+% drawTools(ax, toolContactPts, toolAxisSeq);
 
-drawTanVec(ax, pos, tanVec)
-% for i = 1:length(tanVec)
-%     plot(xPos, zPos)
-%     hold on    
-% end
-
-
-
-function drawTanVec(ax, origPos, tanVec)
-    tanVecLen  = 40;
-    for i = 1:length(tanVec)
-        p0 = origPos(i,:);
-        curTan = tanVec(i,:); 
-        pe = p0 + tanVecLen*curTan;
-        plot(ax, [p0(1), pe(1)], [p0(2), pe(2)])
+function drawTools(ax, origPosSeq, toolAxisSeq)
+    toolLen  = 40;
+    for i = 1:length(toolAxisSeq)
+        p0 = origPosSeq(i,:);
+        curAxis = toolAxisSeq(i,:); 
+        pe = p0 + toolLen*curAxis;
+        plot3(ax, [p0(1), pe(1)], [p0(2), pe(2)], [p0(3), pe(3)])
         hold on    
-        rect = getToolRect(p0, curTan, 4, 50);
-        drawRect(ax, rect);
-        pause
+%         rect = getToolRect(p0, curAxis, 4, 50);
+%         drawRect(ax, rect);
+%         pause
     end
 end
 
 
-function drawRect(ax, rect)
-    for i = 1:4
-        plot(ax, [rect(i,1), rect(i+1,1)], [rect(i,2), rect(i+1,2)])
-        hold on           
-    end
-end
-
-
-function rect = getToolRect(pos, vec, toolRad, toolLen, side)
-        toolContactPt = pos;
-%         vert = rot90(vec)';
-        vert = (rot2(pi/2) * vec')';
-        toolEdge2 = toolContactPt + vert * toolRad * 2;
-        upToolEdge = toolContactPt + vec*toolLen;
-        upToolEdge2 = toolEdge2 + vec*toolLen;     
-        rect = [toolContactPt; toolEdge2; upToolEdge2; upToolEdge; toolContactPt];
-end
+% %%%%%%%%%%%%%%% follow  for 2D %%%%%%%%%%%%%%
+% pos = [];
+% tanVec = [];
+% for curZ = 0:5:wpHeight
+%     curX = vase.genVaseRadius(curZ);
+%     curTan = vase.getVaseTangent(curZ);
+%     pos = [pos; curX, curZ];
+%     tanVec = [tanVec;curTan];
+% end
+% 
+% plot(xPos, zPos)
+% hold on
+% plot(-xPos, zPos)
+% hold on
+% ax = gca;
+% axis equal
+% 
+% drawTanVec(ax, pos, tanVec)
+% 
+% function drawTanVec(ax, origPos, tanVec)
+%     tanVecLen  = 40;
+%     for i = 1:length(tanVec)
+%         p0 = origPos(i,:);
+%         curTan = tanVec(i,:); 
+%         pe = p0 + tanVecLen*curTan;
+%         plot(ax, [p0(1), pe(1)], [p0(2), pe(2)])
+%         hold on    
+%         rect = getToolRect(p0, curTan, 4, 50);
+%         drawRect(ax, rect);
+%         pause
+%     end
+% end
+% 
+% function drawRect(ax, rect)
+%     for i = 1:4
+%         plot(ax, [rect(i,1), rect(i+1,1)], [rect(i,2), rect(i+1,2)])
+%         hold on           
+%     end
+% end
+% 
+% function rect = getToolRect(pos, vec, toolRad, toolLen, side)
+%         toolContactPt = pos;
+% %         vert = rot90(vec)';
+%         vert = (rot2(pi/2) * vec')';
+%         toolEdge2 = toolContactPt + vert * toolRad * 2;
+%         upToolEdge = toolContactPt + vec*toolLen;
+%         upToolEdge2 = toolEdge2 + vec*toolLen;     
+%         rect = [toolContactPt; toolEdge2; upToolEdge2; upToolEdge; toolContactPt];
+% end
 

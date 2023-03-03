@@ -49,7 +49,7 @@ classdef vase
             pwrSeq(1) = pwr;
         end
         
-        function [toolContactPtSeq, toolCntrPtSeq, toolAxisSeq, fcNormalSeq] = genMachiningPath(baseRadiu, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, side)
+        function [toolContactPtSeq, toolCntrPtSeq, toolAxisSeq, fcNormalSeq] = genMachiningPath(startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, rollAgl, side)
             % roughing circle path   
             if floor(wpHeight/lyrThickness) == wpHeight/lyrThickness
                 lyrNum = floor(wpHeight/lyrThickness);            
@@ -76,7 +76,7 @@ classdef vase
                 vaseRadius = vase.genVaseRadius(z); 
                 tanVec2 = vase.getVaseTangent(z);
                 fcNorm2 = vase.getVaseNormal(z);
-                toolAxis2d = vase.getToolAxis(tanVec2, pi/6);
+                toolAxis2d = vase.getToolAxis(tanVec2, -side * rollAgl);
                 
 %                 mtRadiu = vaseRadius + side*(toolRadiu + wallOffset);
                 mtRadiu = vaseRadius + side * wallOffset;
@@ -90,7 +90,7 @@ classdef vase
                     fcNorm = vase.convertTo3DVec(fcNorm2, aglStep * j);
                     tanVec = vase.convertTo3DVec(tanVec2, aglStep * j);     
                     toolAxis = vase.convertTo3DVec(toolAxis2d, aglStep * j);                         
-                    cntrPt = vase.getToolCenterPt(ccPt, toolAxis, fcNorm, toolRadiu);
+                    cntrPt = vase.getToolCenterPt(ccPt, toolAxis, -fcNorm, side * toolRadiu);
                     
                     toolContactPts = [toolContactPts; ccPt];    
                     toolCntrPts = [toolCntrPts; cntrPt];
@@ -139,6 +139,7 @@ classdef vase
         end
         
         function normal2D = getVaseNormal(zValue)
+            % the normal towards outter surf
             tg = vase.getVaseTangent(zValue);
             normal2D = (rot2(pi/2) * tg')';
         end        
