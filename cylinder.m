@@ -3,6 +3,9 @@
 % author: Xiaoke DENG
 
 classdef cylinder
+	properties
+        shape_="Cylinder";
+    end
     methods(Static)
         function [path,pwrSeq] = genPrintingPath(cylinderR, startCenter, tol, lyrNum, lyrThickness, pwr, zOffset, channel, step)
             % planar circle path
@@ -72,6 +75,10 @@ classdef cylinder
                 end
             end
             path = mPathSeq;
+        end
+        
+        function radius = getRadius(~)
+            radius = cylinderR;
         end
     end
 end

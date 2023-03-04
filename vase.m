@@ -3,6 +3,13 @@
 % author: Yuanzhi CHEN
 
 classdef vase
+	properties
+        shape_="Vase";
+    end
+	properties (Constant)
+        drawStep_ = 200;
+    end
+    
     methods(Static)
         function [path,pwrSeq] = genPrintingPath(~, startCenter, tol, lyrNum, lyrThickness, pwr, zOffset, channel, step)
             % planar circle path
@@ -39,14 +46,14 @@ classdef vase
                 end
                 % stop the power when lift the tool 
                 path = [path;tPathSeq];
-                pwrSeq = [pwrSeq;tPwrSeq];
-%                 data{lyrIdx+1, 1} = tPathSeq;
-%                 data{lyrIdx+1, 2} = tPwrSeq;               
+                pwrSeq = [pwrSeq;tPwrSeq];             
             end
             pwrSeq(1) = pwr;
+            scatter3(path(1:vase.drawStep_:end,1), path(1:vase.drawStep_:end,2), path(1:vase.drawStep_:end,3),2)
+            hold on
         end
         
-        function [toolContactPtSeq, toolCntrPtSeq, toolAxisSeq, fcNormalSeq] = genMachiningPath(~, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, rollAgl, side)
+        function pathSeq = genMachiningPath(~, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, side)
             % roughing circle path   
             if floor(wpHeight/lyrThickness) == wpHeight/lyrThickness
                 lyrNum = floor(wpHeight/lyrThickness);            
@@ -59,9 +66,11 @@ classdef vase
             if zOffset > 0
                 lyrNum = lyrNum + 6;
             end
-            data = cell(lyrNum, 4);
+            data = cell(lyrNum, 3);
+            rollAgl = pi/6;
+            startIdx = 7;
             
-            for lyrIdx = 1:lyrNum
+            for lyrIdx = startIdx:lyrNum
                 toolContactPts = [];
                 toolAxes = [];
                 fcNormals = [];
@@ -73,9 +82,8 @@ classdef vase
                 vaseRadius = vase.genVaseRadius(z); 
                 tanVec2 = vase.getVaseTangent(z);
                 fcNorm2 = vase.getVaseNormal(z, side);
-                toolAxis2d = vase.getToolAxis(tanVec2, -side * rollAgl);
+                toolAxis2d = [side * sin(rollAgl),cos(rollAgl)];
                 
-%                 mtRadiu = vaseRadius + side*(toolRadiu + wallOffset);
                 mtRadiu = vaseRadius + side * wallOffset;
                 lyrPtNum = floor(2 * mtRadiu * pi / tol)+1;                
                 aglStep = 2 * pi / lyrPtNum;                
@@ -87,7 +95,7 @@ classdef vase
                     fcNorm = vase.convertTo3DVec(fcNorm2, aglStep * j);
                     tanVec = vase.convertTo3DVec(tanVec2, aglStep * j);     
                     toolAxis = vase.convertTo3DVec(toolAxis2d, aglStep * j);                         
-                    cntrPt = vase.getToolCenterPt(ccPt, toolAxis, -fcNorm, side * toolRadiu);
+                    cntrPt = vase.getToolCenterPt(ccPt, fcNorm, toolRadiu);
                     if cntrPt(3)-toolRadiu<=tol
                         continue;
                     end
@@ -105,27 +113,34 @@ classdef vase
             toolContactPtSeq = cell2mat(data(:,1));
             toolCntrPtSeq = cell2mat(data(:,2));
             toolAxisSeq = cell2mat(data(:,3));
-            fcNormalSeq = cell2mat(data(:,4));
-            
+            bcSeq = sequentialSolveBC(toolAxisSeq, [0,0]);
+            scatter3(toolContactPtSeq(1:vase.drawStep_:end,1), toolContactPtSeq(1:vase.drawStep_:end,2), toolContactPtSeq(1:vase.drawStep_:end,3),2)
+            hold on
+            scatter3(toolCntrPtSeq(1:vase.drawStep_:end,1), toolCntrPtSeq(1:vase.drawStep_:end,2), toolCntrPtSeq(1:vase.drawStep_:end,3),2)
+            hold on
+            ax = gca;
+            vase.drawTools(ax, toolCntrPtSeq, toolAxisSeq, vase.drawStep_);
+            axis equal
+            hold on
+            pathSeq=[toolContactPtSeq,bcSeq];
+            filename = 'verycut.txt';
+            fid = fopen(filename, 'a+');
+            for i=1:size(toolContactPtSeq,1)
+                fprintf(fid, "GOTO/%f, %f, %f, %f, %f, %f\r\n", toolContactPtSeq(i,1), toolContactPtSeq(i,2),toolContactPtSeq(i,3),toolAxisSeq(i,1),toolAxisSeq(i,2),toolAxisSeq(i,3));
+            end
+            fclose(fid);
         end
         
         
-        function ctrPt = getToolCenterPt(ccPt, toolAxis, fcNormal, toolRadiu)
-            mtDir = cross(toolAxis, cross(fcNormal, toolAxis));
-            mtDir = mtDir/ norm(mtDir);
-            ctrPt = ccPt + mtDir * toolRadiu;            
+        function ctrPt = getToolCenterPt(ccPt, fcNormal, toolRadiu)
+            ctrPt = ccPt + fcNormal * toolRadiu;            
         end
         
         function vec3d = convertTo3DVec(xzVec2d, agl)
             % xzVec2d is the vec with cord [x, 0, z]
             vec3d = [cos(agl)*xzVec2d(1), sin(agl)*xzVec2d(1), xzVec2d(2)];            
         end
-        
-        function toolAxis2d = getToolAxis(tanVec2d, roll)
-            % rot the tangent a degree 
-            toolAxis2d = (rot2(roll) * tanVec2d')';                        
-        end
-        
+          
         function radius = genVaseRadius(zValue)
             radius = 3.5 * (sin(((((zValue)/(7.5))+46)/(2)))+1.5 * sin(((((zValue)/(7.5))+46)/(4))+45)+2 * cos(((((zValue)/(7.5))+46)/(6)))+7);
         end
@@ -139,6 +154,21 @@ classdef vase
             % the normal towards outter surf
             tg = vase.getVaseTangent(zValue);
             normal2D = (rot2(-side * pi/2) * tg')';
-        end        
+        end
+        
+        function radius = getRadius(zValue)
+            radius = 3.5 * (sin(((((zValue)/(7.5))+46)/(2)))+1.5 * sin(((((zValue)/(7.5))+46)/(4))+45)+2 * cos(((((zValue)/(7.5))+46)/(6)))+7);
+        end
+        
+        function drawTools(ax, origPosSeq, toolAxisSeq, step)
+            toolLen  = 25;
+            for i = 1:step:length(toolAxisSeq)
+                p0 = origPosSeq(i,:);
+                curAxis = toolAxisSeq(i,:); 
+                pe = p0 + toolLen*curAxis;
+                plot3(ax, [p0(1), pe(1)], [p0(2), pe(2)], [p0(3), pe(3)])
+                hold on    
+            end
+        end
     end
 end

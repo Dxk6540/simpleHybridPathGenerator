@@ -1,4 +1,9 @@
-fid=fopen(strcat('./fullAutoCylinderTest',date,'.txt'),'r');
+% shape
+handle = vase;
+
+% file param:
+filename = strcat('./fullAuto',handle.shape_,date,'.txt');
+fid=fopen(filename,'r');
 path = [];
 count=0;
 while ~feof(fid)    % while循环表示文件指针没到达末尾，则继续

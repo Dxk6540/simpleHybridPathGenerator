@@ -3,6 +3,10 @@
 % author: Yuanzhi CHEN
 
 classdef cube
+	properties
+        shape_="Cube";
+    end
+    
     methods(Static)
         function [path,pwrSeq] = genPrintingPath(cubeLength, startPoint, tol, lyrNum, lyrThickness, pwr, zOffset, channel, step)
             path = [];

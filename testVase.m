@@ -26,54 +26,17 @@ toolRadiu = 4;
 %  geometry param
 startCtr = [0,0];
 % inclinationAgl = 0; % degree
-pLyrNum = 40;
+pLyrNum = 30;
 lyrHeight = 0.5;
 radius = 20;
 tol = 0.5;
 safetyHeight = 230;
-zMin = 10;
 zOffset = 0;
 
 side = 1; % machining inside is -1 and outside is 1
-wallOffset = 3.1;
-rollAgl = pi/6; %the rot angle is the angle between the tool axis and tangent
+wallOffset = 1.2;
 
 wpHeight = pLyrNum * lyrHeight;
 [printPathSeq,pwrSeq] = vase.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
-[toolContactPts, toolCntrPts, toolAxisSeq, fcNormalSeq] = vase.genMachiningPath(radius, startCtr, tol, wpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, rollAgl, side);
-
-figure()
-scatter3(printPathSeq(1:10:end,1), printPathSeq(1:10:end,2), printPathSeq(1:10:end,3),2)
-hold on
-scatter3(toolContactPts(1:10:end,1), toolContactPts(1:10:end,2), toolContactPts(1:10:end,3),2)
-hold on
-scatter3(toolCntrPts(1:10:end,1), toolCntrPts(1:10:end,2), toolCntrPts(1:10:end,3),2)
-hold on
-[X,Y] = meshgrid(-50:10:50,-50:10:50);
-Z = 4 * ones(length(X))';
-mesh(X,Y,Z);
-hold on
-ax = gca;
-drawTools(ax, toolCntrPts, toolAxisSeq, 100);
-axis equal
-min(toolCntrPts(:,3)) - toolRadiu
-
-
-bcSeq = sequentialSolveBC(toolAxisSeq, [0,0]);
-figure()
-plot(bcSeq(:,1))
-figure()
-plot(bcSeq(:,2))
-
-
-function drawTools(ax, origPosSeq, toolAxisSeq, step)
-    toolLen  = 25;
-    for i = 1:step:length(toolAxisSeq)
-        p0 = origPosSeq(i,:);
-        curAxis = toolAxisSeq(i,:); 
-        pe = p0 + toolLen*curAxis;
-        plot3(ax, [p0(1), pe(1)], [p0(2), pe(2)], [p0(3), pe(3)])
-        hold on    
-    end
-end
+path = vase.genMachiningPath(radius, startCtr, tol, wpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
 
