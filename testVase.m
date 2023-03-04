@@ -56,7 +56,7 @@ hold on
 ax = gca;
 drawTools(ax, toolCntrPts, toolAxisSeq, 100);
 axis equal
-min(toolCntrPts(:,3)) - 4
+min(toolCntrPts(:,3)) - toolRadiu
 
 
 bcSeq = sequentialSolveBC(toolAxisSeq, [0,0]);

@@ -88,6 +88,9 @@ classdef vase
                     tanVec = vase.convertTo3DVec(tanVec2, aglStep * j);     
                     toolAxis = vase.convertTo3DVec(toolAxis2d, aglStep * j);                         
                     cntrPt = vase.getToolCenterPt(ccPt, toolAxis, -fcNorm, side * toolRadiu);
+                    if cntrPt(3)-toolRadiu<=tol
+                        continue;
+                    end
                     
                     toolContactPts = [toolContactPts; ccPt];    
                     toolCntrPts = [toolCntrPts; cntrPt];
