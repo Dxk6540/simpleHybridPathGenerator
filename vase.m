@@ -72,7 +72,7 @@ classdef vase
 
                 vaseRadius = vase.genVaseRadius(z); 
                 tanVec2 = vase.getVaseTangent(z);
-                fcNorm2 = vase.getVaseNormal(z);
+                fcNorm2 = vase.getVaseNormal(z, side);
                 toolAxis2d = vase.getToolAxis(tanVec2, -side * rollAgl);
                 
 %                 mtRadiu = vaseRadius + side*(toolRadiu + wallOffset);
@@ -132,10 +132,10 @@ classdef vase
             tangent2D = tangent2D/norm(tangent2D);
         end
         
-        function normal2D = getVaseNormal(zValue)
+        function normal2D = getVaseNormal(zValue, side)
             % the normal towards outter surf
             tg = vase.getVaseTangent(zValue);
-            normal2D = (rot2(-pi/2) * tg')';
+            normal2D = (rot2(-side * pi/2) * tg')';
         end        
     end
 end
