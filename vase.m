@@ -63,7 +63,7 @@ classdef vase
             lyrHeight = wpHeight/lyrNum;
             disp(['total layer ', num2str(lyrNum)])
             
-            if zOffset > 0
+            if zOffset > 5
                 lyrNum = lyrNum + 6;
             end
             data = cell(lyrNum, 3);
