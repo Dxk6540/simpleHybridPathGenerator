@@ -26,35 +26,37 @@ toolRadiu = 4;
 %  geometry param
 startCtr = [0,0];
 % inclinationAgl = 0; % degree
-pLyrNum = 50;
+pLyrNum = 40;
 lyrHeight = 0.5;
 radius = 20;
 tol = 0.5;
 safetyHeight = 230;
+zMin = 10;
 zOffset = 0;
 
-side = -1; % machining inside is -1 and outside is 1
+side = 1; % machining inside is -1 and outside is 1
 wallOffset = 3.1;
 rollAgl = pi/6; %the rot angle is the angle between the tool axis and tangent
-% rollAgl = 0;
 
 wpHeight = pLyrNum * lyrHeight;
-% zOffset = 60;
 [printPathSeq,pwrSeq] = vase.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
-
-
 [toolContactPts, toolCntrPts, toolAxisSeq, fcNormalSeq] = vase.genMachiningPath(radius, startCtr, tol, wpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, rollAgl, side);
 
 figure()
 scatter3(printPathSeq(1:10:end,1), printPathSeq(1:10:end,2), printPathSeq(1:10:end,3),2)
 hold on
-scatter3(toolContactPts(1:10:end,1), toolContactPts(1:10:end,2), toolContactPts(1:10:end,3),1)
-
-
+scatter3(toolContactPts(1:10:end,1), toolContactPts(1:10:end,2), toolContactPts(1:10:end,3),2)
+hold on
+scatter3(toolCntrPts(1:10:end,1), toolCntrPts(1:10:end,2), toolCntrPts(1:10:end,3),2)
+hold on
+[X,Y] = meshgrid(-50:10:50,-50:10:50);
+Z = 4 * ones(length(X))';
+mesh(X,Y,Z);
 hold on
 ax = gca;
 drawTools(ax, toolCntrPts, toolAxisSeq, 100);
 axis equal
+min(toolCntrPts(:,3)) - 4
 
 
 bcSeq = sequentialSolveBC(toolAxisSeq, [0,0]);
