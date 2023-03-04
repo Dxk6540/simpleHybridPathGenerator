@@ -56,7 +56,7 @@ classdef vase
             lyrHeight = wpHeight/lyrNum;
             disp(['total layer ', num2str(lyrNum)])
             
-            if zOffset > 0
+            if zOffset > 5
                 lyrNum = lyrNum + 6;
             end
             data = cell(lyrNum, 4);
@@ -113,7 +113,10 @@ classdef vase
         function ctrPt = getToolCenterPt(ccPt, toolAxis, fcNormal, toolRadiu)
             mtDir = cross(toolAxis, cross(fcNormal, toolAxis));
             mtDir = mtDir/ norm(mtDir);
-            ctrPt = ccPt + mtDir * toolRadiu;            
+            ctrPt = ccPt + mtDir * toolRadiu;        
+
+%             % for ball cutter, the cutter center is offset by fcNormal * toolRadiu
+%             ctrPt = ccPt + fcNormal * toolRadiu;        
         end
         
         function vec3d = convertTo3DVec(xzVec2d, agl)
