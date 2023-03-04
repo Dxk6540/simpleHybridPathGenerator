@@ -135,7 +135,7 @@ classdef vase
         function normal2D = getVaseNormal(zValue)
             % the normal towards outter surf
             tg = vase.getVaseTangent(zValue);
-            normal2D = (rot2(pi/2) * tg')';
+            normal2D = (rot2(-pi/2) * tg')';
         end        
     end
 end
