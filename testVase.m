@@ -31,9 +31,9 @@ lyrHeight = 0.5;
 radius = 20;
 tol = 0.5;
 safetyHeight = 230;
-zOffset = 0;
+zOffset = 15;
 
-side = 1; % machining inside is -1 and outside is 1
+side = -1; % machining inside is -1 and outside is 1
 wallOffset = 1.2;
 
 wpHeight = pLyrNum * lyrHeight;

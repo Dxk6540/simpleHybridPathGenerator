@@ -48,7 +48,6 @@ pg = cPathGen(filename); % create the path generator object
 pg.genNewScript();
 pg.draw_ = false;
 pg.experiment_ = false;
-pg.alternation_ = 1;
 
 zOffsetRng = [0, lyrHeight*pLyrNum*alternativeNum];
 

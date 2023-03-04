@@ -122,13 +122,13 @@ classdef vase
             vase.drawTools(ax, toolCntrPtSeq, toolAxisSeq, vase.drawStep_);
             axis equal
             hold on
-            pathSeq=[toolContactPtSeq,bcSeq];
-            filename = 'verycut.txt';
-            fid = fopen(filename, 'a+');
-            for i=1:size(toolContactPtSeq,1)
-                fprintf(fid, "GOTO/%f, %f, %f, %f, %f, %f\r\n", toolContactPtSeq(i,1), toolContactPtSeq(i,2),toolContactPtSeq(i,3),toolAxisSeq(i,1),toolAxisSeq(i,2),toolAxisSeq(i,3));
-            end
-            fclose(fid);
+            pathSeq=[toolCntrPtSeq,bcSeq];
+%             filename = 'verycut.txt';
+%             fid = fopen(filename, 'a+');
+%             for i=1:size(toolContactPtSeq,1)
+%                 fprintf(fid, "GOTO/%f, %f, %f, %f, %f, %f\r\n", toolCntrPtSeq(i,1), toolCntrPtSeq(i,2),toolCntrPtSeq(i,3),toolAxisSeq(i,1),toolAxisSeq(i,2),toolAxisSeq(i,3));
+%             end
+%             fclose(fid);
         end
         
         
