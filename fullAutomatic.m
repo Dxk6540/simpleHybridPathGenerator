@@ -11,7 +11,7 @@ flowL = 250; % 6 L/min / 20L/min * 1000;
 speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 250;% 6 L/min / 20L/min * 1000;
 speedR = 100;% 2 r/min / 10r/min * 1000;
-pFeedrate = 600; % mm/min
+pFeedrate = 580; % mm/min(cylinder 600, vase 580)
 channel = 2;
 step = 1;
 
@@ -20,12 +20,14 @@ mFeedrate = 300; % mm/min
 planarFeed = 400;
 planarSlowFeed = 200;
 spindleSpeed = 10000;
-toolNum = 1;
-toolRadiu = 4;
+wallToolNum = 1;
+wallToolRadiu = 4;
+plannarToolNum = 2;
+plannarToolRadiu = 3;
 side = 1; % machining inside is -1 and outside is 1
 
 %  geometry param
-startCtr = [0,0];
+startCtr = [-60,0];
 % inclinationAgl = 0; % degree
 pLyrNum = 30;
 lyrHeight = 0.5;
@@ -61,8 +63,9 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     tol = 0.2;
     planarRadiuRng = [handle.getRadius(zOffset+sglWpHeight)-3,handle.getRadius(zOffset+sglWpHeight)+2];
     depthRng = [sglWpHeight+zOffset+planarMachiningDepth, sglWpHeight+zOffset];
-    [planarPathSeq, planarFeedSeq]  = planarCircleMachining(startCtr, depthRng, planarRadiuRng, machiningLyrThickness, toolRadiu, planarFeed, planarSlowFeed);
-    genMachiningProcess(pg, safetyHeight, toolNum, planarPathSeq, planarFeedSeq);    
+    [planarPathSeq, planarFeedSeq]  = planarCircleMachining(startCtr, depthRng, planarRadiuRng, machiningLyrThickness, plannarToolRadiu, planarFeed, planarSlowFeed);
+    pg.changeTool(plannarToolNum);
+    genMachiningProcess(pg, safetyHeight, plannarToolNum, planarPathSeq, planarFeedSeq);    
     pg.drawPath(printPathSeq, planarPathSeq);
     
     %%%%%%%%%%%%%%%%%%%%%%%%% machining outter wall %%%%%%%%%%%%%%%%%%%%%%%%
@@ -70,20 +73,21 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     allOutterPath = [];
     for wallOffset = outterWallRange(1): machiningLyrThickness : outterWallRange(2)
     %%%%%%%%%%%%%% machining path
-        outMachiningPathSeq = handle.genMachiningPath(radius, startCtr, tol, sglWpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
+        outMachiningPathSeq = handle.genMachiningPath(radius, startCtr, tol, sglWpHeight, lyrHeight, wallToolRadiu, wallOffset, zOffset, side);
         allOutterPath = [allOutterPath; outMachiningPathSeq];
     end
-    pg.startRTCP(safetyHeight, toolNum);
-	genMachiningProcess(pg, safetyHeight, toolNum, allOutterPath, mFeedrate);
+    pg.changeTool(wallToolNum);
+    pg.startRTCP(safetyHeight, wallToolNum);
+	genMachiningProcess(pg, safetyHeight, wallToolNum, allOutterPath, mFeedrate);
 %     % machining inner wall
     side = -1;
     allInnerPath = [];
     for wallOffset = innerWallRange(1): machiningLyrThickness : innerWallRange(2)
     %%%%%%%%%%%%%% machining path
-        inMachiningPathSeq = handle.genMachiningPath(radius, startCtr, tol, sglWpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
+        inMachiningPathSeq = handle.genMachiningPath(radius, startCtr, tol, sglWpHeight, lyrHeight, wallToolRadiu, wallOffset, zOffset, side);
         allInnerPath = [allInnerPath; inMachiningPathSeq];   
     end
-    genMachiningProcess(pg, safetyHeight, toolNum, allInnerPath, mFeedrate);
+    genMachiningProcess(pg, safetyHeight, wallToolNum, allInnerPath, mFeedrate);
     pg.stopRTCP(safetyHeight);
     pg.addPathPt([0,0,safetyHeight,0,0]);
     pg.drawPath(allInnerPath, allOutterPath);

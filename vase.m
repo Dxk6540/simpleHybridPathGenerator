@@ -29,6 +29,7 @@ classdef vase
                             x = cos(aglStep * j) * (radius - chnIdx * step) + startCenter(1);
                             y = sin(aglStep * j) * (radius - chnIdx * step) + startCenter(2);
                             z = lyrIdx * lyrThickness + zOffset;
+                            speedOffset = (1.025-abs(aglStep * j-0.75*pi)/pi*0.05);
                             tPathSeq = [tPathSeq; x,y,z];
                             tPwrSeq = [tPwrSeq; pwr];
                         end
