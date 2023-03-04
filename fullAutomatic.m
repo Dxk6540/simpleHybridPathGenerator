@@ -56,15 +56,18 @@ zOffsetRng = [0, lyrHeight*pLyrNum*alternativeNum];
 for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     %%%%%%%%%%%%%% printing path 
     tol = 0.1;
-    [printPathSeq,pwrSeq] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
-    genPrintingProcess(pg, safetyHeight, printPathSeq, pwrSeq, pFeedrate);
+    [printPathSeq,pwrSeq,feedrateOffset] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
+    genPrintingProcess(pg, safetyHeight, printPathSeq, pwrSeq, pFeedrate*feedrateOffset);
 
     %%%%%%%%%%%%%%%%%%%%% plannar circle machining %%%%%%%%%%%%%%%%%%%%
     tol = 0.2;
-    planarRadiuRng = [handle.getRadius(zOffset+sglWpHeight)-3,handle.getRadius(zOffset+sglWpHeight)+2];
+    if handle.shape_=="vase"
+        planarRadiuRng = [handle.getRadius(zOffset+sglWpHeight)-3,handle.getRadius(zOffset+sglWpHeight)+2];
+    elseif handle.shape_=="cylinder"
+        planarRadiuRng = [radius-3,radius+2];
+    end
     depthRng = [sglWpHeight+zOffset+planarMachiningDepth, sglWpHeight+zOffset];
     [planarPathSeq, planarFeedSeq]  = planarCircleMachining(startCtr, depthRng, planarRadiuRng, machiningLyrThickness, plannarToolRadiu, planarFeed, planarSlowFeed);
-    pg.changeTool(plannarToolNum);
     genMachiningProcess(pg, safetyHeight, plannarToolNum, planarPathSeq, planarFeedSeq);    
     pg.drawPath(printPathSeq, planarPathSeq);
     
@@ -76,7 +79,6 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
         outMachiningPathSeq = handle.genMachiningPath(radius, startCtr, tol, sglWpHeight, lyrHeight, wallToolRadiu, wallOffset, zOffset, side);
         allOutterPath = [allOutterPath; outMachiningPathSeq];
     end
-    pg.changeTool(wallToolNum);
     pg.startRTCP(safetyHeight, wallToolNum);
 	genMachiningProcess(pg, safetyHeight, wallToolNum, allOutterPath, mFeedrate);
 %     % machining inner wall

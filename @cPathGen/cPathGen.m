@@ -130,15 +130,15 @@ classdef cPathGen < handle
         function ret = saftyToPt(obj, ptMediate, ptDst, feedrate)
         % pt1 is the pt in safety area, ptDst is the dst pt,
             if(isnan( sum(ptMediate(1,:)) ))
-                fprintf(obj.fid_, "G01 Z%.3f F%d\r\n", ptMediate(3), feedrate);  
+                fprintf(obj.fid_, "G01 Z%.3f F%.3f\r\n", ptMediate(3), feedrate);  
             else
-                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", ptMediate(1), ...
+                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%.3f\r\n", ptMediate(1), ...
                     ptMediate(2), ptMediate(3), feedrate);  
 %                 obj.addPathPtFeed(ptMediate, feedrate);
             end
-            fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", ptDst(1), ...
+            fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%.3f\r\n", ptDst(1), ...
                 ptDst(2), ptMediate(3), feedrate);  
-            fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", ptDst(1), ...
+            fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%.3f\r\n", ptDst(1), ...
                 ptDst(2), ptDst(3), feedrate);    
         end % saftyToPt(obj, pt1, ptDst, feedrate)       
         
@@ -156,11 +156,11 @@ classdef cPathGen < handle
         
         function ret = addPathPtFeed(obj, pt, feedrate)
             if(length(pt) == 3)
-                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%d\r\n", pt(1), pt(2), pt(3), feedrate);  
+                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f F%.3f\r\n", pt(1), pt(2), pt(3), feedrate);  
                 ret = 1;
                 return;
             elseif (length(pt) == 5)
-                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f B%.3f C%.3f F%d\r\n", pt(1), pt(2), pt(3), pt(4), pt(5), feedrate);  
+                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f B%.3f C%.3f F%.3f\r\n", pt(1), pt(2), pt(3), pt(4), pt(5), feedrate);  
                 ret = 1;
                 return;
             else
@@ -181,11 +181,11 @@ classdef cPathGen < handle
                 return;
             end                        
             if(length(pt) == 3)
-                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f I%d J%d F%d\r\n", pt(1), pt(2), pt(3), pwr, lenPos, feedrate);                  
+                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f I%d J%d F%.3f\r\n", pt(1), pt(2), pt(3), pwr, lenPos, feedrate);                  
                 ret = 1;
                 return;
             elseif (length(pt) == 5)
-                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f B%.3f C%.3f I%d J%d F%d\r\n", pt(1), pt(2), pt(3), pt(4), pt(5), pwr, lenPos, feedrate);                  
+                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f B%.3f C%.3f I%d J%d F%.3f\r\n", pt(1), pt(2), pt(3), pt(4), pt(5), pwr, lenPos, feedrate);                  
                 ret = 1;
                 return;
             else

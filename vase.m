@@ -11,10 +11,11 @@ classdef vase
     end
     
     methods(Static)
-        function [path,pwrSeq] = genPrintingPath(~, startCenter, tol, lyrNum, lyrThickness, pwr, zOffset, channel, step)
+        function [path,pwrSeq,feedrateOffset] = genPrintingPath(~, startCenter, tol, lyrNum, lyrThickness, pwr, zOffset, channel, step)
             % planar circle path
             path = [];
             pwrSeq = [];
+            feedrateOffset = [];
             for lyrIdx = 0 : lyrNum - 1    
                 disp(['process printing layer ', num2str(lyrIdx)])                
                 tPathSeq = [];
@@ -32,6 +33,7 @@ classdef vase
                             speedOffset = (1.025-abs(aglStep * j-0.75*pi)/pi*0.05);
                             tPathSeq = [tPathSeq; x,y,z];
                             tPwrSeq = [tPwrSeq; pwr];
+                            feedrateOffset = [feedrateOffset;speedOffset];
                         end
                         tPwrSeq(1)= 0;
                         tPwrSeq(end) = 0;                

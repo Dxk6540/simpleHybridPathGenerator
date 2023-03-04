@@ -7,12 +7,13 @@ classdef cylinder
         shape_="Cylinder";
     end
     methods(Static)
-        function [path,pwrSeq] = genPrintingPath(cylinderR, startCenter, tol, lyrNum, lyrThickness, pwr, zOffset, channel, step)
+        function [path,pwrSeq,feedrateOffset] = genPrintingPath(cylinderR, startCenter, tol, lyrNum, lyrThickness, pwr, zOffset, channel, step)
             % planar circle path
             lyrPtNum = floor(2 * cylinderR * pi / tol)+1;
             aglStep = 2 * pi / lyrPtNum; 
             path = [];
             pwrSeq = [];
+            feedrateOffset = [];
             for lyrIdx = 0 : lyrNum - 1    
                 tPathSeq = [];
                 tPwrSeq = [];
@@ -22,8 +23,10 @@ classdef cylinder
                             x = cos(aglStep * j) * (cylinderR - chnIdx * step) + startCenter(1);
                             y = sin(aglStep * j) * (cylinderR - chnIdx * step) + startCenter(2);
                             z = lyrIdx * lyrThickness + zOffset;
+                            speedOffset = (1.025-abs(aglStep * j-0.75*pi)/pi*0.05);
                             tPathSeq = [tPathSeq; x,y,z];
                             tPwrSeq = [tPwrSeq; pwr];
+                            feedrateOffset = [feedrateOffset;speedOffset];
                         end
                         tPwrSeq(1)= 0;
                         tPwrSeq(end) = 0;                
@@ -43,9 +46,6 @@ classdef cylinder
             end
             pwrSeq(1) = pwr;
         end
-
-
-
 
         function path = genMachiningPath(cylinderR, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, side)
             % planar circle path
@@ -75,10 +75,6 @@ classdef cylinder
                 end
             end
             path = mPathSeq;
-        end
-        
-        function radius = getRadius(~)
-            radius = cylinderR;
         end
     end
 end
