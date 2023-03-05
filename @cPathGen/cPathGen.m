@@ -108,11 +108,12 @@ classdef cPathGen < handle
             ret = 1;
         end
         
-        function ret = stopRTCP(obj, safetyHeight)
+        function ret = stopRTCP(obj, safetyHeight, toolNum)
 %             obj.saftyToPt([nan, nan, safetyHeight],[0, 0, safetyHeight], 1500);
 %             obj.addPathPt([0, 0, safetyHeight, 0, 0]);    
+            fprintf(obj.fid_, "G49\r\n");   
+            fprintf(obj.fid_, "G43H%d ;;¿ªµ¶²¹\r\n", toolNum);                   
             obj.returnToSafety(safetyHeight, 1000);
-            fprintf(obj.fid_, "G49\r\n");            
             ret = 1;
         end
 

@@ -1,7 +1,7 @@
 function [path, feedSeq] = planarCircleMachining(cntr, depthRange, radiuRng, mLyrThick, toolRadiu, feedrate, slowFeed)
     lyrThickness = mLyrThick;
     
-    passStepOver = toolRadiu*1.6; 
+    passStepOver = toolRadiu*1.8; 
     radiuDiffLen = abs(radiuRng(1) - radiuRng(2));
     if floor(radiuDiffLen/passStepOver) == radiuDiffLen/passStepOver
         passNum = floor(radiuDiffLen/passStepOver);            
