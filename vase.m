@@ -70,7 +70,7 @@ classdef vase
                 lyrNum = lyrNum + 6;
             end
             data = cell(lyrNum, 3);
-            rollAgl = pi/6;
+            rollAgl = 25/180*pi;
             startIdx = 7;
             
             for lyrIdx = startIdx:lyrNum

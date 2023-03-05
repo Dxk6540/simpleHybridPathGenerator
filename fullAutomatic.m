@@ -27,7 +27,7 @@ plannarToolRadiu = 3;
 side = 1; % machining inside is -1 and outside is 1
 
 %  geometry param
-startCtr = [-60,0];
+startCtr = [0,0];
 % inclinationAgl = 0; % degree
 pLyrNum = 30;
 lyrHeight = 0.5;
@@ -61,9 +61,9 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
 
     %%%%%%%%%%%%%%%%%%%%% plannar circle machining %%%%%%%%%%%%%%%%%%%%
     tol = 0.2;
-    if handle.shape_=="vase"
+    if handle.shape_=="Vase"
         planarRadiuRng = [handle.getRadius(zOffset+sglWpHeight)-3,handle.getRadius(zOffset+sglWpHeight)+2];
-    elseif handle.shape_=="cylinder"
+    elseif handle.shape_=="Cylinder"
         planarRadiuRng = [radius-3,radius+2];
     end
     depthRng = [sglWpHeight+zOffset+planarMachiningDepth, sglWpHeight+zOffset];
