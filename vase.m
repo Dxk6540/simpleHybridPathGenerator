@@ -116,7 +116,7 @@ classdef vase
             pathSeq=[toolTipPtSeq,bcSeq];
             
             % walloffset machining's tool quit path
-            for lyrIdx = lyrNum:-1:startIdx
+            for lyrIdx = startIdx:lyrNum
                 z = wpHeight - lyrIdx * lyrHeight + zOffset;
                 vaseRadius = vase.genVaseRadius(z); 
                 tanVec2 = vase.getVaseTangent(z);
