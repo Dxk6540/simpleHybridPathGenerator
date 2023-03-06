@@ -16,9 +16,9 @@ channel = 2;
 step = 1;
 
 % machining process param
-mFeedrate = 1200; % mm/min
-planarFeed = 1200;
-planarSlowFeed = 300;
+mFeedrate = 2000; % mm/min
+planarFeed = 2000;
+planarSlowFeed = 100;
 spindleSpeed = 10000;
 wallToolNum = 1;
 wallToolRadiu = 4;
@@ -34,15 +34,18 @@ lyrHeight = 0.5;
 radius = 20;
 tol = 0.1;
 safetyHeight = 200;
-alternativeNum = 1;
 machiningLyrThickness = -0.1;
 planarMachiningDepth = 4;
+
+%shape control
+alternativeNum = 1;
 sglWpHeight = lyrHeight * pLyrNum;
 allWpHeight = sglWpHeight * alternativeNum;
-zOffsetRng = [15, allWpHeight+15];
+zOffset = 60;
+zOffsetRng = [zOffset, allWpHeight + zOffset];
 
 % alternative
-outterWallRange = [1.2,0.4];
+outterWallRange = [1.2,0.2];
 innerWallRange = [2.6,2.1];
 usingRTCP = 1;
     
@@ -56,6 +59,7 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     %%%%%%%%%%%%%% printing path 
     pg.addCmd(";;;;;start a printing process");
     tol = 0.1;
+    pg.pauseProgramMust();
     [printPathSeq,pwrSeq,feedrateOffset] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
     genPrintingProcess(pg, safetyHeight, printPathSeq, pwrSeq, pFeedrate*feedrateOffset);
 

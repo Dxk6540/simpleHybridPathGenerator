@@ -69,14 +69,13 @@ classdef vase
             if zOffset > 5
                 lyrNum = lyrNum + startIdx;
             end
-            data = cell(lyrNum, 3);
             rollAgl = 25/180*pi;
-
-            for lyrIdx = startIdx:lyrNum
-                toolContactPts = [];
-                toolAxes = [];
-                fcNormals = [];
-                toolTpPts = [];
+            toolContactPtSeq = [];
+            toolTipPtSeq = [];
+            toolAxisSeq = [];
+            fcNormals = [];
+            for lyrIdx = lyrNum:-1:startIdx
+                
                 
                 disp(['process layer ', num2str(lyrIdx)])
                 z = wpHeight - lyrIdx * lyrHeight + zOffset;
@@ -89,7 +88,7 @@ classdef vase
                 mtRadiu = vaseRadius + side * wallOffset;
                 lyrPtNum = floor(2 * mtRadiu * pi / tol)+1;                
                 aglStep = 2 * pi / lyrPtNum;                
-                for j = 1 : lyrPtNum
+                for j = 0 : lyrPtNum
                     x = cos(aglStep * j) * mtRadiu + startCenter(1);
                     y = sin(aglStep * j) * mtRadiu + startCenter(2); 
                     ccPt = [x,y,z];
@@ -103,24 +102,21 @@ classdef vase
                         break;
                     end
                     
-                    toolContactPts = [toolContactPts; ccPt];    
-                    toolTpPts = [toolTpPts; ttPt];
-                    toolAxes = [toolAxes; toolAxis];
+                    toolContactPtSeq = [toolContactPtSeq; ccPt];    
+                    toolTipPtSeq = [toolTipPtSeq; ttPt];
+                    toolAxisSeq = [toolAxisSeq; toolAxis];
                     fcNormals = [fcNormals; fcNorm];
                 end
-                data{lyrIdx, 1} = toolContactPts;
-                data{lyrIdx, 2} = toolTpPts;
-                data{lyrIdx, 3} = toolAxes;
-                data{lyrIdx, 4} = fcNormals;                                
+                toolContactPtSeq = [toolContactPtSeq; ccPt];    
+                toolTipPtSeq = [toolTipPtSeq; ttPt + [10 * side * tol,0,0]];
+                toolAxisSeq = [toolAxisSeq; toolAxis];
+                fcNormals = [fcNormals; fcNorm];                                
             end 
-            toolContactPtSeq = cell2mat(data(:,1));
-            toolTipPtSeq = cell2mat(data(:,2));
-            toolAxisSeq = cell2mat(data(:,3));
             bcSeq = sequentialSolveBC(toolAxisSeq, [0,0]);
             pathSeq=[toolTipPtSeq,bcSeq];
             
             % walloffset machining's tool quit path
-            for lyrIdx = lyrNum:startIdx
+            for lyrIdx = lyrNum:-1:startIdx
                 z = wpHeight - lyrIdx * lyrHeight + zOffset;
                 vaseRadius = vase.genVaseRadius(z); 
                 tanVec2 = vase.getVaseTangent(z);
@@ -129,8 +125,8 @@ classdef vase
                 mtRadiu = vaseRadius + side * wallOffset;
                 lyrPtNum = floor(2 * mtRadiu * pi / tol)+1;                
                 aglStep = 2 * pi / lyrPtNum;                
-                x = cos(aglStep * lyrPtNum) * mtRadiu + startCenter(1);
-                y = sin(aglStep * lyrPtNum) * mtRadiu + startCenter(2); 
+                x = cos(0) * mtRadiu + startCenter(1);
+                y = sin(0) * mtRadiu + startCenter(2); 
                 ccPt = [x,y,z];
 
                 fcNorm = vase.convertTo3DVec(fcNorm2, aglStep * j);
@@ -141,7 +137,7 @@ classdef vase
                 if toolCenterPt(3) - toolRadiu <= 2
                     continue;
                 end
-                pathSeq=[pathSeq;ttPt,bcSeq(end,:)];
+                pathSeq=[pathSeq;ttPt + 10 * side * tol,bcSeq(end,:)];
             end
 %             scatter3(toolContactPtSeq(1:vase.drawStep_:end,1), toolContactPtSeq(1:vase.drawStep_:end,2), toolContactPtSeq(1:vase.drawStep_:end,3),2)
 %             hold on
