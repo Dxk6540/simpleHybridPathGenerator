@@ -13,44 +13,52 @@ classdef vase
     methods(Static)
         function [path,pwrSeq,feedrateOffset] = genPrintingPath(~, startCenter, tol, lyrNum, lyrThickness, pwr, zOffset, channel, step)
             % planar circle path
-            path = [];
-            pwrSeq = [];
-            feedrateOffset = [];
+            path = cell(lyrNum);
+            pwrSeq = cell(lyrNum);
+            feedrateOffset = cell(lyrNum);
             for lyrIdx = 0 : lyrNum - 1    
                 disp(['process printing layer ', num2str(lyrIdx)])                
-                tPathSeq = [];
-                tPwrSeq = [];
-%                 radius = baseRadiu * vase.genVaseRadius(lyrIdx * lyrThickness);
                 radius = vase.genVaseRadius(lyrIdx * lyrThickness + zOffset);
                 lyrPtNum = floor(2 * radius * pi / tol)+1;
                 aglStep = 2 * pi / lyrPtNum;
+                tPathSeq = ones(channel * lyrPtNum,3);
+                tPwrSeq = ones(channel * lyrPtNum,1);
+                tOffsetSeq = ones(channel * lyrPtNum,1);
                 if channel > 1
                     for chnIdx = 0 : channel - 1
-                        for j = 0 : lyrPtNum - 1
-                            x = cos(aglStep * j) * (radius - chnIdx * step) + startCenter(1);
-                            y = sin(aglStep * j) * (radius - chnIdx * step) + startCenter(2);
+                        for ptIdx = 0 : lyrPtNum - 1
+                            x = cos(aglStep * ptIdx) * (radius - chnIdx * step) + startCenter(1);
+                            y = sin(aglStep * ptIdx) * (radius - chnIdx * step) + startCenter(2);
                             z = lyrIdx * lyrThickness + zOffset;
-                            speedOffset = (1.05-abs(aglStep * j-0.65*pi)/pi*0.1);
-                            tPathSeq = [tPathSeq; x,y,z];
-                            tPwrSeq = [tPwrSeq; pwr];
-                            feedrateOffset = [feedrateOffset;speedOffset];
+                            speedOffset = (1.05-abs(aglStep * ptIdx-0.65*pi)/pi*0.1);
+                            tPathSeq(ptIdx+chnIdx*lyrPtNum+1,:) = [x,y,z];
+                            tPwrSeq(ptIdx+chnIdx*lyrPtNum+1) = pwr;
+                            tOffsetSeq(ptIdx+chnIdx*lyrPtNum+1) = speedOffset;
                         end
                         tPwrSeq(1)= 0;
                         tPwrSeq(end) = 0;                
                     end
                 else
-                   for j = 0 : lyrPtNum - 1
-                        x = cos(aglStep * j) * radius + startCenter(1);
-                        y = sin(aglStep * j) * radius + startCenter(2);
-                        z = lyrIdx * lyrThickness + zOffset + j * lyrThickness / lyrPtNum;
-                        tPathSeq = [tPathSeq; x,y,z];
-                        tPwrSeq = [tPwrSeq; pwr];
-                    end
+                   for ptIdx = 0 : lyrPtNum - 1
+                        x = cos(aglStep * ptIdx) * radius + startCenter(1);
+                        y = sin(aglStep * ptIdx) * radius + startCenter(2);
+                        z = lyrIdx * lyrThickness + zOffset + ptIdx * lyrThickness / lyrPtNum;
+                        speedOffset = (1.05-abs(aglStep * ptIdx-0.65*pi)/pi*0.1);
+                        tPathSeq(ptIdx+1,:) = [tPathSeq; x,y,z];
+                        tPwrSeq(ptIdx+1) = pwr;
+                        tOffsetSeq(ptIdx+1) = speedOffset;
+                   end
+                   tPwrSeq(1)= 0;
+                   tPwrSeq(end) = 0; 
                 end
                 % stop the power when lift the tool 
-                path = [path;tPathSeq];
-                pwrSeq = [pwrSeq;tPwrSeq];             
+                path{lyrIdx+1} = tPathSeq;
+                pwrSeq{lyrIdx+1} = tPwrSeq;
+                feedrateOffset{lyrIdx+1} = tOffsetSeq;
             end
+            path = cell2mat(path);
+            pwrSeq = cell2mat(pwrSeq);
+            feedrateOffset = cell2mat(feedrateOffset);
             pwrSeq(1) = pwr;
             scatter3(path(1:vase.drawStep_:end,1), path(1:vase.drawStep_:end,2), path(1:vase.drawStep_:end,3),2)
             hold on
@@ -69,32 +77,57 @@ classdef vase
             if zOffset > 5
                 lyrNum = lyrNum + startIdx;
             end
-            rollAgl = 25/180*pi;
-            toolContactPtSeq = [];
-            toolTipPtSeq = [];
-            toolAxisSeq = [];
-            fcNormals = [];
+            rollAgl = 25 / 180 * pi;
+            count = lyrNum - startIdx + 1;
+            pathSeq = cell(count,1);
+            toolContactPtSeq = cell(count,1);
+            toolTipPtSeq = cell(count,1);
+            toolAxisSeq = cell(count,1);
+            fcNormalSeq = cell(count,1);
+            
+            % walloffset machining's tool quit path
+            quitPath = ones(count,5);
+            for lyrIdx = startIdx:lyrNum
+                z = wpHeight - lyrIdx * lyrHeight + zOffset;
+                vaseRadius = vase.genVaseRadius(z); 
+                fcNorm2 = vase.getVaseNormal(z, side);
+                toolAxis2d = [side * sin(rollAgl),cos(rollAgl)];
+                mtRadiu = vaseRadius + side * wallOffset;                            
+                x = cos(0) * mtRadiu + startCenter(1);
+                y = sin(0) * mtRadiu + startCenter(2); 
+                ccPt = [x,y,z];
+
+                fcNorm = vase.convertTo3DVec(fcNorm2, 0);    
+                toolAxis = vase.convertTo3DVec(toolAxis2d, 0);                         
+                ttPt = vase.getToolCenterPt(ccPt, fcNorm, toolAxis, toolRadiu);
+                toolCenterPt = ccPt + fcNorm * toolRadiu;
+                if toolCenterPt(3) - toolRadiu <= 2
+                    continue;
+                end
+                quitPath(lyrIdx - startIdx + 1, :)=[ttPt + 10 * side * tol, sequentialSolveBC(toolAxis, [0,0])];
+            end
+            
             for lyrIdx = lyrNum:-1:startIdx
-                
-                
                 disp(['process layer ', num2str(lyrIdx)])
                 z = wpHeight - lyrIdx * lyrHeight + zOffset;
 
                 vaseRadius = vase.genVaseRadius(z); 
-                tanVec2 = vase.getVaseTangent(z);
                 fcNorm2 = vase.getVaseNormal(z, side);
                 toolAxis2d = [side * sin(rollAgl),cos(rollAgl)];
                 
                 mtRadiu = vaseRadius + side * wallOffset;
                 lyrPtNum = floor(2 * mtRadiu * pi / tol)+1;                
-                aglStep = 2 * pi / lyrPtNum;                
+                aglStep = 2 * pi / lyrPtNum;
+                tToolContactPts = [];
+                tToolTipPts = [];
+                tToolAxes = [];
+                tFaceNprmals = [];
                 for j = 0 : lyrPtNum
                     x = cos(aglStep * j) * mtRadiu + startCenter(1);
                     y = sin(aglStep * j) * mtRadiu + startCenter(2); 
                     ccPt = [x,y,z];
                     
-                    fcNorm = vase.convertTo3DVec(fcNorm2, aglStep * j);
-                    tanVec = vase.convertTo3DVec(tanVec2, aglStep * j);     
+                    fcNorm = vase.convertTo3DVec(fcNorm2, aglStep * j);     
                     toolAxis = vase.convertTo3DVec(toolAxis2d, aglStep * j);                         
                     ttPt = vase.getToolCenterPt(ccPt, fcNorm, toolAxis, toolRadiu);
                     toolCenterPt = ccPt + fcNorm * toolRadiu;
@@ -102,43 +135,23 @@ classdef vase
                         break;
                     end
                     
-                    toolContactPtSeq = [toolContactPtSeq; ccPt];    
-                    toolTipPtSeq = [toolTipPtSeq; ttPt];
-                    toolAxisSeq = [toolAxisSeq; toolAxis];
-                    fcNormals = [fcNormals; fcNorm];
+                    tToolContactPts = [tToolContactPts; ccPt];    
+                    tToolTipPts = [tToolTipPts; ttPt];
+                    tToolAxes = [tToolAxes; toolAxis];
+                    tFaceNprmals = [tFaceNprmals; fcNorm];
                 end
-                toolContactPtSeq = [toolContactPtSeq; ccPt];    
-                toolTipPtSeq = [toolTipPtSeq; ttPt + [10 * side * tol,0,0]];
-                toolAxisSeq = [toolAxisSeq; toolAxis];
-                fcNormals = [fcNormals; fcNorm];                                
+                tToolContactPts = [tToolContactPts; ccPt];    
+                tToolTipPts = [tToolTipPts; ttPt + [10 * side * tol,0,0]];
+                tToolAxes = [tToolAxes; toolAxis];
+                tFaceNprmals = [tFaceNprmals; fcNorm];
+            	toolContactPtSeq{lyrNum - lyrIdx + 1} = tToolContactPts;
+                toolTipPtSeq{lyrNum - lyrIdx + 1} = tToolTipPts;
+                toolAxisSeq{lyrNum - lyrIdx + 1} = tToolAxes;
+                fcNormalSeq{lyrNum - lyrIdx + 1} = tFaceNprmals;
             end 
-            bcSeq = sequentialSolveBC(toolAxisSeq, [0,0]);
-            pathSeq=[toolTipPtSeq,bcSeq];
+            bcSeq = sequentialSolveBC(cell2mat(toolAxisSeq), [0,0]);
+            pathSeq=[quitPath; cell2mat(toolTipPtSeq),bcSeq];
             
-            % walloffset machining's tool quit path
-            for lyrIdx = startIdx:lyrNum
-                z = wpHeight - lyrIdx * lyrHeight + zOffset;
-                vaseRadius = vase.genVaseRadius(z); 
-                tanVec2 = vase.getVaseTangent(z);
-                fcNorm2 = vase.getVaseNormal(z, side);
-                toolAxis2d = [side * sin(rollAgl),cos(rollAgl)];
-                mtRadiu = vaseRadius + side * wallOffset;
-                lyrPtNum = floor(2 * mtRadiu * pi / tol)+1;                
-                aglStep = 2 * pi / lyrPtNum;                
-                x = cos(0) * mtRadiu + startCenter(1);
-                y = sin(0) * mtRadiu + startCenter(2); 
-                ccPt = [x,y,z];
-
-                fcNorm = vase.convertTo3DVec(fcNorm2, aglStep * j);
-                tanVec = vase.convertTo3DVec(tanVec2, aglStep * j);     
-                toolAxis = vase.convertTo3DVec(toolAxis2d, aglStep * j);                         
-                ttPt = vase.getToolCenterPt(ccPt, fcNorm, toolAxis, toolRadiu);
-                toolCenterPt = ccPt + fcNorm * toolRadiu;
-                if toolCenterPt(3) - toolRadiu <= 2
-                    continue;
-                end
-                pathSeq=[pathSeq;ttPt + 10 * side * tol,bcSeq(end,:)];
-            end
 %             scatter3(toolContactPtSeq(1:vase.drawStep_:end,1), toolContactPtSeq(1:vase.drawStep_:end,2), toolContactPtSeq(1:vase.drawStep_:end,3),2)
 %             hold on
 %             scatter3(toolTipPtSeq(1:vase.drawStep_:end,1), toolTipPtSeq(1:vase.drawStep_:end,2), toolTipPtSeq(1:vase.drawStep_:end,3),2)

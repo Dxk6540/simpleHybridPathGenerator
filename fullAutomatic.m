@@ -2,7 +2,7 @@
 handle = vase;
 
 % file param:
-filename = strcat('./fullAuto',handle.shape_,date,'.txt');
+filename = strcat('./fullAutoThin',handle.shape_,date,'.txt');
 
 % printing process param
 pwr = 300; % 1.2KW / 4kw *1000;
@@ -11,7 +11,7 @@ flowL = 250; % 6 L/min / 20L/min * 1000;
 speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 250;% 6 L/min / 20L/min * 1000;
 speedR = 100;% 2 r/min / 10r/min * 1000;
-pFeedrate = 620; % mm/min(cylinder 600, vase 590)
+pFeedrate = 680; % mm/min(cylinder 600, vase 590)
 channel = 2;
 step = 1;
 
@@ -29,19 +29,19 @@ side = 1; % machining inside is -1 and outside is 1
 %  geometry param
 startCtr = [0,0];
 % inclinationAgl = 0; % degree
-pLyrNum = 30;
+pLyrNum = 40;
 lyrHeight = 0.5;
 radius = 20;
-tol = 0.1;
+tol = 0.02;
 safetyHeight = 200;
 machiningLyrThickness = -0.1;
 planarMachiningDepth = 4;
 
 %shape control
-alternativeNum = 1;
+alternativeNum = 0;
 sglWpHeight = lyrHeight * pLyrNum;
 allWpHeight = sglWpHeight * alternativeNum;
-zOffset = 60;
+zOffset = 135;
 zOffsetRng = [zOffset, allWpHeight + zOffset];
 
 % alternative
@@ -56,25 +56,25 @@ pg.draw_ = false;
 pg.experiment_ = false;
 
 for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
-    %%%%%%%%%%%%%% printing path 
-    pg.addCmd(";;;;;start a printing process");
-    tol = 0.1;
-    pg.pauseProgramMust();
-    [printPathSeq,pwrSeq,feedrateOffset] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
-    genPrintingProcess(pg, safetyHeight, printPathSeq, pwrSeq, pFeedrate*feedrateOffset);
-
-    %%%%%%%%%%%%%%%%%%%%% plannar circle machining %%%%%%%%%%%%%%%%%%%%
-    pg.addCmd(";;;;;start a planar machining process");
-    tol = 0.2;
-    if handle.shape_=="Vase"
-        planarRadiuRng = [handle.getRadius(zOffset+sglWpHeight)-3,handle.getRadius(zOffset+sglWpHeight)+2];
-    elseif handle.shape_=="Cylinder"
-        planarRadiuRng = [radius-3,radius+2];
-    end
-    depthRng = [sglWpHeight+zOffset+planarMachiningDepth, sglWpHeight+zOffset];
-    [planarPathSeq, planarFeedSeq]  = planarCircleMachining(startCtr, depthRng, planarRadiuRng, machiningLyrThickness, plannarToolRadiu, planarFeed, planarSlowFeed);
-    genMachiningProcess(pg, safetyHeight, plannarToolNum, planarPathSeq, planarFeedSeq, 0, side);    
-    pg.drawPath(printPathSeq, planarPathSeq);
+%     %%%%%%%%%%%%%% printing path 
+%     pg.addCmd(";;;;;start a printing process");
+%     tol = 0.1;
+%     pg.pauseProgramMust();
+%     [printPathSeq,pwrSeq,feedrateOffset] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
+%     genPrintingProcess(pg, safetyHeight, printPathSeq, pwrSeq, pFeedrate*feedrateOffset);
+% 
+%     %%%%%%%%%%%%%%%%%%%%% plannar circle machining %%%%%%%%%%%%%%%%%%%%
+%     pg.addCmd(";;;;;start a planar machining process");
+%     tol = 0.2;
+%     if handle.shape_=="Vase"
+%         planarRadiuRng = [handle.getRadius(zOffset+sglWpHeight)-3,handle.getRadius(zOffset+sglWpHeight)+2];
+%     elseif handle.shape_=="Cylinder"
+%         planarRadiuRng = [radius-3,radius+2];
+%     end
+%     depthRng = [sglWpHeight+zOffset+planarMachiningDepth, sglWpHeight+zOffset];
+%     [planarPathSeq, planarFeedSeq]  = planarCircleMachining(startCtr, depthRng, planarRadiuRng, machiningLyrThickness, plannarToolRadiu, planarFeed, planarSlowFeed);
+%     genMachiningProcess(pg, safetyHeight, plannarToolNum, planarPathSeq, planarFeedSeq, 0, side);    
+%     pg.drawPath(printPathSeq, planarPathSeq);
     
     %%%%%%%%%%%%%%%%%%%%%%%%% machining outter wall %%%%%%%%%%%%%%%%%%%%%%%%
     pg.addCmd(";;;;;start a outter wall machining process");
