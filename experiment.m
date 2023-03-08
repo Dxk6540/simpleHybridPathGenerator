@@ -1,6 +1,6 @@
 % file param:
-pFilename = strcat('./cylinderTest',date,'.txt');
-mFilename = strcat('./cylinderTestMachinig',date,'.txt');
+pFilename = strcat('./interpTest',date,'.txt');
+mFilename = strcat('./interpTestMachinig',date,'.txt');
 
 % process param
 % pwr = 300; % 1.2KW / 4kw *1000;
@@ -24,7 +24,7 @@ step = 1;
 
 % machining process param
 mFeedrate = 800; % mm/min
-spindleSpeed = 10000;
+spindleSpeed = 5000;
 toolNum = 1;
 toolRadiu = 4;
 wallOffset = 1.1;
@@ -33,13 +33,13 @@ side = 1; % machining inside is -1 and outside is 1
 %  geometry param
 startCtr = [0,0];
 % inclinationAgl = 0; % degree
-pLyrNum = 30;
+pLyrNum = 10;
 % wpH = 10;
 lyrHeight = 0.5;
 radius = 20;
-tol = 0.1;
+tol = 0.005;
 safetyHeight = 230;
-zOffset = 0;
+zOffset = 155;
 
 % shape
 handle=cylinder;

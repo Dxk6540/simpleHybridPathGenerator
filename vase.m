@@ -73,11 +73,11 @@ classdef vase
             end
             lyrHeight = wpHeight/lyrNum;
             disp(['total layer ', num2str(lyrNum)])
-            startIdx = 9;
+            startIdx = 0;
             if zOffset > 5
                 lyrNum = lyrNum + startIdx;
             end
-            rollAgl = 25 / 180 * pi;
+            rollAgl = 10 / 180 * pi;
             count = lyrNum - startIdx + 1;
             pathSeq = cell(count,1);
             toolContactPtSeq = cell(count,1);
@@ -86,7 +86,7 @@ classdef vase
             fcNormalSeq = cell(count,1);
             
             % walloffset machining's tool quit path
-            quitPath = ones(count,5);
+            quitPath = [];
             for lyrIdx = startIdx:lyrNum
                 z = wpHeight - lyrIdx * lyrHeight + zOffset;
                 vaseRadius = vase.genVaseRadius(z); 
@@ -104,7 +104,7 @@ classdef vase
                 if toolCenterPt(3) - toolRadiu <= 2
                     continue;
                 end
-                quitPath(lyrIdx - startIdx + 1, :)=[ttPt + 10 * side * tol, sequentialSolveBC(toolAxis, [0,0])];
+                quitPath=[quitPath; ttPt + 10 * side * tol, sequentialSolveBC(toolAxis, [0,0])];
             end
             
             for lyrIdx = lyrNum:-1:startIdx
@@ -140,10 +140,12 @@ classdef vase
                     tToolAxes = [tToolAxes; toolAxis];
                     tFaceNprmals = [tFaceNprmals; fcNorm];
                 end
-                tToolContactPts = [tToolContactPts; ccPt];    
-                tToolTipPts = [tToolTipPts; ttPt + [10 * side * tol,0,0]];
-                tToolAxes = [tToolAxes; toolAxis];
-                tFaceNprmals = [tFaceNprmals; fcNorm];
+                if toolCenterPt(3) - toolRadiu > 2
+                	tToolContactPts = [tToolContactPts; ccPt];    
+                    tToolTipPts = [tToolTipPts; ttPt + [10 * side * tol,0,0]];
+                    tToolAxes = [tToolAxes; toolAxis];
+                    tFaceNprmals = [tFaceNprmals; fcNorm];
+                end
             	toolContactPtSeq{lyrNum - lyrIdx + 1} = tToolContactPts;
                 toolTipPtSeq{lyrNum - lyrIdx + 1} = tToolTipPts;
                 toolAxisSeq{lyrNum - lyrIdx + 1} = tToolAxes;
