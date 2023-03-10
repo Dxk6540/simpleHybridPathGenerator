@@ -77,7 +77,7 @@ classdef vase
             if zOffset > 5
                 lyrNum = lyrNum + startIdx;
             end
-            rollAgl = 10 / 180 * pi;
+            rollAgl = 15 / 180 * pi;
             count = lyrNum - startIdx + 1;
             pathSeq = cell(count,1);
             toolContactPtSeq = cell(count,1);

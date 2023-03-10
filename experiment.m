@@ -1,5 +1,5 @@
 % file param:
-pFilename = strcat('./interpTest',date,'.txt');
+pFilename = strcat('./rongchiTest',date,'.txt');
 mFilename = strcat('./interpTestMachinig',date,'.txt');
 
 % process param
@@ -37,7 +37,7 @@ pLyrNum = 10;
 % wpH = 10;
 lyrHeight = 0.5;
 radius = 20;
-tol = 0.005;
+tol = 0.5;
 safetyHeight = 230;
 zOffset = 155;
 
@@ -47,7 +47,18 @@ handle=cylinder;
 %%
 %%%%%%%%%%%%%% printing path
 [pPathSeq,pwrSeq] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
+
+stPt = [60,-60,0];
+xdist = -100;
+pPathSeq = [];
+for zOff = 0:0.5:3
+    pPathSeq =[pPathSeq;
+               stPt(1), stPt(2), stPt(3) + zOff;
+               stPt(1) + xdist, stPt(2), stPt(3)+ zOff;];
+end
+pwrSeq = ones(length(pPathSeq), 1) * pwr;
 lenPosSeq = ones(length(pPathSeq),1) * lenPos;
+
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%%% the regular code for generate a script
 pg = cPathGen(pFilename); % create the path generator object
@@ -66,27 +77,27 @@ pg.disableLaser(1);
 pg.closeScript();
 
 
-
-%%
-%%%%%%%%%%%%%% machining path
-mPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
-%%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
-%%%% the regular code for generate a script
-pg = cPathGen(mFilename); % create the path generator object
-pg.genNewScript();
-%%% start machining mode
-pg.changeMode(2); % change to machining mode
-pg.changeTool(toolNum);
-pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) + side*(radius + toolRadiu + wallOffset + 5), startCtr(2), pLyrNum * lyrHeight], 3000); % safety move the start pt
-pg.pauseProgram();% pause and wait for start (the button)
-pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
-%%% add path pts
-pg.addPathPts(mPathSeq, mFeedrate);
-%%% exist machining mode
-pg.disableSpindle();
-pg.returnToSafety(220, 3000);
-%%% end the script
-pg.closeScript();
+% 
+% %%
+% %%%%%%%%%%%%%% machining path
+% mPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
+% %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
+% %%%% the regular code for generate a script
+% pg = cPathGen(mFilename); % create the path generator object
+% pg.genNewScript();
+% %%% start machining mode
+% pg.changeMode(2); % change to machining mode
+% pg.changeTool(toolNum);
+% pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) + side*(radius + toolRadiu + wallOffset + 5), startCtr(2), pLyrNum * lyrHeight], 3000); % safety move the start pt
+% pg.pauseProgram();% pause and wait for start (the button)
+% pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
+% %%% add path pts
+% pg.addPathPts(mPathSeq, mFeedrate);
+% %%% exist machining mode
+% pg.disableSpindle();
+% pg.returnToSafety(220, 3000);
+% %%% end the script
+% pg.closeScript();
 
 
 

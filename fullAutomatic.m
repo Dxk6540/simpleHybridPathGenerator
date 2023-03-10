@@ -46,7 +46,7 @@ zOffsetRng = [zOffset, allWpHeight + zOffset];
 
 % alternative
 outterWallRange = [-0.42,-0.42];
-innerWallRange = [2.06,2.04];
+innerWallRange = [2.04,2.02];
 usingRTCP = 1;
     
 %%
