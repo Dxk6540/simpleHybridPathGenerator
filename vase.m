@@ -30,7 +30,7 @@ classdef vase
                             x = cos(aglStep * ptIdx) * (radius - chnIdx * step) + startCenter(1);
                             y = sin(aglStep * ptIdx) * (radius - chnIdx * step) + startCenter(2);
                             z = lyrIdx * lyrThickness + zOffset;
-                            speedOffset = (1.05-abs(aglStep * ptIdx-0.65*pi)/pi*0.1);
+                            speedOffset = (1.05-abs(aglStep * ptIdx-0.65*pi)/pi*0.1) * (1 + 0.16 * (20 - radius) / 10);
                             tPathSeq(ptIdx+chnIdx*lyrPtNum+1,:) = [x,y,z];
                             tPwrSeq(ptIdx+chnIdx*lyrPtNum+1) = pwr;
                             tOffsetSeq(ptIdx+chnIdx*lyrPtNum+1) = speedOffset;
@@ -64,7 +64,7 @@ classdef vase
             hold on
         end
         
-        function pathSeq = genMachiningPath(~, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, side)
+        function pathSeq = genMachiningPath(~, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, side, startIdx)
             % roughing circle path   
             if floor(wpHeight/lyrThickness) == wpHeight/lyrThickness
                 lyrNum = floor(wpHeight/lyrThickness);            
@@ -73,11 +73,10 @@ classdef vase
             end
             lyrHeight = wpHeight/lyrNum;
             disp(['total layer ', num2str(lyrNum)])
-            startIdx = 0;
             if zOffset > 5
                 lyrNum = lyrNum + startIdx;
             end
-            rollAgl = 15 / 180 * pi;
+            rollAgl = 25 / 180 * pi;
             count = lyrNum - startIdx + 1;
             pathSeq = cell(count,1);
             toolContactPtSeq = cell(count,1);
