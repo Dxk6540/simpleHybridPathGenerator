@@ -1,8 +1,8 @@
 % shape
 handle = vase;
 planarMachiningDepth = 4;
-outterWallMachiningWidth = 1.2;
-innerWallMachiningWidth = 2.6;
+outterWallMachiningWidth = 0.1;
+innerWallMachiningWidth = 2.1;
 
 % file param:
 filename = strcat('./fullAutoThin',handle.shape_,date,'.txt');

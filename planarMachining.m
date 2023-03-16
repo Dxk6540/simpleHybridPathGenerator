@@ -1,16 +1,18 @@
 function ret = planarMachining(cntr, depthRange, side, machiningLyrThickness, toolRadiu)
     lyrThickness = machiningLyrThickness;
+    sideX = side(1);
+    sideY = side(2);
     
     passStepOver = toolRadiu*3.5;    
-    if floor(side/passStepOver) == side/passStepOver
-        passNum = floor(side/passStepOver);            
+    if floor(sideX/passStepOver) == sideX/passStepOver
+        passNum = floor(sideX/passStepOver);            
     else
-        passNum = floor(side/passStepOver) + 1;    
+        passNum = floor(sideX/passStepOver) + 1;    
     end
-    passStepOver = side / passNum;
+    passStepOver = sideX / passNum;
     
-    xRange = [cntr(1) - side/2, cntr(1) + side/2];
-    yRange = [cntr(2) - side/2, cntr(2) + side/2];
+    xRange = [cntr(1) - sideX/2, cntr(1) + sideX/2];
+    yRange = [cntr(2) - sideY/2, cntr(2) + sideY/2];
     planarPathSeq = [];    
     for zPos = depthRange(1): lyrThickness: depthRange(2)
         for yPos = yRange(1): passStepOver: yRange(2)

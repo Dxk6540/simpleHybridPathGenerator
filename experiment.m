@@ -37,7 +37,7 @@ pLyrNum = 10;
 % wpH = 10;
 lyrHeight = 0.5;
 radius = 20;
-tol = 0.5;
+tol = 0.005;
 safetyHeight = 230;
 zOffset = 155;
 
@@ -48,15 +48,15 @@ handle=cylinder;
 %%%%%%%%%%%%%% printing path
 [pPathSeq,pwrSeq] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
 
-stPt = [60,-60,0];
-xdist = -100;
-pPathSeq = [];
-for zOff = 0:0.5:3
-    pPathSeq =[pPathSeq;
-               stPt(1), stPt(2), stPt(3) + zOff;
-               stPt(1) + xdist, stPt(2), stPt(3)+ zOff;];
-end
-pwrSeq = ones(length(pPathSeq), 1) * pwr;
+% stPt = [60,-60,0];
+% xdist = -100;
+% pPathSeq = [];
+% for zOff = 0:0.5:3
+%     pPathSeq =[pPathSeq;
+%                stPt(1), stPt(2), stPt(3) + zOff;
+%                stPt(1) + xdist, stPt(2), stPt(3)+ zOff;];
+% end
+% pwrSeq = ones(length(pPathSeq), 1) * pwr;
 lenPosSeq = ones(length(pPathSeq),1) * lenPos;
 
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
