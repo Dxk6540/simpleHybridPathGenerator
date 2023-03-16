@@ -91,12 +91,13 @@ classdef cPathGen < handle
             ret = 1;
         end % setLaser(obj, pwr, lenPos, flowL, speedL, flowR, speedR)
         
+        ret = changePowder(obj, flowL, speedL, flowR, speedR, delay);
         
         ret = enableSpindle(obj, spindleSpeed, wcsPath)        
         ret = disableSpindle(obj)
         ret = changeTool(obj, toolNum)
         
-
+        
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%% path control %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -195,6 +196,39 @@ classdef cPathGen < handle
             ret = 0;
             return;            
         end  % addPathPtWithPwr(obj, pt, pwr, lenPos, feedrate)      
+        
+
+       
+        function ret = addPathPtWithAll(obj, pt, pwr, lenPos, flowL, speedL, flowR, speedR, feedrate)
+            ret = 1;
+            if(pwr < 0)
+                obj.addPathPtFeed(pt, feedrate);
+                return;
+            end
+            if(lenPos < 0)
+                obj.addPathPtFeed(pt, feedrate);
+                return;
+            end    
+            if(flowL < 0 | speedL < 0 | flowR < 0 | speedR < 0)
+                obj.addPathPtFeed(pt, feedrate);
+                return;
+            end                
+            if(length(pt) == 3)
+                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f I%d J%d V%d K%d W%d U%d F%.3f\r\n", ...
+                                  pt(1), pt(2), pt(3), pwr, lenPos, flowL, speedL, flowR, speedR, feedrate);                  
+                ret = 1;
+                return;
+            elseif (length(pt) == 5)
+                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f B%.3f C%.3f I%d J%d V%d K%d W%d U%d F%.3f\r\n", ...
+                    pt(1), pt(2), pt(3), pt(4), pt(5), pwr, lenPos, flowL, speedL, flowR, speedR, feedrate);                  
+                ret = 1;
+                return;
+            else
+                disp("error in addPathPt! the pt is neither 3 or 5 dim!")
+            end            
+            ret = 0;
+            return;            
+        end  % addPathPtWithAll(obj, pt, pwr, lenPos, feedrate)              
         
         ret = addPathPts(obj, pts, feedrate);
         ret = addPathPtsWithPwr(obj, pts, pwr, lenPos, feedrate);
