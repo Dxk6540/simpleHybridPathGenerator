@@ -14,7 +14,7 @@ speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 250;% 6 L/min / 20L/min * 1000;
 speedR = 100;% 2 r/min / 10r/min * 1000;
 pFeedrate = 600; % mm/min(cylinder 600, vase 590)
-channel = 2;
+channel = 4;
 step = 1;
 
 % machining process param
@@ -28,9 +28,9 @@ plannarToolNum = 2;
 plannarToolRadiu = 3;
 
 %  geometry param
-startCtr = [0,60];
+startCtr = [-15,60];
 % inclinationAgl = 0; % degree
-pLyrNum = 5;
+pLyrNum = 10;
 lyrHeight = 0.5;
 cubeLength = 30;
 tol = 0.1;
@@ -64,25 +64,25 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     genPrintingProcess(pg, safetyHeight, printPathSeq, pwrSeq, pFeedrate);
 
     %%%%%%%%%%%%%% rough machining path
-    tol = 0.2;
-    %%%%%%%%%%%%%%%%%%%%% plannar machining %%%%%%%%%%%%%%%%%%%%
-    pg.addCmd(";;;;;start a planar machining process");
-    depthRng = [sglWpHeight+zOffset+planarMachiningDepth, sglWpHeight+zOffset];
-    planarPathSeq  = planarMachining([startCtr(1) + 0.5* cubeLength, startCtr(2) + 0.5 * (channel - 1) * step], depthRng, [cubeLength, (channel - 1) * step], machiningLyrThickness, plannarToolRadiu);
-    genMachiningProcess(pg, safetyHeight, plannarToolNum, planarPathSeq, planarFeed, 0, side);    
-    pg.drawPath(printPathSeq, planarPathSeq);
-    
-    %%%%%%%%%%%%%%%%%%%%%%%% machining outter wall %%%%%%%%%%%%%%%%%%%%%%%%
-    pg.addCmd(";;;;;start an outter wall machining process");
-    side = 1;
-    allOutterPath = [];
-    for wallOffset = outterWallRange(1): machiningLyrThickness : outterWallRange(2)
-    %%%%%%%%%%%%%% machining path
-        outMachiningPathSeq = handle.genMachiningPath(cubeLength, startCtr, tol, sglWpHeight, lyrHeight, wallToolRadiu, wallOffset, zOffset, side);
-        allOutterPath = [allOutterPath; outMachiningPathSeq];
-    end
-	genMachiningProcess(pg, safetyHeight, wallToolNum, allOutterPath, mFeedrate, usingRTCP, side);
-    pg.drawPath(allOutterPath, allOutterPath);    
+%     tol = 0.2;
+%     %%%%%%%%%%%%%%%%%%%%% plannar machining %%%%%%%%%%%%%%%%%%%%
+%     pg.addCmd(";;;;;start a planar machining process");
+%     depthRng = [sglWpHeight+zOffset+planarMachiningDepth, sglWpHeight+zOffset];
+%     planarPathSeq  = planarMachining([startCtr(1) + 0.5* cubeLength, startCtr(2) + 0.5 * (channel - 1) * step], depthRng, [cubeLength, (channel - 1) * step], machiningLyrThickness, plannarToolRadiu);
+%     genMachiningProcess(pg, safetyHeight, plannarToolNum, planarPathSeq, planarFeed, 0, side);    
+%     pg.drawPath(printPathSeq, planarPathSeq);
+%     
+%     %%%%%%%%%%%%%%%%%%%%%%%% machining outter wall %%%%%%%%%%%%%%%%%%%%%%%%
+%     pg.addCmd(";;;;;start an outter wall machining process");
+%     side = 1;
+%     allOutterPath = [];
+%     for wallOffset = outterWallRange(1): machiningLyrThickness : outterWallRange(2)
+%     %%%%%%%%%%%%%% machining path
+%         outMachiningPathSeq = handle.genMachiningPath(cubeLength, startCtr, tol, sglWpHeight, lyrHeight, wallToolRadiu, wallOffset, zOffset, side);
+%         allOutterPath = [allOutterPath; outMachiningPathSeq];
+%     end
+% 	genMachiningProcess(pg, safetyHeight, wallToolNum, allOutterPath, mFeedrate, usingRTCP, side);
+%     pg.drawPath(allOutterPath, allOutterPath);    
     pg.alternation_ = pg.alternation_ + 1;
 end
 

@@ -6,7 +6,7 @@ function ret = genNormalMachiningProcess(obj, pg, mPathSeq, mFeedrate, side, mac
     toolNum = machiningParam.toolNum;
     
     safetyPt = mPathSeq(1,:);
-    safetyPt(1) = safetyPt(1) + side * 2; % x offset 5 mm
+    safetyPt(1) = safetyPt(1) - 1 * 2; % x offset 5 mm
     safetyPt(3) = safetyPt(3) + 5; % z offset 5 mm
     
     %%% start machining mode
