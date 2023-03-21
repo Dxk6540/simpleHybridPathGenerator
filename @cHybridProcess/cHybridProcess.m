@@ -49,7 +49,7 @@ classdef cHybridProcess < handle
         end
       
         ret = genNormalPrintingProcess(obj, pg, safetyHeight, pPathSeq, pwrSeq, pFeedrate, printParam);
-        ret = genNormalMachiningProcess(obj, pg, toolNum, mPathSeq, mFeedrate, side, machiningParam);
+        ret = genNormalMachiningProcess(obj, pg, mPathSeq, mFeedrate, side, machiningParam);
         ret = genGradMtrlPrintingProcess(obj, pg, processCell, printParam);
     end
 end

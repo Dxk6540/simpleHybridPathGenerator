@@ -42,7 +42,7 @@ classdef cube
             pwrSeq(1) = pwr;
         end
         
-        function path = genMachiningPath(cubeLength, startPoint, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset,side)
+        function path = genMachiningPath(cubeLength, cubeWidth, startPoint, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, side)
             path=[0,0,0];
             
             if floor(wpHeight/lyrThickness) == wpHeight/lyrThickness
@@ -59,10 +59,11 @@ classdef cube
             for lyrIdx = 1:1:lyrNum+1
                 z = max(0.06, wpHeight - (lyrIdx - 1) * lyrHeight + zOffset);                
                 mPathSeq = [mPathSeq; 
-                            startPoint(1) - toolRadiu - wallOffset, startPoint(2) + toolRadiu + wallOffset, z;
-                            startPoint(1) + cubeLength + toolRadiu + wallOffset, startPoint(2) + toolRadiu + wallOffset, z;
+                            startPoint(1) - toolRadiu - wallOffset, startPoint(2) - toolRadiu - wallOffset, z;
                             startPoint(1) + cubeLength + toolRadiu + wallOffset, startPoint(2) - toolRadiu - wallOffset, z;
-                            startPoint(1) - toolRadiu - wallOffset, startPoint(2) - toolRadiu - wallOffset, z];
+                            startPoint(1) + cubeLength + toolRadiu + wallOffset, startPoint(2) + cubeWidth + toolRadiu + wallOffset, z;
+                            startPoint(1) - toolRadiu - wallOffset, startPoint(2)  + cubeWidth + toolRadiu + wallOffset, z;
+                            startPoint(1) - toolRadiu - wallOffset, startPoint(2) - toolRadiu - wallOffset, z;];
             end
             path = mPathSeq;            
             
