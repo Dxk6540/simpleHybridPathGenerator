@@ -19,7 +19,7 @@ classdef cube
             outPathSeq = [outPathSeq;startPoint(1) + cubeLength(1), startPoint(2) + cubeLength(2), zOffset];
             outPathSeq = [outPathSeq;startPoint(1), startPoint(2) + cubeLength(2), zOffset];
             outPathSeq = [outPathSeq;startPoint(1), startPoint(2) + step, zOffset];
-            outPwrSeq = pwr * ones(length(outPathSeq),1);
+            outPwrSeq = 1.2 * pwr * ones(length(outPathSeq),1);
             startPoint = startPoint + [step, step];
             for lyrIdx = 0 : lyrNum - 1
                 zValue = zOffset + lyrThickness * lyrIdx;
@@ -30,13 +30,13 @@ classdef cube
                     cPathSeq = [];
                     cPwrSeq = [];
                     cPathSeq = [cPathSeq; startPoint(1) + tol, startPoint(2) + chnIdx * step, zValue];
-                    cPwrSeq = [cPwrSeq; 0];
+                    cPwrSeq = [cPwrSeq; pwr];
                     cPathSeq = [cPathSeq; startPoint(1) + step, startPoint(2) + chnIdx * step, zValue];
                     cPwrSeq = [cPwrSeq; pwr];
                     cPathSeq = [cPathSeq; startPoint(1) + cubeLength(1) - 2 * step, startPoint(2) + chnIdx * step, zValue];
                     cPwrSeq = [cPwrSeq; pwr];
                     cPathSeq = [cPathSeq; startPoint(1) + cubeLength(1) - 2 * step + tol, startPoint(2) + chnIdx * step, zValue];
-                    cPwrSeq = [cPwrSeq; 0];
+                    cPwrSeq = [cPwrSeq; pwr];
                     if rem(chnIdx,2)==1
                         cPathSeq=flipud(cPathSeq);
                         cPwrSeq=flipud(cPwrSeq);
@@ -44,11 +44,12 @@ classdef cube
                     tPathSeq = [tPathSeq; cPathSeq];
                     tPwrSeq = [tPwrSeq; cPwrSeq];
                 end
+                tPwrSeq(end) = 0;
                 tPathSeq = [tPathSeq;tPathSeq(1,:)-[0,tol,0]];
                 tPwrSeq = [tPwrSeq; 0];
                 path = [path; tPathSeq];
                 pwrSeq = [pwrSeq; tPwrSeq];
-                feedOffset = [feedOffset; (1 + lyrIdx * 0.005)* ones(length(tPathSeq),1)];
+                feedOffset = [feedOffset; (1 - lyrIdx * 0.005)* ones(length(tPathSeq),1)];
             end
         end
         

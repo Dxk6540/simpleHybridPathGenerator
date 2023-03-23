@@ -6,14 +6,14 @@ pFilename = strcat('./alternativeTest',date,'.txt');
 hProc = cHybridProcess(pFilename);
 hProc.sMachinParam_.spindleSpeed = 8000; % mm/min
 hProc.sMachinParam_.mFeedrate = 2000; % both powder are used
-hProc.sMachinParam_.toolNum = 2;
-hProc.sMachinParam_.toolRadiu = 3;
-hProc.sPrintParam_.pFeedrate = 700; % mm/min
+hProc.sMachinParam_.toolNum = 3;
+hProc.sMachinParam_.toolRadiu = 5;
+hProc.sPrintParam_.pFeedrate = 1100; % mm/min
 hProc.sPrintParam_.powderMode = 1; % left powder are used
 
 %  geometry param
 cubeLength = [50, 10];
-startPoint = [0, 0]; % left corner
+startPoint = [-15, 50]; % left corner
 tol = 0.1;
 pLyrNum = 30;
 lyrHeight = 0.5;
@@ -26,17 +26,17 @@ machiningLyrThickness = -0.1;
 handle=cube;
 
 % alternative param
-planarMachiningDepth = 2;
+planarMachiningDepth = 3;
 sglWpHeight = pLyrNum * lyrHeight;
 alterNum = 1;
 zOffsetRng = [zOffset, zOffset + sglWpHeight*alterNum];
-wallOffsetRng = [1.5, 0.6];
+wallOffsetRng = [0.8, 0];
 
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%%% the regular code for generate a script
 pg = cPathGen(pFilename); % create the path generator object
 pg.genNewScript();
-pg.draw_ = true;
+pg.draw_ = false;
 
 
 for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
