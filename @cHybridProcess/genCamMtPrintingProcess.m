@@ -1,4 +1,4 @@
-function ret = genCamMtPrintingProcess(obj, pg, pPathSeq, pwrSeq, pFeedrate, printParam)
+function ret = genCamMtPrintingProcess(obj, pg, pPathSeq, pwrSeq, pFeedrate, printParam,E_pPath)
     pwr = printParam.pwr; % 1.2KW / 4kw *1000;
     lenPos = printParam.lenPos;
     flowL = printParam.flowL; % 6 L/min / 20L/min * 1000;
@@ -56,11 +56,11 @@ function ret = genCamMtPrintingProcess(obj, pg, pPathSeq, pwrSeq, pFeedrate, pri
             lenPosSeq(E_segment_index(i)+1:E_segment_index(i+1)), ...
             pFeedrate(E_segment_index(i)+1:E_segment_index(i+1)));
         pg.disableLaser(printParam.powderMode);
-        pg.addPathPt(pPathSeq(E_segment_index(i+1),:)+E_cam_offset);
+        pg.addPathPtFeed(E_pPath(E_segment_index(i+1),:)+E_cam_offset,2000);
         pg.addCmd(';;;;;;;;;;;;Structured light detection');
         pg.pauseProgramMust();
         if E_segment_index(i+1)~=size(pPathSeq,1)
-            pg.addPathPt(pPathSeq(E_segment_index(i+1)+1,:));
+            pg.addPathPtFeed(pPathSeq(E_segment_index(i+1)+1,:),2000);
         end
     end
 
