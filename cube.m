@@ -57,7 +57,7 @@ classdef cube
             end
             mPathSeq = [];
             for lyrIdx = 1:1:lyrNum+1
-                z = max(0.06, wpHeight - (lyrIdx - 1) * lyrHeight + zOffset);                
+                z = max(0.1, wpHeight - (lyrIdx - 1) * lyrHeight + zOffset);                
                 mPathSeq = [mPathSeq; 
                             startPoint(1) - toolRadiu - wallOffset, startPoint(2) - toolRadiu - wallOffset, z;
                             startPoint(1) + cubeLength + toolRadiu + wallOffset, startPoint(2) - toolRadiu - wallOffset, z;
