@@ -5,10 +5,10 @@ pFilename = strcat('./alternativeTest',date,'.txt');
 
 hProc = cHybridProcess(pFilename);
 hProc.sMachinParam_.spindleSpeed = 8000; % mm/min
-hProc.sMachinParam_.mFeedrate = 1200; % both powder are used
+hProc.sMachinParam_.mFeedrate = 2000; % both powder are used
 hProc.sMachinParam_.toolNum = 2;
 hProc.sMachinParam_.toolRadiu = 3;
-hProc.sPrintParam_.pFeedrate = 600; % mm/min
+hProc.sPrintParam_.pFeedrate = 700; % mm/min
 hProc.sPrintParam_.powderMode = 1; % left powder are used
 
 %  geometry param
