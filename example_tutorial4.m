@@ -12,22 +12,13 @@ hProc.sPrintParam_.pFeedrate = 600; % mm/min
 hProc.sPrintParam_.powderMode = 1; % left powder are used
 
 %  geometry param
-startCtr = [60,-45];
-
-radius = 40;
-
-
-
-
-cubeLength = 40;
-startPoint = [60, -45]; % left corner
+cubeLength = [50, 10];
+startPoint = [0, 0]; % left corner
 tol = 0.1;
 pLyrNum = 30;
 lyrHeight = 0.5;
-zOffset = 0.5;
-channel = 6; 
+zOffset = 0;
 step = 1; % lap
-cubeWidth = channel * step;
 wpHeight = pLyrNum * lyrHeight;
 machiningLyrThickness = -0.1;
 
@@ -38,7 +29,7 @@ handle=cube;
 planarMachiningDepth = 2;
 sglWpHeight = pLyrNum * lyrHeight;
 alterNum = 1;
-zOffsetRng = [zOffset, zOffset*alterNum];
+zOffsetRng = [zOffset, zOffset + sglWpHeight*alterNum];
 wallOffsetRng = [1.5, 0.6];
 
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
@@ -51,14 +42,14 @@ pg.draw_ = true;
 for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     %%%%%%% gen printing process %%%%%%
     pg.addCmd(";;;;;start a printing process;;;;;;;;;;");
-    [pPathSeq, pwrSeq] = handle.genPrintingPath(cubeLength, startPoint, tol, pLyrNum, lyrHeight, ...
+    [pPathSeq, pwrSeq, feedOffset] = handle.genPrintingPath(cubeLength, startPoint, tol, pLyrNum, lyrHeight, ...
                                         hProc.sPrintParam_.pwr, zOffset, channel, step);
-    hProc.genNormalPrintingProcess(pg, pPathSeq, pwrSeq, hProc.sPrintParam_.pFeedrate, hProc.sPrintParam_);
+    hProc.genNormalPrintingProcess(pg, pPathSeq, pwrSeq, hProc.sPrintParam_.pFeedrate * feedOffset, hProc.sPrintParam_);
     
     %%%%%%%%%%%%%%%%%%%%% plannar circle machining %%%%%%%%%%%%%%%%%%%%
     pg.addCmd(";;;;;start a planar machining process");
     depthRng = [sglWpHeight+zOffset+planarMachiningDepth, sglWpHeight+zOffset];
-    planarPathSeq = planarMachining([startPoint(1)+cubeLength/2,startPoint(2)+cubeWidth/2], depthRng, [cubeLength, cubeWidth], ...
+    planarPathSeq = planarMachining([startPoint(1) - hProc.sMachinParam_.toolRadiu  + cubeLength(1)/2, startPoint(2) + cubeLength(2)/2], depthRng, cubeLength, ...
                                         machiningLyrThickness, hProc.sMachinParam_.toolRadiu);
 %     genMachiningProcess(pg, safetyHeight, plannarToolNum, planarPathSeq, planarFeedSeq, 0, side);   
     ret = hProc.genNormalMachiningProcess(pg, planarPathSeq, hProc.sMachinParam_.mFeedrate, 1, hProc.sMachinParam_);
@@ -69,7 +60,7 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     side = 1;
     totalMachiningPath = [];
     for wallOffset = wallOffsetRng(1) : machiningLyrThickness : wallOffsetRng(2)
-        mPathSeq = handle.genMachiningPath(cubeLength, cubeWidth, startPoint, tol, wpHeight, ...
+        mPathSeq = handle.genMachiningPath(cubeLength(1), cubeLength(2), startPoint, tol, wpHeight, ...
                                                 lyrHeight, hProc.sMachinParam_.toolRadiu, wallOffset, zOffset, side);
         totalMachiningPath = [totalMachiningPath; mPathSeq];                                  
     end

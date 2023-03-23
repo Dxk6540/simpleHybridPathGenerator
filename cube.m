@@ -8,22 +8,34 @@ classdef cube
     end
     
     methods(Static)
-        function [path,pwrSeq] = genPrintingPath(cubeLength, startPoint, tol, lyrNum, lyrThickness, pwr, zOffset, channel, step)
+        function [path, pwrSeq, feedOffset] = genPrintingPath(cubeLength, startPoint, tol, lyrNum, lyrThickness, pwr, zOffset, ~, step)
             path = [];
             pwrSeq = [];
+            feedOffset = [];
+            outPathSeq = [];
+            outPathSeq = [outPathSeq;startPoint(1), startPoint(2), zOffset];
+            outPathSeq = [outPathSeq;startPoint(1) + tol, startPoint(2), zOffset];
+            outPathSeq = [outPathSeq;startPoint(1) + cubeLength(1), startPoint(2), zOffset];
+            outPathSeq = [outPathSeq;startPoint(1) + cubeLength(1), startPoint(2) + cubeLength(2), zOffset];
+            outPathSeq = [outPathSeq;startPoint(1), startPoint(2) + cubeLength(2), zOffset];
+            outPathSeq = [outPathSeq;startPoint(1), startPoint(2) + step, zOffset];
+            outPwrSeq = pwr * ones(length(outPathSeq),1);
+            startPoint = startPoint + [step, step];
             for lyrIdx = 0 : lyrNum - 1
-                tPathSeq = [];
-                tPwrSeq = [];
+                zValue = zOffset + lyrThickness * lyrIdx;
+                tPathSeq = outPathSeq + [0,0,lyrThickness * lyrIdx];
+                tPwrSeq = outPwrSeq;
+                channel = cubeLength(2) - step;
                 for chnIdx = 0 : channel - 1
                     cPathSeq = [];
                     cPwrSeq = [];
-                    cPathSeq = [cPathSeq; startPoint(1), startPoint(2) + chnIdx * step, zOffset+lyrThickness*lyrIdx];
+                    cPathSeq = [cPathSeq; startPoint(1) + tol, startPoint(2) + chnIdx * step, zValue];
                     cPwrSeq = [cPwrSeq; 0];
-                    cPathSeq = [cPathSeq; startPoint(1) + tol, startPoint(2) + chnIdx * step, zOffset+lyrThickness*lyrIdx];
+                    cPathSeq = [cPathSeq; startPoint(1) + step, startPoint(2) + chnIdx * step, zValue];
                     cPwrSeq = [cPwrSeq; pwr];
-                    cPathSeq = [cPathSeq; startPoint(1) + cubeLength - tol, startPoint(2) + chnIdx * step, zOffset+lyrThickness*lyrIdx];
+                    cPathSeq = [cPathSeq; startPoint(1) + cubeLength(1) - 2 * step, startPoint(2) + chnIdx * step, zValue];
                     cPwrSeq = [cPwrSeq; pwr];
-                    cPathSeq = [cPathSeq; startPoint(1) + cubeLength, startPoint(2) + chnIdx * step, zOffset+lyrThickness*lyrIdx];
+                    cPathSeq = [cPathSeq; startPoint(1) + cubeLength(1) - 2 * step + tol, startPoint(2) + chnIdx * step, zValue];
                     cPwrSeq = [cPwrSeq; 0];
                     if rem(chnIdx,2)==1
                         cPathSeq=flipud(cPathSeq);
@@ -32,14 +44,12 @@ classdef cube
                     tPathSeq = [tPathSeq; cPathSeq];
                     tPwrSeq = [tPwrSeq; cPwrSeq];
                 end
-                if rem(lyrIdx,2)==1
-                    tPathSeq=flipud(tPathSeq);
-                    tPwrSeq=flipud(tPwrSeq);
-                end
+                tPathSeq = [tPathSeq;tPathSeq(1,:)-[0,tol,0]];
+                tPwrSeq = [tPwrSeq; 0];
                 path = [path; tPathSeq];
                 pwrSeq = [pwrSeq; tPwrSeq];
+                feedOffset = [feedOffset; (1 + lyrIdx * 0.005)* ones(length(tPathSeq),1)];
             end
-            pwrSeq(1) = pwr;
         end
         
         function path = genMachiningPath(cubeLength, cubeWidth, startPoint, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, side)
