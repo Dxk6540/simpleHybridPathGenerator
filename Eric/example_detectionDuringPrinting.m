@@ -2,7 +2,7 @@
 % Eric Add some pauses during printing, for the structured light detection
 
 % file param:
-pFilename = strcat('./Eric/DetectionDuringPrinting',date,'.txt');
+pFilename = strcat('DetectionDuringPrinting',date,'.txt');
 
 hProc = cHybridProcess(pFilename);
 hProc.sPrintParam_.pFeedrate = 600; % mm/min
