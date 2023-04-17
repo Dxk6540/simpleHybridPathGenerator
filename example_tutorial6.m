@@ -1,3 +1,4 @@
+% an example of using just cPathGen() class to generate the NC file. 
 % file param:
 pFilename = strcat('./rongchiTest',date,'.txt');
 mFilename = strcat('./interpTestMachinig',date,'.txt');

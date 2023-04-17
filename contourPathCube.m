@@ -2,7 +2,7 @@
 % functions for alternative hybrid manufactuing a cube
 % author: Yuanzhi CHEN
 
-classdef cube
+classdef contourPathCube
 	properties
         shape_="Cube";
     end

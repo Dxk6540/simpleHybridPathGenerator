@@ -1,7 +1,10 @@
-% this is an example of generate machining process
+% this is an example of generating alternative path.
+% the script generate a path to printing a cube with contourPath, 
+% then machining its top surface and outter surface.
+% the above process will totally repeat alterNum + 1 times.
 close all
 % file param:
-pFilename = strcat('./alternativeTest',date,'.txt');
+pFilename = strcat('./tutorial4_alternativeTest',date,'.txt');
 
 hProc = cHybridProcess(pFilename);
 hProc.sMachinParam_.spindleSpeed = 8000; % mm/min
@@ -23,20 +26,20 @@ wpHeight = pLyrNum * lyrHeight;
 machiningLyrThickness = -0.1;
 
 % shape
-handle=cube;
+handle = contourPathCube;
 
 % alternative param
 planarMachiningDepth = 3;
 sglWpHeight = pLyrNum * lyrHeight;
 alterNum = 1;
-zOffsetRng = [zOffset, zOffset + sglWpHeight*alterNum];
+zOffsetRng = [zOffset, zOffset + sglWpHeight*alterNum]; 
 wallOffsetRng = [0.8, 0];
 
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%%% the regular code for generate a script
 pg = cPathGen(pFilename); % create the path generator object
 pg.genNewScript();
-pg.draw_ = false;
+pg.draw_ = true;
 
 
 for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)

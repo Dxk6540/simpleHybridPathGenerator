@@ -1,7 +1,7 @@
 % this is an example of using cPathGen class and cHybridProcess class.
 
 % file param:
-pFilename = strcat('./highSpeedCam',date,'.txt');
+pFilename = strcat('./tutorial_1_printingTest',date,'.txt');
 
 hProc = cHybridProcess(pFilename);
 hProc.sPrintParam_.pFeedrate = 600; % mm/min
@@ -21,8 +21,6 @@ step = 1;
 
 % shape
 handle=cylinder;
-
-
 
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%%% the regular code for generate a script

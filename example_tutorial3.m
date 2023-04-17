@@ -1,7 +1,7 @@
-% this is an example of generate machining process
+% this is an example of generate a single layer machining process
 
 % file param:
-pFilename = strcat('./materialMachiningTest',date,'.txt');
+pFilename = strcat('./tutorial3_machiningTest',date,'.txt');
 
 hProc = cHybridProcess(pFilename);
 hProc.sMachinParam_.spindleSpeed = 8000; % mm/min
@@ -20,7 +20,7 @@ channel = 6;
 step = 1;
 
 % shape
-handle=cube;
+handle=contourPathCube;
 
 
 
@@ -32,7 +32,7 @@ pg.draw_ = true;
 
 % path = genMachiningPath(cubeLength, startPoint, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset,side)
 wallOffset = 0.6;
-side = 1;0
+side = 1;
 mPathSeq = handle.genMachiningPath(radius, 5, startCtr, tol, pLyrNum * lyrHeight, ...
                                                 lyrHeight, hProc.sMachinParam_.toolRadiu, wallOffset, zOffset, side);
 
