@@ -4,7 +4,9 @@ function ret = changePowder(obj, flowL, speedL, flowR, speedR, delay)
        ret = 0;
        return;
    end
-    fprintf(obj.fid_, "G01 I0 V%d K%d W%d U%d\r\n", flowL, speedL, flowR, speedR); 
+    % G01 is not stable,             
+    % use M146(single step update) to change the analog value.   
+    fprintf(obj.fid_, "M146 I0 V%d K%d W%d U%d\r\n", flowL, speedL, flowR, speedR); 
     if delay > 0
         fprintf(obj.fid_, "G04X%d ;;—” ±\r\n", delay);  
     end             

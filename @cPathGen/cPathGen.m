@@ -87,7 +87,10 @@ classdef cPathGen < handle
         ret = disableLaser(obj, powderMode)
                
         function ret = setLaser(obj, pwr, lenPos, flowL, speedL, flowR, speedR)
-            fprintf(obj.fid_, "G01 I%d J%d V%d K%d W%d U%d\r\n", pwr, lenPos, flowL, speedL, flowR, speedR);     
+%             fprintf(obj.fid_, "G01 I%d J%d V%d K%d W%d U%d\r\n", pwr, lenPos, flowL, speedL, flowR, speedR);  
+            fprintf(obj.fid_, "M146 I%d J%d V%d K%d W%d U%d\r\n", pwr, lenPos, flowL, speedL, flowR, speedR); 
+            % G01 is not stable,             
+            % use M146(single step update) to change the analog value.
             ret = 1;
         end % setLaser(obj, pwr, lenPos, flowL, speedL, flowR, speedR)
         
