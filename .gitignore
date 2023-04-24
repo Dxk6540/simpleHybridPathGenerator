@@ -1,5 +1,4 @@
-build/
-HM/
+experiment/
 *.csv
 *.asv
 *.txt
