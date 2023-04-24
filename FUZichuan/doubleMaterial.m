@@ -71,7 +71,7 @@ mPathSeq = handle.genMachiningPath(cubeShape, startCtr, pLyrNum*lyrHeight, lyrHe
 %%% start machining mode
 pg.changeMode(2); % change to machining mode
 pg.changeTool(toolNum);
-pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) - toolRadiu - wallOffset - 5, startCtr(2), pLyrNum * lyrHeight], 3000); % safety move the start pt
+pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) - toolRadiu - wallOffset - 5, startCtr(2) - toolRadiu - wallOffset - 5, pLyrNum * lyrHeight], 3000); % safety move the start pt
 pg.pauseProgram();% pause and wait for start (the button)
 pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
 %%% add path pts
