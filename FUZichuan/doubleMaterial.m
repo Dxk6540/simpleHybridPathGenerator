@@ -26,7 +26,7 @@ toolRadiu = 4;
 
 %  geometry param
 startCtr = [30,30];
-pLyrNum = 2;
+pLyrNum = 40;
 lyrHeight = 0.5;
 cubeShape = [20,20];
 tol = 0.01;
@@ -36,63 +36,51 @@ angle = 10;
 rotation = true;
 side = 1; % machining inside is -1 and outside is 1
 wallOffset = 1.1;
+aus = true;
 
 % shape
 handle = rotationalZigzagPathCube;
 
 %%
 %%%%%%%%%%%%%% printing path
-[pPathSeq,pwrSeq,feedOffset] = handle.genPrintingPath(cubeShape, startCtr, pLyrNum, lyrHeight, pwr, zOffset, angle, rotation, step);
-lenPosSeq = ones(length(pPathSeq),1) * lenPos;
-%%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%%% the regular code for generate a script
 pg = cPathGen(hFilename); % create the path generator object
 pg.genNewScript();
-%%% start printing mode
 pg.changeMode(1); % change to printing mode
-pg.setLaser(pwr, lenPos, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
-pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) + radius, startCtr(2), 0], 3000); % safety move the start pt
-pg.pauseProgram();% pause and wait for start (the button)
-pg.enableLaser(1, 10);
-%%% add path pts
-pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrate*feedOffset);
-%%% exist printing mode
-pg.disableLaser(1);
-% %%% end the script
-pg.closeScript();
-pg.draw_ = true;
+for i=1:2*pLyrNum
+    aus=~aus;
+    [pPathSeq,pwrSeq,feedOffset] = handle.genPrintingPath(cubeShape, startCtr, 1, lyrHeight, pwr, zOffset+floor((i-1)/2)*lyrHeight, angle, rotation, step, aus);
+    lenPosSeq = ones(length(pPathSeq),1) * lenPos;
+    %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
+    %%% start printing mode
+    pg.setLaser(pwr, lenPos, flowL, aus*speedL, flowR, (~aus)*speedR); % set a init process param (in case of overshoot)
+    pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) + radius, startCtr(2), 0], 3000); % safety move the start pt
+    pg.pauseProgram();% pause and wait for start (the button)
+    pg.enableLaser(3, 10);
+    %%% add path pts
+    pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrate*feedOffset);
+    %%% exist printing mode
+    pg.disableLaser(3);
+end
+%pg.draw_ = true;
 pg.drawPath(pPathSeq, pPathSeq);
-
 
 %%
 %%%%%%%%%%%%%% machining path
-[toolContactPts, toolCntrPts, toolAxisSeq, fcNormalSeq] = handle.genMachiningPath(radius, startCtr, tol, wpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, rollAgl, side);
-bcSeq = sequentialSolveBC(toolAxisSeq, [0,0]);
-mPathSeq = [toolCntrPts, bcSeq];
-
-%%%%%%%%%%%%% following for RTCP path Gen %%%%%%%%%%%%%%%%%%%%%
-%%%% the regular code for generate a script
-pg = cPathGen(hFilename); % create the path generator object
-pg.genNewScript();
+mPathSeq = handle.genMachiningPath(cubeShape, startCtr, pLyrNum*lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset);
 %%% start machining mode
 pg.changeMode(2); % change to machining mode
 pg.changeTool(toolNum);
-pg.startRTCP(safetyHeight, toolNum);
-pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) + side*(radius + toolRadiu + wallOffset + 5), startCtr(2), pLyrNum * lyrHeight], 3000); % safety move the start pt
+pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) - toolRadiu - wallOffset - 5, startCtr(2), pLyrNum * lyrHeight], 3000); % safety move the start pt
 pg.pauseProgram();% pause and wait for start (the button)
 pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
 %%% add path pts
 pg.addPathPts(mPathSeq, mFeedrate);
 %%% exist machining mode
 pg.disableSpindle();
-pg.stopRTCP(safetyHeight);
 pg.returnToSafety(safetyHeight, 3000);
 %%% end the script
 pg.closeScript();
-
-
-
-%%% draw the path
-pg.drawPath(pPathSeq, mPathSeq);
-
+pg.draw_ = true;
+pg.drawPath(mPathSeq,mPathSeq);
 
