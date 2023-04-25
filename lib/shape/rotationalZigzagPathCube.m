@@ -36,14 +36,14 @@ classdef rotationalZigzagPathCube
                     offsetY = 0;
                     if cubeShape(1)<deltaX
                         offsetY=(deltaX-cubeShape(1))*abs(tan(alpha));
-                        if isnan(offsetY)
+                        if isnan(offsetY) || deltaX>1e10
                             offsetY=step*chnIdx;
                         end
                         deltaX=cubeShape(1);
                     end
                     if cubeShape(2)<deltaY
                         offsetX=(deltaY-cubeShape(2))*abs(tan(pi/2-alpha));
-                        if isnan(offsetX)
+                        if isnan(offsetX) || deltaY>1e10
                             offsetX=step*chnIdx;
                         end                        
                         deltaY=cubeShape(2);
@@ -56,14 +56,44 @@ classdef rotationalZigzagPathCube
                        offsetX=0;
                        offsetY=step*chnIdx;
                     end
-                    tmpPath = [tmpPath; startPoint(1) + offsetX, startPoint(2) + deltaY, zValue];
-                    tmpPwrSeq = [tmpPwrSeq; 0];
-                    tmpPath = [tmpPath; startPoint(1) + offsetX, startPoint(2) + deltaY, zValue];
-                    tmpPwrSeq = [tmpPwrSeq; pwr];
-                    tmpPath = [tmpPath; startPoint(1) + deltaX, startPoint(2) + offsetY, zValue];
-                    tmpPwrSeq = [tmpPwrSeq; pwr];  
-                    tmpPath = [tmpPath; startPoint(1) + deltaX, startPoint(2) + offsetY, zValue];
-                    tmpPwrSeq = [tmpPwrSeq; 0];  
+                    trueAngle = rem(angle,360);
+                    if 0<=trueAngle<90
+                        tmpPath = [tmpPath; startPoint(1) + offsetX, startPoint(2) + deltaY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; 0];
+                        tmpPath = [tmpPath; startPoint(1) + offsetX, startPoint(2) + deltaY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; pwr];
+                        tmpPath = [tmpPath; startPoint(1) + deltaX, startPoint(2) + offsetY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; pwr];  
+                        tmpPath = [tmpPath; startPoint(1) + deltaX, startPoint(2) + offsetY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; 0];
+                    elseif 90<=trueAngle<180
+                        tmpPath = [tmpPath; startPoint(1) + offsetX, startPoint(2) + cubeShape(2) - deltaY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; 0];
+                        tmpPath = [tmpPath; startPoint(1) + offsetX, startPoint(2) + cubeShape(2) - deltaY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; pwr];
+                        tmpPath = [tmpPath; startPoint(1) + deltaX, startPoint(2) + cubeShape(2) - offsetY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; pwr];  
+                        tmpPath = [tmpPath; startPoint(1) + deltaX, startPoint(2) + cubeShape(2) - offsetY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; 0];
+                    elseif 180<=trueAngle<270
+                        tmpPath = [tmpPath; startPoint(1) + cubeShape(1) - offsetX, startPoint(2) + cubeShape(2) - deltaY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; 0];
+                        tmpPath = [tmpPath; startPoint(1) + cubeShape(1) - offsetX, startPoint(2) + cubeShape(2) - deltaY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; pwr];
+                        tmpPath = [tmpPath; startPoint(1) + cubeShape(1) - deltaX, startPoint(2) + cubeShape(2) - offsetY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; pwr];  
+                        tmpPath = [tmpPath; startPoint(1) + cubeShape(1) - deltaX, startPoint(2) + cubeShape(2) - offsetY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; 0];                        
+                    elseif 270<=trueAngle<360
+                        tmpPath = [tmpPath; startPoint(1) + cubeShape(1) - offsetX, startPoint(2) + deltaY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; 0];
+                        tmpPath = [tmpPath; startPoint(1) + cubeShape(1) - offsetX, startPoint(2) + deltaY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; pwr];
+                        tmpPath = [tmpPath; startPoint(1) + cubeShape(1) - deltaX, startPoint(2) + offsetY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; pwr];  
+                        tmpPath = [tmpPath; startPoint(1) + cubeShape(1) - deltaX, startPoint(2) + offsetY, zValue];
+                        tmpPwrSeq = [tmpPwrSeq; 0];
+                    end
                     if rem(chnIdx,4)==3 || rem(chnIdx,4)==0
                         tmpPath=flipud(tmpPath);
                         tmpPwrSeq=flipud(tmpPwrSeq);
