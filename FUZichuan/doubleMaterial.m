@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%
 %
 % date: 2023-4-24
-% authorï¼? CHEN Yuanzhi
+% authorï¿½? CHEN Yuanzhi
 %
 %%%%%%%%%%%%%%%%%%
 
@@ -25,18 +25,19 @@ toolNum = 1;
 toolRadiu = 4;
 
 %  geometry param
-startCtr = [-60,30];
-pLyrNum = 40;
+startCtr = [0,0];
+pLyrNum = 48;
 lyrHeight = 0.5;
 cubeShape = [20,20];
 tol = 0.01;
 safetyHeight = 230;
 zOffset = 0;
-angle = 15;
+angle = 0:15:359;
 rotation = true;
 side = 1; % machining inside is -1 and outside is 1
 wallOffset = 1.1;
 aus = true;
+allPath=[];
 
 % shape
 handle = rotationalZigzagPathCube;
@@ -49,7 +50,7 @@ pg.genNewScript();
 pg.changeMode(1); % change to printing mode
 for i=1:2*pLyrNum
     aus=~aus;
-    [pPathSeq,pwrSeq,feedOffset] = handle.genPrintingPath(cubeShape, startCtr, 1, lyrHeight, round(max(100,(1-0.2/2/pLyrNum*i)*(pwr-(~aus)*100))), zOffset+floor((i-1)/2)*lyrHeight, angle*floor((i-1)/2), false, step, aus);
+    [pPathSeq,pwrSeq,feedOffset] = handle.genPrintingPath(cubeShape, startCtr, 1, lyrHeight, round(max(100,(1-0.2/2/pLyrNum*i)*(pwr-(~aus)*100))), zOffset+floor((i-1)/2)*lyrHeight, angle(rem(floor((i-1)/2),length(angle))+1), false, step, aus);
     lenPosSeq = ones(length(pPathSeq),1) * lenPos;
     if aus
        flipud(pPathSeq); 
@@ -67,7 +68,10 @@ for i=1:2*pLyrNum
     pg.disableLaser(3);
     pg.draw_ = true;
     pg.drawPath(pPathSeq, pPathSeq);
+    allPath = [allPath;pPathSeq];
 end
+pg.draw_ = true;
+pg.drawPath(allPath, allPath);
 
 %%
 %%%%%%%%%%%%%% machining path
@@ -85,6 +89,6 @@ pg.disableSpindle();
 pg.returnToSafety(safetyHeight, 3000);
 %%% end the script
 pg.closeScript();
-pg.draw_ = true;
-pg.drawPath(mPathSeq,mPathSeq);
+% pg.draw_ = true;
+% pg.drawPath(mPathSeq,mPathSeq);
 
