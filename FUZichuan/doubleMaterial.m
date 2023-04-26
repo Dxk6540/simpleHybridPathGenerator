@@ -26,14 +26,14 @@ toolRadiu = 5;
 machiningLyrThickness = 0.1;
 
 %  geometry param
-startCtr = [20,-100];
+startCtr = [60,20];
 pLyrNum = 24;
 lyrHeight = 0.48;
 cubeShape = [20,20];
 tol = 0.01;
 safetyHeight = min(230, 2*pLyrNum*lyrHeight+20);
 zOffset = 0;
-angle = 0:45:359;
+angle = 0:90:359;
 rotation = true;
 side = 1; % machining inside is -1 and outside is 1
 wallOffset = -0.5;
@@ -76,6 +76,7 @@ pg.drawPath(allPath, allPath);
 
 %%
 %%%%%%%%%%%%%% machining path
+safetyHeight = 230;
 mPathSeq = handle.genMachiningPath(cubeShape, startCtr, 2*pLyrNum*lyrHeight, 2*lyrHeight, toolRadiu, wallOffset, zOffset);
 %%% start machining mode
 pg.changeMode(2); % change to machining mode
