@@ -2,18 +2,18 @@
 hFilename = strcat('./MediaMold',date,'.txt');
 
 % printing process param
-pwr = 200; % 1.2KW / 4kw *1000;
+pwr = 175; % 1.2KW / 4kw *1000;
 lenPos = 900;
 flowL = 250; % 6 L/min / 20L/min * 1000;
 speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 400;% 6 L/min / 20L/min * 1000;
-speedR = 100;% 2 r/min / 10r/min * 1000;
-pFeedrate = 500; % mm/min
-step = 1;
-channel = 1;
+speedR = 0;% 2 r/min / 10r/min * 1000;
+pFeedrate = 750; % mm/min
+step = 1.3;
+channel = 2;
 
 % machining process param
-mFeedrate = 200; % mm/min
+mFeedrate = 300; % mm/min
 spindleSpeed = 10000;
 toolNum = 1;
 toolRadiu = 1;
@@ -21,18 +21,18 @@ machiningLyrThickness = 0.1;
 planarMachiningDepth = 1.5;
 
 %  geometry param
-startCtr = [0,0];
+startCtr = [20,-20];
 pLyrNum = 10;
-lyrHeight = 0.5;
-radius = 1.8;
+lyrHeight = 0.2;
+radius = 3.8;
 tol = 0.01;
 safetyHeight = 230;
-zOffset = 0;
+zOffset = 6;
 side = 1; % machining inside is -1 and outside is 1
 outterWallOffsetRng = [0.8, 0];
-innerWallOffsetRng = [0.8, 0.775];
+innerWallOffsetRng = [2.8, 2.775];
 sglWpHeight = pLyrNum * lyrHeight;
-alterNum = 0;
+alterNum = 1;
 zOffsetRng = [zOffset, zOffset + sglWpHeight*alterNum]; 
 allPath=[];
 
@@ -49,7 +49,7 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     %%%%%%% gen printing process %%%%%%
     pg.addCmd(";;;;;start a printing process;;;;;;;;;;");
     pg.changeMode(1);
-    [pPathSeq, pwrSeq, feedOffset] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, ...
+    [pPathSeq, pwrSeq, feedOffset] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum+1, lyrHeight, ...
                                         pwr, zOffset, channel, step);
     lenPosSeq = ones(length(pPathSeq),1) * lenPos;
     pg.setLaser(0, lenPos, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
@@ -67,6 +67,7 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     %%%%%%%%%%%%%%%%%%%%% plannar circle machining %%%%%%%%%%%%%%%%%%%%
     pg.addCmd(";;;;;start a planar machining process");
     depthRng = [sglWpHeight+zOffset+planarMachiningDepth, sglWpHeight+zOffset];
+    mFeedrate = 300;
     toolNum = 3;
     toolRadiu = 5;
     [mpPath, mpFeedSeq] = planarCircleMachining(startCtr, depthRng, [0,3], -machiningLyrThickness, toolRadiu, mFeedrate, mFeedrate);   
@@ -82,28 +83,29 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     pg.returnToSafety(safetyHeight, 3000);
     
     %%%%%%%%%%%%%%%%%%%%%%%% gen outter machining process %%%%%%%%%%%%%%%%%%%%%%%
-    pg.addCmd(";;;;;start an outter machining process");    
-    side = 1;
-    totalMachiningPath = [];
-    toolNum = 3;
-    toolRadiu = 5;
-    for wallOffset = outterWallOffsetRng(1) : -machiningLyrThickness : outterWallOffsetRng(2)
-        mPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
-        totalMachiningPath = [totalMachiningPath; mPathSeq]; 
-        pg.changeTool(toolNum);
-        pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1)-toolRadiu-radius-wallOffset-5, startCtr(2)-toolRadiu-radius-wallOffset-5, zOffset + pLyrNum * lyrHeight + 5], 3000); % safety move the start pt
-        pg.pauseProgram();% pause and wait for start (the button)
-        pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
-        %%% add path pts
-        pg.addPathPts(totalMachiningPath, mFeedrate);
-        %%% exist machining mode
-        pg.disableSpindle();
-        pg.returnToSafety(safetyHeight, 3000);
-    end
+%     pg.addCmd(";;;;;start an outter machining process");    
+%     side = 1;
+%     totalMachiningPath = [];
+%     toolNum = 3;
+%     toolRadiu = 5;
+%     for wallOffset = outterWallOffsetRng(1) : -machiningLyrThickness : outterWallOffsetRng(2)
+%         mPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
+%         totalMachiningPath = [totalMachiningPath; mPathSeq]; 
+%     end
+%     pg.changeTool(toolNum);
+%     pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1)+toolRadiu+radius+wallOffset+5, startCtr(2)+toolRadiu+radius+wallOffset+5, zOffset + pLyrNum * lyrHeight + 5], 3000); % safety move the start pt
+%     pg.pauseProgram();% pause and wait for start (the button)
+%     pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
+%     %% add path pts
+%     pg.addPathPts(totalMachiningPath, mFeedrate);
+%     %% exist machining mode
+%     pg.disableSpindle();
+%     pg.returnToSafety(safetyHeight, 3000);
 
     
     %%%%%%%%%%%%%%%%%%%%%%%% gen inner machining process %%%%%%%%%%%%%%%%%%%%%%%
     pg.addCmd(";;;;;start an inner machining process");
+    mFeedrate = 30;
     side = -1;
     totalMachiningPath = [];
     toolNum = 1;
@@ -111,18 +113,19 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     for wallOffset = innerWallOffsetRng
         mPathSeq = handle.genMachiningPath(radius, startCtr, tol, pLyrNum * lyrHeight, lyrHeight, toolRadiu, wallOffset, zOffset, side);
         totalMachiningPath = [totalMachiningPath; mPathSeq]; 
-        pg.changeTool(toolNum);
-        pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1), startCtr(2), zOffset + pLyrNum * lyrHeight + 5], 3000); % safety move the start pt
-        pg.pauseProgram();% pause and wait for start (the button)
-        pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
-        %%% add path pts
-        pg.addPathPts(totalMachiningPath, mFeedrate);
-        %%% exist machining mode
-        pg.disableSpindle();
-        pg.returnToSafety(safetyHeight, 3000);        
     end
+    pg.changeTool(toolNum);
+    pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1), startCtr(2), zOffset + pLyrNum * lyrHeight + 5], 3000); % safety move the start pt
+    pg.pauseProgram();% pause and wait for start (the button)
+    pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
+    %% add path pts
+    pg.addPathPts(totalMachiningPath, mFeedrate);
+    %% exist machining mode
+    pg.returnToSafety(zOffset + pLyrNum * lyrHeight + 5, 3000);
+    pg.disableSpindle();
+    pg.returnToSafety(safetyHeight, 3000);        
 end
-
+pg.draw_ = true;
+pg.drawPath(allPath, allPath);
 %%% end the script
 pg.closeScript();
-
