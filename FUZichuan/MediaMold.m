@@ -2,18 +2,18 @@
 hFilename = strcat('./MediaMold',date,'.txt');
 
 % printing process param
-pwr = 175; % 1.2KW / 4kw *1000;
+pwr = 140; % 1.2KW / 4kw *1000;
 lenPos = 900;
-flowL = 250; % 6 L/min / 20L/min * 1000;
+flowL = 240; % 6 L/min / 20L/min * 1000;
 speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 400;% 6 L/min / 20L/min * 1000;
 speedR = 0;% 2 r/min / 10r/min * 1000;
-pFeedrate = 750; % mm/min
-step = 1.3;
+pFeedrate = 600; % mm/min
+step = 1.25;
 channel = 2;
 
 % machining process param
-mFeedrate = 300; % mm/min
+mFeedrate = 30; % mm/min
 spindleSpeed = 10000;
 toolNum = 1;
 toolRadiu = 1;
@@ -21,18 +21,18 @@ machiningLyrThickness = 0.1;
 planarMachiningDepth = 1.5;
 
 %  geometry param
-startCtr = [20,-20];
-pLyrNum = 10;
-lyrHeight = 0.2;
-radius = 3.8;
+startCtr = [-20,90];
+pLyrNum = 5;
+lyrHeight = 0.3;
+radius = 3.45;
 tol = 0.01;
 safetyHeight = 230;
-zOffset = 6;
+zOffset = 19.8;
 side = 1; % machining inside is -1 and outside is 1
 outterWallOffsetRng = [0.8, 0];
-innerWallOffsetRng = [2.8, 2.775];
+innerWallOffsetRng = [radius-1, radius-1.025];
 sglWpHeight = pLyrNum * lyrHeight;
-alterNum = 1;
+alterNum = 4;
 zOffsetRng = [zOffset, zOffset + sglWpHeight*alterNum]; 
 allPath=[];
 
@@ -105,7 +105,7 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     
     %%%%%%%%%%%%%%%%%%%%%%%% gen inner machining process %%%%%%%%%%%%%%%%%%%%%%%
     pg.addCmd(";;;;;start an inner machining process");
-    mFeedrate = 30;
+    mFeedrate = 15;
     side = -1;
     totalMachiningPath = [];
     toolNum = 1;
