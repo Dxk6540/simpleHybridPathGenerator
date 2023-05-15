@@ -16,28 +16,18 @@ classdef hollowCylinder
             for lyrIdx = 0 : lyrNum - 1    
                 tPathSeq = [];
                 tPwrSeq = [];
-                if channel > 1
-                    for chnIdx = 0 : channel - 1
-                        for j = 0 : lyrPtNum - 1
-                            x = cos(aglStep * j) * (cylinderR - chnIdx * step) + startCenter(1);
-                            y = sin(aglStep * j) * (cylinderR - chnIdx * step) + startCenter(2);
-                            z = lyrIdx * lyrThickness + zOffset;
-                            speedOffset = (1.025-abs(aglStep * j-0.75*pi)/pi*0.05);
-                            tPathSeq = [tPathSeq; x,y,z];
-                            tPwrSeq = [tPwrSeq; pwr];
-                            feedrateOffset = [feedrateOffset;speedOffset];
-                        end
-                        tPwrSeq(1)= 0;
-                        tPwrSeq(end) = 0;                
-                    end
-                else
-                   for j = 0 : lyrPtNum - 1
-                        x = cos(aglStep * j) * cylinderR + startCenter(1);
-                        y = sin(aglStep * j) * cylinderR + startCenter(2);
-                        z = lyrIdx * lyrThickness + zOffset + j * lyrThickness / lyrPtNum;
+                for chnIdx = 0 : channel - 1
+                    for j = 0 : lyrPtNum - 1
+                        x = cos(aglStep * j + 0.1*lyrIdx) * (cylinderR - chnIdx * step) + startCenter(1);
+                        y = sin(aglStep * j + 0.1*lyrIdx) * (cylinderR - chnIdx * step) + startCenter(2);
+                        z = lyrIdx * lyrThickness + zOffset;
+                        speedOffset = (1.025-abs(aglStep * j-0.75*pi)/pi*0.05);
                         tPathSeq = [tPathSeq; x,y,z];
                         tPwrSeq = [tPwrSeq; pwr];
+                        feedrateOffset = [feedrateOffset;speedOffset];
                     end
+                    tPwrSeq(1)= 0;
+                    tPwrSeq(end) = 0;                
                 end
                 % stop the power when lift the tool 
                 path = [path;tPathSeq];
