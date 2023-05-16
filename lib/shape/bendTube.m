@@ -9,7 +9,7 @@ classdef bendTube
             geoParam.profileRadiu = 20;
             geoParam.center = [0,20,0];
             geoParam.bendDir = [1,0,0];            
-            geoParam.guideDstAgl = 70;
+            geoParam.guideDstAgl = 90;
 
             geoParam.tol = 0.3;
             geoParam.lyrThickness = 0.8; % max rad?
@@ -18,7 +18,7 @@ classdef bendTube
             
         end
         
-        function [path,axisSeq,pwrSeq] = genPrintingPath(obj, geoParam, procParam)
+        function [path,axisSeq,pwrSeq,feedrateSeq] = genPrintingPath(obj, geoParam, procParam, feedrate)
             % bend tube - circle path
             lyrPtNum = floor(2 * geoParam.profileRadiu * pi / geoParam.tol)+1;
             aglStep = 2 * pi / lyrPtNum; 
@@ -41,11 +41,13 @@ classdef bendTube
             getNewTransl = @(agl) guideCircleCenter + ...
                 (-xDir) * geoParam.guideRadiu * (eye(3) + sin(agl)*rodriguesMat+(1-cos(agl))*rodriguesMat*rodriguesMat)';
             
-                       
+            power = 1;           
             path = [];
             pwrSeq = [];
             axisSeq = [];
-            feedrateOffset = [];
+            feedrateSeq = [];
+            nominalCurCsR = baseCsR * roty(lyrAglStep/pi*180);
+            nominalCurCsTransl = getNewTransl(lyrAglStep);
             for lyrIdx = 0 : lyrNum - 1    
                 tPathSeq = [];
                 tPwrSeq = [];
@@ -57,10 +59,11 @@ classdef bendTube
                         for j = 0 : lyrPtNum - 1
                             x = cos(pi + aglStep * j) * (geoParam.profileRadiu - chnIdx * geoParam.step);
                             y = sin(pi + aglStep * j) * (geoParam.profileRadiu - chnIdx * geoParam.step);
-                            speedOffset = (1.025-abs(aglStep * j-0.75*pi)/pi*0.05);
+                            speedOffset = 1-0.025*sin(aglStep*j-0.75*pi);
                             tPathSeq = [tPathSeq; x,y,0];
+                            nominalPath=[x,y,0]*nominalCurCsR' + nominalCurCsTransl;
                             tPwrSeq = [tPwrSeq; procParam.pwr];
-                            feedrateOffset = [feedrateOffset;speedOffset];
+                            feedrateSeq = [feedrateSeq;speedOffset*nthroot(nominalPath(3)/360,-power)];
                         end
                         tPwrSeq(1)= 0;
                         tPwrSeq(end) = 0;                
