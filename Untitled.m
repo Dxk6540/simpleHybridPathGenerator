@@ -1,3 +1,4 @@
+addpath('./lib')
 bt = bendTube()
 p.pwr = 600;
 % path,axisSeq,pwrSeq = bt.genPrintingPath(bt.getDefaultParam(),p);
