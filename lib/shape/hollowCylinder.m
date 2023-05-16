@@ -18,8 +18,8 @@ classdef hollowCylinder
                 tPwrSeq = [];
                 for chnIdx = 0 : channel - 1
                     for j = 0 : lyrPtNum - 1
-                        x = cos(aglStep * j + 0.1*lyrIdx) * (cylinderR - chnIdx * step) + startCenter(1);
-                        y = sin(aglStep * j + 0.1*lyrIdx) * (cylinderR - chnIdx * step) + startCenter(2);
+                        x = cos(aglStep * j + 0.5*lyrIdx) * (cylinderR - chnIdx * step) + startCenter(1);
+                        y = sin(aglStep * j + 0.5*lyrIdx) * (cylinderR - chnIdx * step) + startCenter(2);
                         z = lyrIdx * lyrThickness + zOffset;
                         speedOffset = (1.025-abs(aglStep * j-0.75*pi)/pi*0.05);
                         tPathSeq = [tPathSeq; x,y,z];
