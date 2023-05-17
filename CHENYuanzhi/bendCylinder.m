@@ -9,7 +9,7 @@ hProc.sProcessParam_.usingRTCP = 1;
 
 shapeHandle = bendTube();
 geoParam = shapeHandle.getDefaultParam();
-geoParam.center = [-80,0,0];
+geoParam.center = [-30,0,0];
 geoParam.bendDir = [1,0,0];
 
 
@@ -29,6 +29,7 @@ hProc.sPrintParam_.flowL = 250;
 hProc.sPrintParam_.speedL = 100;
 hProc.sPrintParam_.flowR = 500;
 hProc.sPrintParam_.speedR = 100;
+hProc.sPrintParam_.pwr = 0;
 % we just want to print one material, the normal printing process is enough.
 % (here, one material means the single mixing ratio)
 hProc.genNormalPrintingProcess(pg, pPathSeq, pwrSeq, feedrateSeq, hProc.sPrintParam_);

@@ -64,8 +64,8 @@ classdef bendTube
                         speedOffset = 1-0.025*sin(start * lyrIdx + aglStep * j - 0.75 * pi);
                         tPathSeq = [tPathSeq; x,y,0];
                         nominalPath=[x,y,0]*nominalCurCsR' + nominalCurCsTransl;
-                        tPwrSeq = [tPwrSeq; procParam.pwr*(1-0.1*chnIdx)*(1-0.002*lyrIdx)];
-                        tFeedrateSeq = [tFeedrateSeq;speedOffset*nthroot(nominalPath(3)/360,-power)];
+                        tPwrSeq = [tPwrSeq; round(procParam.pwr*(1-0.1*chnIdx)*(1-0.001*lyrIdx))];
+                        tFeedrateSeq = [tFeedrateSeq;round(speedOffset*nthroot(nominalPath(3)/360,-power))];
                     end
                     tPwrSeq(1)= 0;
                     tPwrSeq(end) = 0;                
@@ -74,15 +74,16 @@ classdef bendTube
                 toolAxis = curCsR(:,3)';
                 tPathSeq = tPathSeq*curCsR' + repmat(curCsTransl,length(tPathSeq),1);
                 tPathSeq = [tPathSeq(1,:)+lead*(tPathSeq(2,:)-tPathSeq(1,:))/norm(tPathSeq(2,:)-tPathSeq(1,:));tPathSeq];
-                tFeedrateSeq = [0;tFeedrateSeq];
+                tFeedrateSeq = [tFeedrateSeq(1);tFeedrateSeq];
+                tPwrSeq = [0; tPwrSeq];
                 tNozzleAxisSeq = repmat(toolAxis,length(tPathSeq),1);
                 path = [path;tPathSeq];
                 axisSeq = [axisSeq; tNozzleAxisSeq];
                 pwrSeq = [pwrSeq;tPwrSeq];
-                feedrateSeq = [feedrateSeq, tFeedrateSeq];
-%                 if lyrIdx==0
-%                    plot3(tPathSeq(:,1), tPathSeq(:,2), feedrateSeq);
-%                 end
+                feedrateSeq = [feedrateSeq; tFeedrateSeq];
+                if lyrIdx==0
+                   plot3(tPathSeq(:,1), tPathSeq(:,2), feedrateSeq);
+                end
             end
             
         end
