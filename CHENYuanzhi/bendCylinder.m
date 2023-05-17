@@ -20,7 +20,7 @@ pg = cPathGen(pFilename); % create the path generator object
 pg.genNewScript();
 pg.draw_ = true;
 
-[pPathSeq,axisSeq, pwrSeq, feedrateSeq] = shapeHandle.genPrintingPath(geoParam,hProc.sPrintParam_,hProc.sPrintParam_.pFeedrate);
+[pPathSeq,axisSeq, pwrSeq, feedrateSeq] = shapeHandle.genPrintingPath(geoParam,hProc.sPrintParam_);
 bcSeq = sequentialSolveBC(axisSeq, [0,0]);
 pPathSeq = [pPathSeq, bcSeq];
 
