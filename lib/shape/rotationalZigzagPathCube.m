@@ -8,7 +8,7 @@ classdef rotationalZigzagPathCube
     end
     
     methods(Static)
-        function [path, pwrSeq, feedOffset] = genPrintingPath(cubeShape, startPoint, lyrNum, lyrThickness, pwr, zOffset, angle, rotation, step, aus)
+        function [path, pwrSeq, feedOffset] = genPrintingPath(cubeShape, startPoint, lyrNum, lyrThickness, pwr, zOffset, angle, rotation, step, aus, mode)
             path = [];
             pwrSeq = [];
             feedOffset = [];
@@ -23,10 +23,12 @@ classdef rotationalZigzagPathCube
                 yStep = step/abs(cos(alpha));  
                 channel = cubeShape(1)/xStep+cubeShape(2)/yStep;
                 for chnIdx = 1 : ceil(channel)-1
-                    if aus && rem(chnIdx,2)==1
-                       continue;
-                    elseif ~aus && rem(chnIdx,2)==0
-                       continue;
+                    if(mode==2)
+                        if aus && rem(chnIdx,2)==1
+                           continue;
+                        elseif ~aus && rem(chnIdx,2)==0
+                           continue;
+                        end
                     end
                     tmpPath = [];
                     tmpPwrSeq = [];

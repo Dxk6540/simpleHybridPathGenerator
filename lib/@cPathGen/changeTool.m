@@ -4,7 +4,7 @@ function ret = changeTool(obj, toolNum)
        ret = 0;
        return;
    end
-   if(toolNum < 0 || toolNum > 3)
+   if(toolNum < 0 || toolNum > 5)
     disp("changeTool() err! toolNum can't find!")
        ret = 0;
        return;               
