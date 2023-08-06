@@ -9,35 +9,37 @@
 hFilename = strcat('./doubleMaterial',date,'.txt');
 
 % printing process param
-pwr = 250; % 1.2KW / 4kw *1000;
+aupwr = 250; % 1.2KW / 4kw *1000;
+auFeedrate = 600; % mm/min
+mapwr = 200;
+maFeedrate = 500; % mm/min
+ammode=1; %0:au,1:ma,2:mix
 lenPos = 900;
 flowL = 250; % 6 L/min / 20L/min * 1000;
 speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 400;% 6 L/min / 20L/min * 1000;
 speedR = 100;% 2 r/min / 10r/min * 1000;
-pFeedrate = 500; % mm/min
 step = 1;
 
 % machining process param
 mFeedrate = 1400; % mm/min
 spindleSpeed = 10000;
-toolNum = 3;
-toolRadiu = 5;
+toolNum = 4;
+toolRadiu = 3;
 machiningLyrThickness = 0.1;
 
 %  geometry param
 startCtr = [60,20];
 pLyrNum = 24;
-lyrHeight = 0.48;
+lyrHeight = 0.5;
 cubeShape = [20,20];
 tol = 0.01;
 safetyHeight = min(230, 2*pLyrNum*lyrHeight+20);
 zOffset = 0;
-angle = 0:90:359;
+angle = 0:30:359;
 rotation = true;
 side = 1; % machining inside is -1 and outside is 1
 wallOffset = -0.5;
-aus = true;
 allPath=[];
 
 % shape
@@ -49,27 +51,63 @@ handle = rotationalZigzagPathCube;
 pg = cPathGen(hFilename); % create the path generator object
 pg.genNewScript();
 pg.changeMode(1); % change to printing mode
-for i=1:2*pLyrNum
-    aus=~aus;
-    [pPathSeq,pwrSeq,feedOffset] = handle.genPrintingPath(cubeShape, startCtr, 1, lyrHeight, round(max(100,(1-0.2/2/pLyrNum*i)*(pwr-(~aus)*50))), zOffset+(i-1)*lyrHeight, angle(rem(floor((i-1)/2),length(angle))+1), false, step, aus);
-    lenPosSeq = ones(length(pPathSeq),1) * lenPos;
-    if aus
-       pPathSeq = flipud(pPathSeq); 
-       pwrSeq = flipud(pwrSeq);
+aus=true; 
+if(ammode==0)
+    aus=true; 
+elseif(ammode==1)
+    aus=false;
+end
+if(ammode==2)
+    for i=1:2*pLyrNum
+        if(aus)
+           pwr=aupwr;
+           pFeedrate=auFeedrate;
+        else
+            pwr=mapwr;
+            pFeedrate=maFeedrate;
+        end
+        [pPathSeq,pwrSeq,feedOffset] = handle.genPrintingPath(cubeShape, startCtr, 1, lyrHeight, round(max(100,(1-0.2/2/pLyrNum*i)*pwr)), zOffset+floor((i-1)/2)*lyrHeight, angle(rem(floor((i-1)/2),length(angle))+1), false, step, aus, ammode);
+        lenPosSeq = ones(length(pPathSeq),1) * lenPos;
+        if aus
+           pPathSeq = flipud(pPathSeq); 
+           pwrSeq = flipud(pwrSeq);
+        end
+        %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
+        %%% start printing mode
+        pg.setLaser(0, lenPos, flowL, aus*speedL, flowR, (~aus)*speedR); % set a init process param (in case of overshoot)
+        pg.saftyToPt([nan, nan, safetyHeight], pPathSeq(1,:), 3000); % safety move the start pt
+        pg.pauseProgram();% pause and wait for start (the button)
+        pg.enableLaser(3, 10);
+        %%% add path pts
+        pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrate*feedOffset);
+        %%% exist printing mode
+        pg.disableLaser(3);
+        aus=~aus;
+        allPath = [allPath;pPathSeq];
     end
-    %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
-    %%% start printing mode
-    pg.setLaser(0, lenPos, flowL, aus*speedL, flowR, (~aus)*speedR); % set a init process param (in case of overshoot)
-    pg.saftyToPt([nan, nan, safetyHeight], pPathSeq(1,:), 3000); % safety move the start pt
-    pg.pauseProgram();% pause and wait for start (the button)
-    pg.enableLaser(3, 10);
-    %%% add path pts
-    pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrate*feedOffset-(~aus)*100);
-    %%% exist printing mode
-    pg.disableLaser(3);
-    pg.draw_ = false;
-    pg.drawPath(pPathSeq, pPathSeq);
-    allPath = [allPath;pPathSeq];
+else
+    for i=1:pLyrNum
+        if(aus)
+           pwr=aupwr;
+           pFeedrate=auFeedrate;
+        else
+            pwr=mapwr;
+            pFeedrate=maFeedrate;
+        end
+        [pPathSeq,pwrSeq,feedOffset] = handle.genPrintingPath(cubeShape, startCtr, 1, lyrHeight, round(max(100,(1-0.2/pLyrNum*i)*pwr)), zOffset+(i-1)*lyrHeight, angle(rem(i-1,length(angle))+1), false, step, aus, ammode);
+        lenPosSeq = ones(length(pPathSeq),1) * lenPos;
+        %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
+        %%% start printing mode
+        pg.setLaser(0, lenPos, flowL, aus*speedL, flowR, (~aus)*speedR); % set a init process param (in case of overshoot)
+        pg.saftyToPt([nan, nan, safetyHeight], pPathSeq(1,:), 3000); % safety move the start pt
+        pg.pauseProgram();% pause and wait for start (the button)
+        pg.enableLaser(3, 10);
+        %%% add path pts
+        pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrate*feedOffset);
+        %%% exist printing mode
+        pg.disableLaser(3);
+        allPath = [allPath;pPathSeq];
+    end    
 end
 pg.draw_ = true;
 pg.drawPath(allPath, allPath);
