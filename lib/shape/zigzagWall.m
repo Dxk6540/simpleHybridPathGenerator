@@ -11,7 +11,8 @@ classdef zigzagWall
         function [path, pwrSeq, feedOffset] = genPrintingPath(wallLength, startPoint, lead, lyrNum, lyrThickness, pwr, zOffset, channel, step)
             path = [];
             pwrSeq = [];
-            feedOffset = [];            
+            feedOffset = []; 
+            tol = 0.1;
             for lyrIdx = 0 : lyrNum - 1
                 zValue = zOffset + lyrThickness * lyrIdx;
                 cPathSeq = [];
@@ -21,10 +22,14 @@ classdef zigzagWall
                     tmpPwrSeq = [];
                     tmpPath = [tmpPath; startPoint(1) - lead, startPoint(2) + chnIdx * step, zValue];
                     tmpPwrSeq = [tmpPwrSeq; 0];
+                    tmpPath = [tmpPath; startPoint(1) - tol, startPoint(2) + chnIdx * step, zValue];
+                    tmpPwrSeq = [tmpPwrSeq; 0];
                     tmpPath = [tmpPath; startPoint(1), startPoint(2) + chnIdx * step, zValue];
                     tmpPwrSeq = [tmpPwrSeq; pwr];
                     tmpPath = [tmpPath; startPoint(1) + wallLength, startPoint(2) + chnIdx * step, zValue];
                     tmpPwrSeq = [tmpPwrSeq; pwr];
+                    tmpPath = [tmpPath; startPoint(1) + wallLength - tol, startPoint(2) + chnIdx * step, zValue];
+                    tmpPwrSeq = [tmpPwrSeq; 0];
                     tmpPath = [tmpPath; startPoint(1) + wallLength + lead, startPoint(2) + chnIdx * step, zValue];
                     tmpPwrSeq = [tmpPwrSeq; 0];
                     if rem(chnIdx,2)==1

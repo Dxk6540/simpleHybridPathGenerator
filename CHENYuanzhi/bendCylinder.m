@@ -9,7 +9,7 @@ hProc.sProcessParam_.usingRTCP = 1;
 
 shapeHandle = bendTube();
 geoParam = shapeHandle.getDefaultParam();
-geoParam.center = [-30,0,0];
+geoParam.center = [-60,-40,0];
 geoParam.bendDir = [1,0,0];
 
 

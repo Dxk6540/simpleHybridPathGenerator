@@ -11,10 +11,10 @@ classdef bendTube
             geoParam.bendDir = [1,0,0];            
             geoParam.guideDstAgl = 90;
 
-            geoParam.tol = 0.3;
+            geoParam.tol = 0.1;
             geoParam.lyrThickness = 0.8; % max rad?
-            geoParam.step = 1;
-            geoParam.channel = 2;
+            geoParam.step = 0.96;
+            geoParam.channel = 5;
             
         end
         
@@ -61,14 +61,21 @@ classdef bendTube
                     for j = 0 : lyrPtNum - 1
                         x = cos(start * lyrIdx + aglStep * j) * (geoParam.profileRadiu - chnIdx * geoParam.step);
                         y = sin(start * lyrIdx + aglStep * j) * (geoParam.profileRadiu - chnIdx * geoParam.step);
-                        speedOffset = 1-0.025*sin(start * lyrIdx + aglStep * j - 0.75 * pi);
+                        speedOffset = 1-max(0.05*cos(start * lyrIdx + aglStep * j - 1.5 * pi),0);
+                        %speedOffset = 1;
                         tPathSeq = [tPathSeq; x,y,0];
                         nominalPath=[x,y,0]*nominalCurCsR' + nominalCurCsTransl;
-                        tPwrSeq = [tPwrSeq; round(procParam.pwr*(1-0.1*chnIdx)*(1-0.001*lyrIdx))];
-                        tFeedrateSeq = [tFeedrateSeq;round(speedOffset*nthroot(nominalPath(3)/360,-power))];
+                        feedrate = round(0.95 * speedOffset*nthroot((nominalPath(3)-geoParam.center(3))/330,-power));
+                        tPwrSeq = [tPwrSeq; round(procParam.pwr*(1-0.1*chnIdx)*(1-0.001*lyrIdx)+(feedrate-400)/25)];
+                        tFeedrateSeq = [tFeedrateSeq;feedrate];
                     end
                     tPwrSeq(1)= 0;
-                    tPwrSeq(end) = 0;                
+                    tPwrSeq(end) = 0; 
+                    if rem(lyrIdx,2)==0
+                        tPathSeq=flipud(tPathSeq);
+                        tFeedrateSeq=flipud(tFeedrateSeq);
+                        tPwrSeq=flipud(tPwrSeq);
+                    end
                 end
                 % stop the power when lift the tool 
                 toolAxis = curCsR(:,3)';

@@ -11,7 +11,7 @@ hProc.sPrintParam_.powderMode = 1; % both powder are used
 %  geometry param
 startCtr = [0,-60];
 % inclinationAgl = 0; % degree
-pLyrNum = 30;
+pLyrNum = 20;
 lyrHeight = 0.5;
 radius = 20;
 tol = 0.1;

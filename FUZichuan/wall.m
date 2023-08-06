@@ -18,13 +18,13 @@ lead = 5;
 mFeedrate = 300; % mm/min
 traversalSpeed=1500;
 spindleSpeed = 10000;
-toolNum = 1;
+toolNum = 3;
 toolRadiu = 5;
 depth = 0.1;
 
 %  geometry param
-startCtr = [-40,-70];
-pLyrNum = 5;
+startCtr = [30,50];
+pLyrNum = 10;
 lyrHeight = 0.5;
 safetyHeight = 230;
 zOffset = 0;
