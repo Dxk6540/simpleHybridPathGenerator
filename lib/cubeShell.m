@@ -17,7 +17,8 @@ classdef cubeShell
         function [path,pwrSeq] = genPrintingPath(obj, geoParam, procParam)
             path = [];
             pwrSeq = [];
-            axisSeq = [];
+            
+            pwr = procParam.pwr;
             curZ = 0;
             ctrX = geoParam.center(1);
             ctrY = geoParam.center(2);
@@ -35,6 +36,7 @@ classdef cubeShell
                     cnr3(1),cnr3(2),curZ;
                     cnr4(1),cnr4(2),curZ;
                     cnr1(1),cnr1(2),curZ;];
+                pwrSeq = [pwrSeq, pwr,pwr,pwr,pwr,pwr];
             end
             
         end

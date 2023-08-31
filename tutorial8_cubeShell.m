@@ -10,8 +10,8 @@ hProc.sPrintParam_.pwr = 150;
 
 shapeHandle = cubeShell();
 geoParam = shapeHandle.getDefaultParam();
-geoParam.center = [20,20,0];
-geoParam.sideLen = 50;
+geoParam.center = [55,55,0];
+geoParam.sideLen = 30;
 
 
 %%
