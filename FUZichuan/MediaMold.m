@@ -2,14 +2,14 @@
 hFilename = strcat('./MediaMold',date,'.txt');
 
 % printing process param
-pwr = 140; % 1.2KW / 4kw *1000;
+pwr = 155; % 1.2KW / 4kw *1000;
 lenPos = 900;
-flowL = 240; % 6 L/min / 20L/min * 1000;
+flowL = 250; % 6 L/min / 20L/min * 1000;
 speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 400;% 6 L/min / 20L/min * 1000;
 speedR = 0;% 2 r/min / 10r/min * 1000;
 pFeedrate = 600; % mm/min
-step = 1.25;
+step = 1.2;
 channel = 2;
 
 % machining process param
@@ -18,21 +18,21 @@ spindleSpeed = 10000;
 toolNum = 1;
 toolRadiu = 1;
 machiningLyrThickness = 0.1;
-planarMachiningDepth = 1.5;
+planarMachiningDepth = 3;
 
 %  geometry param
-startCtr = [-20,90];
+startCtr = [-40,-70];
 pLyrNum = 5;
-lyrHeight = 0.3;
-radius = 3.45;
+lyrHeight = 0.33;
+radius = 3.55;
 tol = 0.01;
 safetyHeight = 230;
-zOffset = 19.8;
+zOffset = 24;
 side = 1; % machining inside is -1 and outside is 1
 outterWallOffsetRng = [0.8, 0];
 innerWallOffsetRng = [radius-1, radius-1.025];
 sglWpHeight = pLyrNum * lyrHeight;
-alterNum = 4;
+alterNum = 3;
 zOffsetRng = [zOffset, zOffset + sglWpHeight*alterNum]; 
 allPath=[];
 
@@ -73,7 +73,7 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     [mpPath, mpFeedSeq] = planarCircleMachining(startCtr, depthRng, [0,3], -machiningLyrThickness, toolRadiu, mFeedrate, mFeedrate);   
     pg.changeMode(2); % change to machining mode
     pg.changeTool(toolNum);
-    pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1), startCtr(2), zOffset + pLyrNum * lyrHeight + 5], 3000); % safety move the start pt
+    pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1), startCtr(2), zOffset + pLyrNum * lyrHeight+5 ], 3000); % safety move the start pt
     pg.pauseProgram();% pause and wait for start (the button)
     pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
     %%% add path pts
@@ -105,7 +105,7 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     
     %%%%%%%%%%%%%%%%%%%%%%%% gen inner machining process %%%%%%%%%%%%%%%%%%%%%%%
     pg.addCmd(";;;;;start an inner machining process");
-    mFeedrate = 15;
+    mFeedrate = 30;
     side = -1;
     totalMachiningPath = [];
     toolNum = 1;
@@ -115,7 +115,7 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
         totalMachiningPath = [totalMachiningPath; mPathSeq]; 
     end
     pg.changeTool(toolNum);
-    pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1), startCtr(2), zOffset + pLyrNum * lyrHeight + 5], 3000); % safety move the start pt
+    pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1), startCtr(2), zOffset + pLyrNum * lyrHeight+5 ], 3000); % safety move the start pt
     pg.pauseProgram();% pause and wait for start (the button)
     pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
     %% add path pts

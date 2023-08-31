@@ -9,16 +9,16 @@ classdef bendTube
             geoParam.profileRadiu = 20;
             geoParam.center = [0,20,0];
             geoParam.bendDir = [1,0,0];            
-            geoParam.guideDstAgl = 70;
+            geoParam.guideDstAgl = 90;
 
-            geoParam.tol = 0.3;
+            geoParam.tol = 0.1;
             geoParam.lyrThickness = 0.8; % max rad?
-            geoParam.step = 1;
-            geoParam.channel = 2;
+            geoParam.step = 0.96;
+            geoParam.channel = 5;
             
         end
         
-        function [path,axisSeq,pwrSeq] = genPrintingPath(obj, geoParam, procParam)
+        function [path,axisSeq,pwrSeq,feedrateSeq] = genPrintingPath(obj, geoParam, procParam)
             % bend tube - circle path
             lyrPtNum = floor(2 * geoParam.profileRadiu * pi / geoParam.tol)+1;
             aglStep = 2 * pi / lyrPtNum; 
@@ -41,45 +41,56 @@ classdef bendTube
             getNewTransl = @(agl) guideCircleCenter + ...
                 (-xDir) * geoParam.guideRadiu * (eye(3) + sin(agl)*rodriguesMat+(1-cos(agl))*rodriguesMat*rodriguesMat)';
             
-                       
+            power = 1;
+            start = 0.2 * pi;
+            lead = 5;
             path = [];
             pwrSeq = [];
             axisSeq = [];
-            feedrateOffset = [];
+            feedrateSeq = [];
+            nominalCurCsR = baseCsR * roty(lyrAglStep);
+            nominalCurCsTransl = getNewTransl(lyrAglStep);
             for lyrIdx = 0 : lyrNum - 1    
                 tPathSeq = [];
                 tPwrSeq = [];
+                tFeedrateSeq = [];
                 lyrAgl = lyrAglStep * lyrIdx;
-                curCsR = baseCsR * roty(lyrAgl/pi*180);
+                curCsR = baseCsR * roty(lyrAgl);
                 curCsTransl = getNewTransl(lyrAgl);
-                if geoParam.channel > 1
-                    for chnIdx = 0 : geoParam.channel - 1
-                        for j = 0 : lyrPtNum - 1
-                            x = cos(pi + aglStep * j) * (geoParam.profileRadiu - chnIdx * geoParam.step);
-                            y = sin(pi + aglStep * j) * (geoParam.profileRadiu - chnIdx * geoParam.step);
-                            speedOffset = (1.025-abs(aglStep * j-0.75*pi)/pi*0.05);
-                            tPathSeq = [tPathSeq; x,y,0];
-                            tPwrSeq = [tPwrSeq; procParam.pwr];
-                            feedrateOffset = [feedrateOffset;speedOffset];
-                        end
-                        tPwrSeq(1)= 0;
-                        tPwrSeq(end) = 0;                
-                    end
-                else
-                   for j = 0 : lyrPtNum - 1
-                        x = cos(pi + aglStep * j) * (geoParam.profileRadiu - chnIdx * geoParam.step);
-                        y = sin(pi + aglStep * j) * (geoParam.profileRadiu - chnIdx * geoParam.step);             
+                for chnIdx = 0 : geoParam.channel - 1
+                    for j = 0 : lyrPtNum - 1
+                        x = cos(start * lyrIdx + aglStep * j) * (geoParam.profileRadiu - chnIdx * geoParam.step);
+                        y = sin(start * lyrIdx + aglStep * j) * (geoParam.profileRadiu - chnIdx * geoParam.step);
+                        speedOffset = 1-max(0.05*cos(start * lyrIdx + aglStep * j - 1.5 * pi),0);
+                        %speedOffset = 1;
                         tPathSeq = [tPathSeq; x,y,0];
-                        tPwrSeq = [tPwrSeq; procParam.pwr];
+                        nominalPath=[x,y,0]*nominalCurCsR' + nominalCurCsTransl;
+                        feedrate = round(0.95 * speedOffset*nthroot((nominalPath(3)-geoParam.center(3))/330,-power));
+                        tPwrSeq = [tPwrSeq; round(procParam.pwr*(1-0.1*chnIdx)*(1-0.001*lyrIdx)+(feedrate-400)/25)];
+                        tFeedrateSeq = [tFeedrateSeq;feedrate];
+                    end
+                    tPwrSeq(1)= 0;
+                    tPwrSeq(end) = 0; 
+                    if rem(lyrIdx,2)==0
+                        tPathSeq=flipud(tPathSeq);
+                        tFeedrateSeq=flipud(tFeedrateSeq);
+                        tPwrSeq=flipud(tPwrSeq);
                     end
                 end
                 % stop the power when lift the tool 
                 toolAxis = curCsR(:,3)';
-                tPathSeq =tPathSeq*curCsR' + repmat(curCsTransl,length(tPathSeq),1);
+                tPathSeq = tPathSeq*curCsR' + repmat(curCsTransl,length(tPathSeq),1);
+                tPathSeq = [tPathSeq(1,:)+lead*(tPathSeq(2,:)-tPathSeq(1,:))/norm(tPathSeq(2,:)-tPathSeq(1,:));tPathSeq];
+                tFeedrateSeq = [tFeedrateSeq(1);tFeedrateSeq];
+                tPwrSeq = [0; tPwrSeq];
                 tNozzleAxisSeq = repmat(toolAxis,length(tPathSeq),1);
                 path = [path;tPathSeq];
                 axisSeq = [axisSeq; tNozzleAxisSeq];
                 pwrSeq = [pwrSeq;tPwrSeq];
+                feedrateSeq = [feedrateSeq; tFeedrateSeq];
+                if lyrIdx==0
+                   plot3(tPathSeq(:,1), tPathSeq(:,2), feedrateSeq);
+                end
             end
             
         end

@@ -1,5 +1,3 @@
-addpath('./lib')
-
 % file param:
 pFilename = strcat('./tutorial7_RTCPPrintingTest',date,'.txt');
 
