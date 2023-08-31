@@ -5,7 +5,7 @@ pFilename = strcat('./tutorial8_cubeShell',date,'.txt');
 
 hProc = cHybridProcess(pFilename);
 hProc.sPrintParam_.pFeedrate = 600; % mm/min
-hProc.sPrintParam_.powderMode = 3; % both powder are used (for mixing)
+hProc.sPrintParam_.powderMode = 1; % both powder are used (for mixing)
 hProc.sPrintParam_.pwr = 150;
 
 shapeHandle = cubeShell();
