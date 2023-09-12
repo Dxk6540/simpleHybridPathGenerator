@@ -29,15 +29,15 @@ toolRadiu = 3;
 machiningLyrThickness = 0.1;
 
 %  geometry param
-startCtr = [10,-5];
-pLyrNum = 10;
+startCtr = [60,20];
+pLyrNum = 3;
 lyrHeight = 0.6;
-cubeShape = [20,5];
+cubeShape = [20,10];
 tol = 0.01;
 safetyHeight = min(230, 2*pLyrNum*lyrHeight+20);
 zOffset = 0;
-angle = 0:30:359;
 angle = 0;
+tilte=10;
 rotation = true;
 side = 1; % machining inside is -1 and outside is 1
 wallOffset = -0.5;
@@ -54,8 +54,12 @@ pg.genNewScript();
 pg.changeMode(1); % change to printing mode
 ausPath=[];
 masPath=[];
-for i=1:pLyrNum
-    [pPathSeq,pwrSeq,feedOffset] = handle.genPrintingPath(cubeShape, startCtr, 1, lyrHeight, round(max(100,(1-0.2/pLyrNum*i)*aupwr)), zOffset+(i-1)*lyrHeight, angle(rem(floor(i-1),length(angle))+1), false, step, 0, 0);
+pg.saftyToPt([nan, nan, safetyHeight], [cubeShape,safetyHeight], 3000); % safety move the start pt
+for i=1:2*pLyrNum
+    [pPathSeq, bcSeq, pwrSeq,feedOffset] = handle.genPrintingPath(cubeShape, startCtr, 1, lyrHeight,...
+        round(max(100,(1-0.2/2/pLyrNum*i)*aupwr)), zOffset+floor((i-1)/2)*lyrHeight,...
+        angle(rem(floor((i-1)/2), length(angle))+1), false, tilte, step, 0, 0);
+    pPathSeq = [pPathSeq, bcSeq];
     lenPosSeq = ones(length(pPathSeq),1) * lenPos;
     aus=true;
     %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
