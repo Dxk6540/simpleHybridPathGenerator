@@ -1,4 +1,4 @@
-addpath('./lib')
+addpath('../lib')
 
 % file param:
 pFilename = strcat('./tutorial8_triShellV2',date,'.txt');

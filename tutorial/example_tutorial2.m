@@ -1,6 +1,7 @@
 % this is an example of generate gradient material using genGradMtrlPrintingProcess.
 % the process is an alternative printing process with different material
 % mixing.
+addpath('../lib')
 
 % file param:
 pFilename = strcat('./tutorial2_gradientMaterialTest',date,'.txt');
