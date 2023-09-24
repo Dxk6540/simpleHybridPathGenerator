@@ -7,20 +7,19 @@ pFilename = strcat('./tutorial1_printing',date,'.txt');
 
 hProc = cHybridProcess(pFilename);
 hProc.sPrintParam_.pFeedrate = 600; % mm/min
-hProc.sPrintParam_.powderMode = 1; % both powder are used
+hProc.sPrintParam_.powderMode = 1; % left powder are used
 
 
 %  geometry param
-startCtr = [0,0];
-cubeShape= [40,20];
+startCtr = [0,0];% left-bottom corner point
+cubeShape= [40,30];% length and width
 % inclinationAgl = 0; % degree
-pLyrNum = 20;
+pLyrNum = 50;
 lyrHeight = 0.5;
-radius = 20;
-tol = 0.1;
-zOffset = 0;
-channel = 2;
-step = 1;
+tol = 0.1;% 
+zOffset = 0;% 
+
+step = 1;% 
 
 % shape
 handle=zigzagPathCube;

@@ -8,18 +8,18 @@ pFilename = strcat('./tutorial3_machiningContour',date,'.txt');
 hProc = cHybridProcess(pFilename);
 hProc.sMachinParam_.spindleSpeed = 8000; % mm/min
 hProc.sMachinParam_.mFeedrate = 1000; % both powder are used
-hProc.sMachinParam_.toolNum = 2;
-hProc.sMachinParam_.toolRadiu = 3;
+hProc.sMachinParam_.toolNum = 2;% Tool index
+hProc.sMachinParam_.toolRadiu = 3;% Tool length
 
 %  geometry param
-startCtr = [0,0];
+startCtr = [0,0];% left-bottom corner point
 cubeShape = [40,20];
-pLyrNum = 20;
-lyrHeight = 0.3;
+lyrHeight = 0.4;
+pLyrNum = round(25/lyrHeight);% 8 needs to be defined by the user
 wpHeight = pLyrNum * lyrHeight;
 radius = 40;
 tol = 0.1;
-zOffset = 3;
+zOffset =2;
 channel = 6;
 step = 1;
 
