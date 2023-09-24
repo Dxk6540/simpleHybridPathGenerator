@@ -106,9 +106,9 @@ classdef cPathGen < handle
 %%%%%%%%%%%%%%%%%%%%%%% path control %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function ret = startRTCP(obj, safetyHeight, toolNum)
-            obj.saftyToPt([nan, nan, safetyHeight],[0, 0, safetyHeight], 1500);
-            obj.addPathPt([0, 0, safetyHeight, 0, 0]);            
-            fprintf(obj.fid_, "G43.4H%d\r\n",toolNum);            
+            obj.saftyToPt([nan, nan, safetyHeight], [0, 0, safetyHeight], 1500);
+            obj.addPathPt([0, 0, safetyHeight, 0, 0]);
+            fprintf(obj.fid_, "G43.4H%d\r\n",toolNum);
             ret = 1;
         end
         

@@ -26,7 +26,7 @@ classdef cHybridProcess < handle
             pParam.speedL = 100;% 2 r/min / 10r/min * 1000;
             pParam.flowR = 250;% 6 L/min / 20L/min * 1000;
             pParam.speedR = 100;% 2 r/min / 10r/min * 1000;   
-            pParam.pFeedrate = 600; % mm/min(cylinder 600, vase 590)      
+            pParam.pFeedrate = 600; % mm/min(cylinder 600, vase 590)
             pParam.powderMode = 1; % 1 = left, 2 = right, 3 = left + right
             pParam.laserDelay = 10; % unit second
         end
@@ -45,7 +45,7 @@ classdef cHybridProcess < handle
             % machining process param                      
             procParam.safetyHeight = 220;
             procParam.usingRTCP = 0;
-            procParam.travelFeedrate = 3000;            
+            procParam.travelFeedrate = 3000;
         end
       
         ret = genNormalPrintingProcess(obj, pg, safetyHeight, pPathSeq, pwrSeq, pFeedrate, printParam);
@@ -54,12 +54,3 @@ classdef cHybridProcess < handle
         ret = genCamMtPrintingProcess(obj, pg, safetyHeight, pPathSeq, pwrSeq, pFeedrate, printParam);
     end
 end
-
-
-
-
-
-
-
-
-
