@@ -1,17 +1,17 @@
 addpath('./lib')
 
 % file param:
-pFilename = strcat('./tutorial8_cubeShell',date,'.txt');
+pFilename = strcat('./tutorial8_triShellV2',date,'.txt');
 
 hProc = cHybridProcess(pFilename);
 % F750£¬ pwr 1200, r 0.75
-hProc.sPrintParam_.pFeedrate = 750; % mm/min
+hProc.sPrintParam_.pFeedrate = 750 ; % mm/min
 hProc.sPrintParam_.powderMode = 1; % both powder are used (for mixing)
 hProc.sPrintParam_.pwr = 300;
 
-shapeHandle = cubeShell();
+shapeHandle = triShell();
 geoParam = shapeHandle.getDefaultParam();
-geoParam.center = [0,65,0];
+geoParam.center = [0, 0, 0];
 geoParam.sideLen = 30;
 geoParam.lyrNum = 90;
 geoParam.lyrThickness = 0.33;
