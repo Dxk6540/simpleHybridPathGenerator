@@ -9,17 +9,23 @@
 hFilename = strcat('./doubleMaterial',date,'.txt');
 
 % printing process param
-aupwr = 250; % 1.2KW / 4kw *1000;
-auFeedrate = 600; % mm/min
-mapwr = 200;
-maFeedrate = 500; % mm/min
-ammode=1; %0:au,1:ma,2:mix
+aupwr = 220; % 1.2KW / 4kw *1000;
+auFeedrate = 675; % mm/min
+mapwr = 210;
+maFeedrate = 625; % mm/min
+ammode=2; %0:au,1:ma,2:mix
 lenPos = 900;
 flowL = 250; % 6 L/min / 20L/min * 1000;
 speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 400;% 6 L/min / 20L/min * 1000;
 speedR = 100;% 2 r/min / 10r/min * 1000;
-step = 1;
+step = 0.8;
+angle = 0:180:359; 
+angle=0;
+startCtr = [10,-25];
+pLyrNum = 10;
+lyrHeight = 0.6;
+cubeShape = [20,7];
 
 % machining process param
 mFeedrate = 1400; % mm/min
@@ -29,14 +35,10 @@ toolRadiu = 3;
 machiningLyrThickness = 0.1;
 
 %  geometry param
-startCtr = [60,20];
-pLyrNum = 24;
-lyrHeight = 0.5;
-cubeShape = [20,20];
 tol = 0.01;
 safetyHeight = min(230, 2*pLyrNum*lyrHeight+20);
 zOffset = 0;
-angle = 0:30:359;
+
 rotation = true;
 side = 1; % machining inside is -1 and outside is 1
 wallOffset = -0.5;
@@ -112,35 +114,35 @@ end
 pg.draw_ = true;
 pg.drawPath(allPath, allPath);
 
-%%
-%%%%%%%%%%%%%% machining path
+
+%%%%%%%%%%%%% machining path
 safetyHeight = 230;
-mPathSeq = handle.genMachiningPath(cubeShape, startCtr, 2*pLyrNum*lyrHeight, 2*lyrHeight, toolRadiu, wallOffset, zOffset);
-%%% start machining mode
+mPathSeq = planarMachining([startCtr(1)+cubeShape(1)/2, startCtr(2)+cubeShape(2)/2], [zOffset+pLyrNum*lyrHeight+3, zOffset+pLyrNum*lyrHeight], cubeShape, machiningLyrThickness, toolRadiu);
 pg.changeMode(2); % change to machining mode
 pg.changeTool(toolNum);
 pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) - toolRadiu - wallOffset - 5, startCtr(2) - toolRadiu - wallOffset - 5, 2 * pLyrNum * lyrHeight], 3000); % safety move the start pt
 pg.pauseProgram();% pause and wait for start (the button)
 pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
-%%% add path pts
+%% add path pts
 pg.addPathPts(mPathSeq, mFeedrate);
-%%% exist machining mode
+%% exist machining mode
 pg.disableSpindle();
 pg.returnToSafety(safetyHeight, 3000);
 
-mPathSeq = planarMachining([startCtr(1)+cubeShape(1)/2, startCtr(2)+cubeShape(2)/2], [zOffset+2*pLyrNum*lyrHeight+1.5, zOffset+2*pLyrNum*lyrHeight], cubeShape, machiningLyrThickness, toolRadiu);
+mPathSeq = handle.genMachiningPath(cubeShape, startCtr, pLyrNum*lyrHeight, 2*lyrHeight, toolRadiu, wallOffset, zOffset);
+%% start machining mode
 pg.changeMode(2); % change to machining mode
 pg.changeTool(toolNum);
 pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) - toolRadiu - wallOffset - 5, startCtr(2) - toolRadiu - wallOffset - 5, 2 * pLyrNum * lyrHeight], 3000); % safety move the start pt
 pg.pauseProgram();% pause and wait for start (the button)
 pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
-%%% add path pts
+%% add path pts
 pg.addPathPts(mPathSeq, mFeedrate);
-%%% exist machining mode
+%% exist machining mode
 pg.disableSpindle();
 pg.returnToSafety(safetyHeight, 3000);
 
-%%% end the script
+%% end the script
 pg.closeScript();
 % pg.draw_ = true;
 % pg.drawPath(mPathSeq,mPathSeq);

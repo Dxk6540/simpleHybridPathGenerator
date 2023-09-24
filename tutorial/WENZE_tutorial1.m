@@ -1,8 +1,9 @@
 % this is an example of using cPathGen class and cHybridProcess class.
 addpath('../lib')
+addpath('../lib/shape')
 
 % file param:
-pFilename = strcat('./tutorial_1_printingTest',date,'.txt');
+pFilename = strcat('./tutorial1_printing',date,'.txt');
 
 hProc = cHybridProcess(pFilename);
 hProc.sPrintParam_.pFeedrate = 600; % mm/min
@@ -10,7 +11,8 @@ hProc.sPrintParam_.powderMode = 1; % both powder are used
 
 
 %  geometry param
-startCtr = [-60,-50];
+startCtr = [0,0];
+cubeShape= [40,20];
 % inclinationAgl = 0; % degree
 pLyrNum = 20;
 lyrHeight = 0.5;
@@ -21,13 +23,13 @@ channel = 2;
 step = 1;
 
 % shape
-handle=cylinder;
+handle=zigzagPathCube;
 
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%%% the regular code for generate a script
 pg = cPathGen(pFilename); % create the path generator object
 pg.genNewScript();
-[pPathSeq,pwrSeq, feedSeq] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, ...
+[pPathSeq,pwrSeq, feedSeq] = handle.genPrintingPath(cubeShape, startCtr, tol, pLyrNum, ...
                                                 lyrHeight, hProc.sPrintParam_.pwr, zOffset, channel, step);
                                             
 hProc.genNormalPrintingProcess(pg, pPathSeq, pwrSeq, feedSeq*hProc.sPrintParam_.pFeedrate, hProc.sPrintParam_);    

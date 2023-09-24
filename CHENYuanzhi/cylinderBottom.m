@@ -9,7 +9,7 @@ speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 250;% 6 L/min / 20L/min * 1000;
 speedR = 100;% 2 r/min / 10r/min * 1000;
 pFeedrate = 600; % mm/min
-step = 0.96;
+step = 0.8;
 channel = 5;
 
 % machining process param
@@ -21,10 +21,10 @@ machiningLyrThickness = 0.1;
 planarMachiningDepth = 3;
 
 %  geometry param
-startCtr = [0,-70];
-pLyrNum = 10;
-lyrHeight = 0.5;
-radius = 20;
+startCtr = [0,0];
+pLyrNum = 20;
+lyrHeight = 0.6;
+radius = 35;
 tol = 0.1;
 safetyHeight = 230;
 zOffset = 0;

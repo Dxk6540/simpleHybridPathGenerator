@@ -8,8 +8,9 @@ classdef rotationalZigzagPathCube
     end
     
     methods(Static)
-        function [path, pwrSeq, feedOffset] = genPrintingPath(cubeShape, startPoint, lyrNum, lyrThickness, pwr, zOffset, angle, rotation, step, aus, mode)
+        function [path, bcSeq, pwrSeq, feedOffset] = genPrintingPath(cubeShape, startPoint, lyrNum, lyrThickness, pwr, zOffset, angle, rotation, tilte, step, aus, mode)
             path = [];
+            bcSeq = [];
             pwrSeq = [];
             feedOffset = [];
             for lyrIdx = 0 : lyrNum - 1
@@ -17,7 +18,7 @@ classdef rotationalZigzagPathCube
                 if rotation
                     alpha=angle*lyrIdx/180*pi;                   
                 else
-                  alpha=angle/180*pi;
+                	alpha=angle/180*pi;
                 end
                 xStep = step/abs(sin(alpha));
                 yStep = step/abs(cos(alpha));  
@@ -96,12 +97,13 @@ classdef rotationalZigzagPathCube
                         tmpPath = [tmpPath; startPoint(1) + cubeShape(1) - deltaX, startPoint(2) + offsetY, zValue];
                         tmpPwrSeq = [tmpPwrSeq; 0];
                     end
-                    if rem(chnIdx,4)==3 || rem(chnIdx,4)==0
+                    if rem(chnIdx,2)==0
                         tmpPath=flipud(tmpPath);
                         tmpPwrSeq=flipud(tmpPwrSeq);
                     end
                     path = [path; tmpPath];
                     pwrSeq = [pwrSeq; tmpPwrSeq];
+                    bcSeq = [bcSeq; repmat([tilte,alpha/pi*180],length(tmpPath),1)];
                 end
                 feedOffset = [feedOffset; ones(length(path),1)];
             end
