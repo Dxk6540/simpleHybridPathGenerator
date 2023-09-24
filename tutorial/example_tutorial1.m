@@ -10,7 +10,7 @@ hProc.sPrintParam_.powderMode = 1; % both powder are used
 
 
 %  geometry param
-startCtr = [0,-60];
+startCtr = [-60,-50];
 % inclinationAgl = 0; % degree
 pLyrNum = 20;
 lyrHeight = 0.5;
