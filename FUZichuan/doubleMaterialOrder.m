@@ -29,15 +29,15 @@ toolRadiu = 3;
 machiningLyrThickness = 0.1;
 
 %  geometry param
-startCtr = [60,20];
+startCtr = [-30,-25];
 pLyrNum = 3;
 lyrHeight = 0.6;
-cubeShape = [20,10];
+cubeShape = [20,7];
 tol = 0.01;
 safetyHeight = min(230, 2*pLyrNum*lyrHeight+20);
 zOffset = 0;
 angle = 0;
-tilte=10;
+tilte=20;
 rotation = true;
 side = 1; % machining inside is -1 and outside is 1
 wallOffset = -0.5;
@@ -55,6 +55,7 @@ pg.changeMode(1); % change to printing mode
 ausPath=[];
 masPath=[];
 pg.saftyToPt([nan, nan, safetyHeight], [cubeShape,safetyHeight], 3000); % safety move the start pt
+pg.startRTCP(safetyHeight,16);
 for i=1:2*pLyrNum
     [pPathSeq, bcSeq, pwrSeq,feedOffset] = handle.genPrintingPath(cubeShape, startCtr, 1, lyrHeight,...
         round(max(100,(1-0.2/2/pLyrNum*i)*aupwr)), zOffset+floor((i-1)/2)*lyrHeight,...
@@ -85,6 +86,7 @@ for i=1:2*pLyrNum
         safetyHeight=pPathSeq(4*j+1,3);
     end
 end
+pg.stopRTCP(safetyHeight,16);
 plot3(ausPath(:,1),ausPath(:,2),ausPath(:,3),'r');
 hold on
 plot3(masPath(:,1),masPath(:,2),masPath(:,3),'b');
@@ -95,6 +97,7 @@ safetyHeight = 230;
 mPathSeq = planarMachining([startCtr(1)+cubeShape(1)/2, startCtr(2)+cubeShape(2)/2], [zOffset+pLyrNum*lyrHeight+1.5, zOffset+pLyrNum*lyrHeight], cubeShape, machiningLyrThickness, toolRadiu);
 pg.changeMode(2); % change to machining mode
 pg.changeTool(toolNum);
+pg.startRTCP(safetyHeight,toolNum);
 pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) - toolRadiu - wallOffset - 5, startCtr(2) - toolRadiu - wallOffset - 5, pLyrNum * lyrHeight], 3000); % safety move the start pt
 pg.pauseProgram();% pause and wait for start (the button)
 pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
@@ -115,6 +118,7 @@ pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of 
 pg.addPathPts(mPathSeq, mFeedrate);
 %%% exist machining mode
 pg.disableSpindle();
+pg.stopRTCP(safetyHeight,toolNum);
 pg.returnToSafety(safetyHeight, 3000);
 
 %%% end the script

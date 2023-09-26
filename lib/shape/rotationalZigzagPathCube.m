@@ -97,13 +97,15 @@ classdef rotationalZigzagPathCube
                         tmpPath = [tmpPath; startPoint(1) + cubeShape(1) - deltaX, startPoint(2) + offsetY, zValue];
                         tmpPwrSeq = [tmpPwrSeq; 0];
                     end
-                    if rem(chnIdx,2)==0
+                    sign=-1;
+                    if rem(chnIdx,4)==3 || rem(chnIdx,4)==0
                         tmpPath=flipud(tmpPath);
                         tmpPwrSeq=flipud(tmpPwrSeq);
+                        sign=1;
                     end
                     path = [path; tmpPath];
                     pwrSeq = [pwrSeq; tmpPwrSeq];
-                    bcSeq = [bcSeq; repmat([tilte,alpha/pi*180],length(tmpPath),1)];
+                    bcSeq = [bcSeq; repmat([sign*tilte,alpha/pi*180],length(tmpPath),1)];
                 end
                 feedOffset = [feedOffset; ones(length(path),1)];
             end
