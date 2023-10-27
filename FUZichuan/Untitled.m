@@ -6,43 +6,43 @@
 %%%%%%%%%%%%%%%%%%
 
 % file param:
-hFilename = strcat('./doubleMaterial',date,'.txt');
+hFilename = strcat('./doubleMaterial-1',date,'.txt');
 
 % printing process param
-aupwr = 220; % 1.2KW / 4kw *1000;
+aupwr = 175; % 1.2KW / 4kw *1000;
 auFeedrate = 675; % mm/min
-mapwr = 210;
+mapwr = 175;
 maFeedrate = 625; % mm/min
 ammode=2; %0:au,1:ma,2:mix
 lenPos = 900;
 flowL = 250; % 6 L/min / 20L/min * 1000;
-speedL = 100;% 2 r/min / 10r/min * 1000;
+speedL = 0;% 2 r/min / 10r/min * 1000;
 flowR = 400;% 6 L/min / 20L/min * 1000;
-speedR = 100;% 2 r/min / 10r/min * 1000;
+speedR = 0;% 2 r/min / 10r/min * 1000;
 step = 0.9;
-angle = 0:22.5:359; 
-% angle=0;
+angle = 0:180:359; 
+angle=0;
 tilte=0;
-startCtr = [-40,-25];
-pLyrNum = 20;
-lyrHeight = 0.9;
-cubeShape = [80,20];
+startCtr = [0,-30];
+pLyrNum = 1;
+lyrHeight = 0.6;
+cubeShape = [25,15];
 
 % machining process param
-mFeedrate = 2000; % mm/min
-spindleSpeed = 8000;
-toolNum = 3;
-toolRadiu = 4;
+mFeedrate = 1400; % mm/min
+spindleSpeed = 10000;
+toolNum = 4;
+toolRadiu = 3;
 machiningLyrThickness = 0.1;
 
 %  geometry param
 tol = 0.01;
 safetyHeight = min(230, 2*pLyrNum*lyrHeight+20);
-zOffset = 0;
+zOffset = 6.3;
 
 rotation = true;
 side = 1; % machining inside is -1 and outside is 1
-wallOffset = 0.3;
+wallOffset = -0.5;
 allPath=[];
 ausPath=[];
 masPath=[];
@@ -70,7 +70,7 @@ if(ammode==2)
             pwr=mapwr;
             pFeedrate=maFeedrate;
         end
-        [pPathSeq,~,pwrSeq,feedOffset] = handle.genPrintingPath(cubeShape, startCtr, 1, lyrHeight, round(max(100,(1-0.25/2/pLyrNum*i)*pwr)), zOffset+floor((i-1)/2)*lyrHeight, angle(rem(floor((i-1)/2),length(angle))+1), false,tilte, step, aus, ammode);
+        [pPathSeq,~,pwrSeq,feedOffset] = handle.genPrintingPath(cubeShape, startCtr, 1, lyrHeight, round(max(100,(1-0.2/2/pLyrNum*i)*pwr)), zOffset+floor((i-1)/2)*lyrHeight, angle(rem(floor((i-1)/2),length(angle))+1), false,tilte, step, aus, ammode);
         lenPosSeq = ones(length(pPathSeq),1) * lenPos;
         if aus
 %            pPathSeq = flipud(pPathSeq); 
@@ -101,7 +101,7 @@ else
             pwr=mapwr;
             pFeedrate=maFeedrate;
         end
-        [pPathSeq,pwrSeq,feedOffset] = handle.genPrintingPath(cubeShape, startCtr, 1, lyrHeight, round(max(100,(1-0.25/pLyrNum*i)*pwr)), zOffset+(i-1)*lyrHeight, angle(rem(i-1,length(angle))+1), false, step, aus, ammode);
+        [pPathSeq,pwrSeq,feedOffset] = handle.genPrintingPath(cubeShape, startCtr, 1, lyrHeight, round(max(100,(1-0.2/pLyrNum*i)*pwr)), zOffset+(i-1)*lyrHeight, angle(rem(i-1,length(angle))+1), false, step, aus, ammode);
         lenPosSeq = ones(length(pPathSeq),1) * lenPos;
         %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
         %%% start printing mode
@@ -120,32 +120,32 @@ plot3(ausPath(:,1),ausPath(:,2),ausPath(:,3),'r');
 hold on
 plot3(masPath(:,1),masPath(:,2),masPath(:,3),'b');
 
-%%%%%%%%%%%% machining path
-safetyHeight = 230;
-mPathSeq = planarMachining([startCtr(1)+cubeShape(1)/2, startCtr(2)+cubeShape(2)/2], [zOffset+pLyrNum*lyrHeight+3, zOffset+pLyrNum*lyrHeight], cubeShape, machiningLyrThickness, toolRadiu);
-pg.changeMode(2); % change to machining mode
-pg.changeTool(toolNum);
-pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) - toolRadiu - wallOffset - 5, startCtr(2) - toolRadiu - wallOffset - 5, 2 * pLyrNum * lyrHeight], 3000); % safety move the start pt
-pg.pauseProgram();% pause and wait for start (the button)
-pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
-%% add path pts
-pg.addPathPts(mPathSeq, mFeedrate);
-%% exist machining mode
-pg.disableSpindle();
-pg.returnToSafety(safetyHeight, 3000);
-
-mPathSeq = handle.genMachiningPath(cubeShape, startCtr, pLyrNum*lyrHeight, 2*lyrHeight, toolRadiu, wallOffset, zOffset);
-%% start machining mode
-pg.changeMode(2); % change to machining mode
-pg.changeTool(toolNum);
-pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) - toolRadiu - wallOffset - 5, startCtr(2) - toolRadiu - wallOffset - 5, 2 * pLyrNum * lyrHeight], 3000); % safety move the start pt
-pg.pauseProgram();% pause and wait for start (the button)
-pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
-%% add path pts
-pg.addPathPts(mPathSeq, mFeedrate);
-%% exist machining mode
-pg.disableSpindle();
-pg.returnToSafety(safetyHeight, 3000);
+%%%%%%%%%%%%% machining path
+% safetyHeight = 230;
+% mPathSeq = planarMachining([startCtr(1)+cubeShape(1)/2, startCtr(2)+cubeShape(2)/2], [zOffset+pLyrNum*lyrHeight+3, zOffset+pLyrNum*lyrHeight], cubeShape, machiningLyrThickness, toolRadiu);
+% pg.changeMode(2); % change to machining mode
+% pg.changeTool(toolNum);
+% pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) - toolRadiu - wallOffset - 5, startCtr(2) - toolRadiu - wallOffset - 5, 2 * pLyrNum * lyrHeight], 3000); % safety move the start pt
+% pg.pauseProgram();% pause and wait for start (the button)
+% pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
+% %% add path pts
+% pg.addPathPts(mPathSeq, mFeedrate);
+% %% exist machining mode
+% pg.disableSpindle();
+% pg.returnToSafety(safetyHeight, 3000);
+% 
+% mPathSeq = handle.genMachiningPath(cubeShape, startCtr, pLyrNum*lyrHeight, 2*lyrHeight, toolRadiu, wallOffset, zOffset);
+% %% start machining mode
+% pg.changeMode(2); % change to machining mode
+% pg.changeTool(toolNum);
+% pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) - toolRadiu - wallOffset - 5, startCtr(2) - toolRadiu - wallOffset - 5, 2 * pLyrNum * lyrHeight], 3000); % safety move the start pt
+% pg.pauseProgram();% pause and wait for start (the button)
+% pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of overshoot)
+% %% add path pts
+% pg.addPathPts(mPathSeq, mFeedrate);
+% %% exist machining mode
+% pg.disableSpindle();
+% pg.returnToSafety(safetyHeight, 3000);
 
 %% end the script
 pg.closeScript();

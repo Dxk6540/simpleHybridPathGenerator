@@ -16,15 +16,15 @@ hProc.sPrintParam_.pwr = 250; % left powder are used
 
 %  geometry param
 height = 0.5; %层高
-count = 20; %层数
+count = 1; %层数
 startPoint = [-15,80]; % left corner
 wpHeight = count * height;
 machiningLyrThickness = -0.1;
-channel = 2;
+channel = 10;
 startX = startPoint(1); %起点X坐标
 startY = startPoint(2); %起点Y坐标
 cubeLen = 30; %单线长度
-step = 1.5; % 搭接
+step = 4; % 搭接
 
 Path=[]; %路径
 

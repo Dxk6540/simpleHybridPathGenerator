@@ -18,7 +18,7 @@ flowL = 250; % 6 L/min / 20L/min * 1000;
 speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 400;% 6 L/min / 20L/min * 1000;
 speedR = 100;% 2 r/min / 10r/min * 1000;
-step = 0.8;
+step = 0.9;
 aus = true;
 
 % machining process param
@@ -29,10 +29,10 @@ toolRadiu = 3;
 machiningLyrThickness = 0.1;
 
 %  geometry param
-startCtr = [-30,-25];
-pLyrNum = 3;
+startCtr = [-40,-10];
+pLyrNum = 34;
 lyrHeight = 0.6;
-cubeShape = [20,7];
+cubeShape = [20,20];
 tol = 0.01;
 safetyHeight = min(230, 2*pLyrNum*lyrHeight+20);
 zOffset = 0;

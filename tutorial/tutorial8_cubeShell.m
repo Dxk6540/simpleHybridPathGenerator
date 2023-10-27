@@ -7,14 +7,14 @@ hProc = cHybridProcess(pFilename);
 % F750£¬ pwr 1200, r 0.75
 hProc.sPrintParam_.pFeedrate = 750; % mm/min
 hProc.sPrintParam_.powderMode = 1; % both powder are used (for mixing)
-hProc.sPrintParam_.pwr = 300;
+hProc.sPrintParam_.pwr = 200;
 
 shapeHandle = cubeShell();
 geoParam = shapeHandle.getDefaultParam();
-geoParam.center = [0,65,0];
-geoParam.sideLen = 30;
-geoParam.lyrNum = 90;
-geoParam.lyrThickness = 0.33;
+geoParam.center = [0,0,0];
+geoParam.sideLen = 20;
+geoParam.lyrNum = 10;
+geoParam.lyrThickness = 0.5;
 
 %%
 %%%%%%%%%%%%%% machining path

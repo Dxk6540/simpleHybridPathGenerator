@@ -38,7 +38,7 @@ classdef cubeShell
                     cnr1(1),cnr1(2),curZ;];
                 pwrSeq = [pwrSeq, pwr,pwr,pwr,pwr,pwr];
             end
-            
+            pwrSeq=pwrSeq';
         end
         
         function path = genMachiningPath(obj, cylinderR, startCenter, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, side)
