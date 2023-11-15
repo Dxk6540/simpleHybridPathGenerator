@@ -107,8 +107,8 @@ classdef rotationalZigzagPathCube
                     pwrSeq = [pwrSeq; tmpPwrSeq];
                     bcSeq = [bcSeq; repmat([sign*tilte,alpha/pi*180],length(tmpPath),1)];
                 end
-                feedOffset = [feedOffset; ones(length(path),1)];
             end
+                feedOffset = [feedOffset; ones(length(path),1)];
         end
         
         function path = genMachiningPath(cubeShape, startPoint, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset)

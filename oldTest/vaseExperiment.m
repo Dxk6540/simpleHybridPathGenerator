@@ -21,7 +21,7 @@ channel = 2;
 step = 1;
 
 % machining process param
-mFeedrate = 800; % mm/min
+mFeedrate = 4000; % mm/min
 spindleSpeed = 10000;
 toolNum = 1;
 toolRadiu = 4;
@@ -31,48 +31,46 @@ toolLen = 30;
 startCtr = [0,0];
 pLyrNum = 100;
 lyrHeight = 0.5;
-radius = 20;
-tol = 3;
+radius = 30;
+tol = 0.1;
 safetyHeight = 230;
-zOffset = 0;
-side = -1; % machining inside is -1 and outside is 1
-wallOffset = 1.1;
+zOffset = 85;
+side = 1; % machining inside is -1 and outside is 1
+wallOffset = 0;
 rollAgl = pi/6; %the rot angle is the angle between the tool axis and tangent
 % rollAgl = 0;
-
+wpHeight = pLyrNum*lyrHeight;
 
 
 % shape
-handle=cylinder;
+handle=vase;
 
-%%
-%%%%%%%%%%%%%% printing path
-[pPathSeq,pwrSeq] = vase.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
-lenPosSeq = ones(length(pPathSeq),1) * lenPos;
-%%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
-%%%% the regular code for generate a script
-pg = cPathGen(pFilename); % create the path generator object
-pg.genNewScript();
-%%% start printing mode
-pg.changeMode(1); % change to printing mode
-pg.setLaser(pwr, lenPos, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
-pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) + radius, startCtr(2), 0], 3000); % safety move the start pt
-pg.pauseProgram();% pause and wait for start (the button)
-pg.enableLaser(1, 10);
-%%% add path pts
-pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrate);
-%%% exist printing mode
-pg.disableLaser(1);
-% %%% end the script
-pg.closeScript();
+% %%
+% %%%%%%%%%%%%%% printing path
+% [pPathSeq,pwrSeq] = vase.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, pwr, zOffset, channel, step);
+% lenPosSeq = ones(length(pPathSeq),1) * lenPos;
+% %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
+% %%%% the regular code for generate a script
+% pg = cPathGen(pFilename); % create the path generator object
+% pg.genNewScript();
+% %%% start printing mode
+% pg.changeMode(1); % change to printing mode
+% pg.setLaser(pwr, lenPos, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
+% pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) + radius, startCtr(2), 0], 3000); % safety move the start pt
+% pg.pauseProgram();% pause and wait for start (the button)
+% pg.enableLaser(1, 10);
+% %%% add path pts
+% pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrate);
+% %%% exist printing mode
+% pg.disableLaser(1);
+% % %%% end the script
+% pg.closeScript();
 
 
 
 %%
 %%%%%%%%%%%%%% machining path
-[toolContactPts, toolCntrPts, toolAxisSeq, fcNormalSeq] = vase.genMachiningPath(radius, startCtr, tol, wpHeight, lyrHeight, toolRadiu, wallOffset, zOffset, rollAgl, side);
-bcSeq = sequentialSolveBC(toolAxisSeq, [0,0]);
-mPathSeq = [toolCntrPts, bcSeq];
+mPathSeq = vase.genMachiningPath(radius, startCtr, tol, 38, 0.2, toolRadiu, wallOffset, zOffset, side, 0);
 
 %%%%%%%%%%%%% following for RTCP path Gen %%%%%%%%%%%%%%%%%%%%%
 %%%% the regular code for generate a script
@@ -89,7 +87,7 @@ pg.enableSpindle(spindleSpeed, toolNum); % set a init process param (in case of 
 pg.addPathPts(mPathSeq, mFeedrate);
 %%% exist machining mode
 pg.disableSpindle();
-pg.stopRTCP(safetyHeight);
+pg.stopRTCP(safetyHeight, toolNum);
 pg.returnToSafety(safetyHeight, 3000);
 %%% end the script
 pg.closeScript();
@@ -97,6 +95,6 @@ pg.closeScript();
 
 
 %%% draw the path
-pg.drawPath(pPathSeq, mPathSeq);
+pg.drawPath(mPathSeq, mPathSeq);
 
 

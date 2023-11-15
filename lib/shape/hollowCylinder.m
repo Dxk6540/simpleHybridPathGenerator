@@ -15,6 +15,7 @@ classdef hollowCylinder
             path = [];
             pwrSeq = [];
             feedrateOffset = [];
+            b = leanAngle;
             for lyrIdx = 0 : lyrNum - 1    
                 tPathSeq = [];
                 tPwrSeq = [];
@@ -24,7 +25,6 @@ classdef hollowCylinder
                     x = cos(aglStep * firstPt) * (cylinderR - chnIdx * step) + startCenter(1) + sin(aglStep * firstPt)*interShift;
                     y = sin(aglStep * firstPt) * (cylinderR - chnIdx * step) + startCenter(2) - cos(aglStep * firstPt)*interShift;
                     z = lyrIdx * lyrThickness + zOffset;
-                    b = 0;
                     c = (aglStep * firstPt)*180/pi;
                     tPathSeq = [tPathSeq; x,y,z,b,c];
                     tPwrSeq = [tPwrSeq; 0];
@@ -61,7 +61,6 @@ classdef hollowCylinder
                     x = cos(aglStep * lastPt) * (cylinderR - chnIdx * step) + startCenter(1) - sin(aglStep * firstPt)*interShift;
                     y = sin(aglStep * lastPt) * (cylinderR - chnIdx * step) + startCenter(2) + cos(aglStep * firstPt)*interShift;
                     z = lyrIdx * lyrThickness + zOffset;
-                    b = 0;
                     c = (aglStep * firstPt)*180/pi;
                     tPathSeq = [tPathSeq; x,y,z,b,c];
                     tPwrSeq = [tPwrSeq; 0];
