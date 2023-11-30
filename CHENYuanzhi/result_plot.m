@@ -6,6 +6,7 @@ hold on
 x2=300:100:1200;
 y2=0.1:0.1:0.9;
 [X2,Y2]=meshgrid(x2,y2);
+heights23=cat(2,heights2,heights3);
 surf(X2,Y2,heights23);
 hold on
 x4=1300:100:1700;
@@ -14,3 +15,15 @@ y4=0.1:0.1:0.3;
 surf(X4,Y4,heights4(1:3,:));
 error23=heights23-6*y2';
 surf(X2,Y2,error23);
+H=zeros(18,18);
+H(10:18,1:5)=heights1;
+H(1:9,4:13)=heights23;
+H(1:3,14:18)=heights4(1:3,:);
+x=0:100:1700;
+x(1)=50;
+x(2)=125;
+y=0.1:0.1:1.8;
+[X,Y]=meshgrid(x,y);
+surf(X,Y,H);
+error=H-6*y';
+surf(X,Y,error);
