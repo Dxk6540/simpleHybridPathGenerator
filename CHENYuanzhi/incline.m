@@ -15,17 +15,17 @@ flowL = 250; % 6 L/min / 20L/min * 1000;
 speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 400;% 6 L/min / 20L/min * 1000;
 speedR = 100;% 2 r/min / 10r/min * 1000;
-pFeedrate = 600; % mm/min
-step = 1;
+pFeedrate = 500; % mm/min
+step = 0.8;
 safetyHeight = 200;
 
 %  geometry param
-startCtr = [-60,20];
+startCtr = [-30,20];
 pLyrNum = 40;
-lyrHeight = 0.4;
-wallLength = 30;
-lead = 5;
-inclineAngle = 20;
+lyrHeight = 0.5;
+wallLength = 10;
+lead = 2.5;
+inclineAngle = 0;
 channel = 2;
 
 % shape

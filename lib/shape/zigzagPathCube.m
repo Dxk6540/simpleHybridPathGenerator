@@ -43,6 +43,50 @@ classdef zigzagPathCube
                 feedOffset = [feedOffset; ones(length(path),1)];
             end
         end
+
+        
+        function [path, pwrSeq, feedOffset] = genPrintingPathV2(cubeShape, startPoint, tol, lyrNum, lyrThickness, pwr, zOffset, ~, step)
+%             cubeShape: (1) is the length along x direction and (2) is the channel number.
+% the path is flipped to aviod shut down the light
+            path = [];
+            pwrSeq = [];
+            feedOffset = [];            
+            for lyrIdx = 0 : lyrNum - 1
+                zValue = zOffset + lyrThickness * lyrIdx;
+%                 channel = cubeShape(2) - step;
+                channel = cubeShape(2);
+                cPathSeq = [];
+                cPwrSeq = [];
+                for chnIdx = 0 : channel - 1
+                    tmpPath = [];
+                    tmpPwrSeq = [];
+                    tmpPath = [tmpPath; startPoint(1) + tol, startPoint(2) + chnIdx * step, zValue];
+                    tmpPwrSeq = [tmpPwrSeq; pwr];
+                    tmpPath = [tmpPath; startPoint(1) + step, startPoint(2) + chnIdx * step, zValue];
+                    tmpPwrSeq = [tmpPwrSeq; pwr];
+                    tmpPath = [tmpPath; startPoint(1) + cubeShape(1) - 2 * step, startPoint(2) + chnIdx * step, zValue];
+                    tmpPwrSeq = [tmpPwrSeq; pwr];
+                    tmpPath = [tmpPath; startPoint(1) + cubeShape(1) - 2 * step + tol, startPoint(2) + chnIdx * step, zValue];
+                    tmpPwrSeq = [tmpPwrSeq; pwr];
+                    if rem(chnIdx,2)==1
+                        tmpPath=flipud(tmpPath);
+                        tmpPwrSeq=flipud(tmpPwrSeq);
+                    end
+                    cPathSeq = [cPathSeq; tmpPath];
+                    cPwrSeq = [cPwrSeq; tmpPwrSeq];
+                end
+                if rem(lyrIdx,2)==1
+                    cPathSeq=flipud(cPathSeq);
+                    cPwrSeq=flipud(cPwrSeq);
+                end                    
+                path = [path; cPathSeq];
+                pwrSeq = [pwrSeq; cPwrSeq];
+                feedOffset = [feedOffset; ones(length(path),1)];
+            end
+        end
+        
+        
+        
         
         function path = genMachiningPath(cubeShape, cubeWidth, startPoint, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset, side)
 %             path=[0,0,0];

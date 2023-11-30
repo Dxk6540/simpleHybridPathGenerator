@@ -38,6 +38,7 @@ safetyHeight = min(230, 2*pLyrNum*lyrHeight+20);
 zOffset = 0;
 
 rotation = false;
+ammode = 0;
 aus=true;
 amode=0;
 side = 1; % machining inside is -1 and outside is 1

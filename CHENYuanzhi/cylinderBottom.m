@@ -10,7 +10,7 @@ flowR = 250;% 6 L/min / 20L/min * 1000;
 speedR = 100;% 2 r/min / 10r/min * 1000;
 pFeedrate = 650; % mm/min
 step = 0.8;
-channel = 1;
+channel = 6;
 
 % machining process param
 mFeedrate = 30; % mm/min
@@ -22,12 +22,12 @@ planarMachiningDepth = 3;
 
 %  geometry param
 startCtr = [0,0];
-pLyrNum = 14;
+pLyrNum = 80;
 lyrHeight = 0.5;
-radius = 29.7;
+radius = 15.2;
 tol = 0.1;
 safetyHeight = 230;
-zOffset = 113;
+zOffset = 0;
 side = 1; % machining inside is -1 and outside is 1
 outterWallOffsetRng = [0.8, 0];
 innerWallOffsetRng = [radius-1, radius-1.025];
@@ -50,7 +50,7 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     pg.addCmd(";;;;;start a printing process;;;;;;;;;;");
     pg.changeMode(1);
     [pPathSeq, pwrSeq, feedOffset] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, ...
-                                        pwr, zOffset, channel, step,2,5,55);
+                                        pwr, zOffset, channel, step,0,0,0);
     lenPosSeq = ones(length(pPathSeq),1) * lenPos;
     pg.setLaser(0, lenPos, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
     pg.startRTCP(safetyHeight, 16);

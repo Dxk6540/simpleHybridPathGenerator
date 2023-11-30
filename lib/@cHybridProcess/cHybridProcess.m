@@ -43,7 +43,7 @@ classdef cHybridProcess < handle
 
         function procParam = getDefaultProcessParam(obj)            
             % machining process param                      
-            procParam.safetyHeight = 220;
+            procParam.safetyHeight = 20;
             procParam.usingRTCP = 0;
             procParam.travelFeedrate = 3000;
         end
