@@ -2,7 +2,7 @@
 addpath('../lib')
 addpath('../lib/shape')
 
-mFilename = strcat('./mRtc2',date,'.txt');
+mFilename = strcat('./mRtcv3',date,'.txt');
 
 hProc = cHybridProcess(mFilename);
 hProc.sMachinParam_.spindleSpeed = 8000; % mm/min

@@ -119,7 +119,16 @@ classdef cRtcpCylinder < handle
             toolTipPtSeqMat = flipud(cell2mat(toolTipPtSeq));
             toolContactPtSeqMat = flipud(cell2mat(toolContactPtSeq));
             bcSeq = sequentialSolveBC(toolAxisSeqMat, [0,0]);
-            pathSeq=[toolTipPtSeqMat, bcSeq; quitPath];
+            
+            enteringPath = [];
+            startBcAgl = bcSeq(1,:);   
+            enteringPath = [toolTipPtSeqMat(1,:) + toolAxisSeqMat(1,:)*30, startBcAgl];
+            
+            endCaxisAgl = bcSeq(end,2);
+            for i = 1:length(quitPath)
+                quitPath(i,5) = endCaxisAgl;
+            end
+            pathSeq=[enteringPath; toolTipPtSeqMat, bcSeq; quitPath];
             
             drawStep_ = 1;
             plot3(toolContactPtSeqMat(1:drawStep_:end,1), toolContactPtSeqMat(1:drawStep_:end,2), toolContactPtSeqMat(1:drawStep_:end,3), 'b')
@@ -132,6 +141,9 @@ classdef cRtcpCylinder < handle
             hold on 
             plot3(quitPath(1:drawStep_:end,1), quitPath(1:drawStep_:end,2), quitPath(1:drawStep_:end,3),'y')
             plot3(quitPath(1,1), quitPath(1,2), quitPath(1,3),'yo')            
+
+            plot3(pathSeq(1:drawStep_:end,1), pathSeq(1:drawStep_:end,2), pathSeq(1:drawStep_:end,3),'g')
+            plot3(pathSeq(1,1), pathSeq(1,2), pathSeq(1,3),'go')            
             
             ax = gca;
             cRtcpCylinder.drawTools(ax, toolTipPtSeqMat, toolAxisSeqMat, cRtcpCylinder.drawStep_);
