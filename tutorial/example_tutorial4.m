@@ -4,7 +4,7 @@
 % the above process will totally repeat alterNum + 1 times.
 close all
 % file param:
-pFilename = strcat('./tutorial4_alternativeTest',date,'.txt');
+pFilename = strcat('./example_tutorial4',date,'.txt');
 
 hProc = cHybridProcess(pFilename);
 hProc.sMachinParam_.spindleSpeed = 8000; % mm/min
