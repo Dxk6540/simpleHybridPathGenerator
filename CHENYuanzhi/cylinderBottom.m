@@ -4,13 +4,13 @@ hFilename = strcat('./CylinderFixing',date,'.txt');
 % printing process param
 pwr = 200; % 1.2KW / 4kw *1000;
 lenPos = 900;
-flowL = 250; % 6 L/min / 20L/min * 1000;
-speedL = 100;% 2 r/min / 10r/min * 1000;
+flowL = 0; % 6 L/min / 20L/min * 1000;
+speedL = 0;% 2 r/min / 10r/min * 1000;
 flowR = 250;% 6 L/min / 20L/min * 1000;
 speedR = 100;% 2 r/min / 10r/min * 1000;
-pFeedrate = 650; % mm/min
+pFeedrate = 600; % mm/min
 step = 0.8;
-channel = 6;
+channel = 2;
 
 % machining process param
 mFeedrate = 30; % mm/min
@@ -21,10 +21,10 @@ machiningLyrThickness = 0.1;
 planarMachiningDepth = 3;
 
 %  geometry param
-startCtr = [0,0];
-pLyrNum = 80;
+startCtr = [0,00];
+pLyrNum = 20;
 lyrHeight = 0.5;
-radius = 15.2;
+radius = 70;
 tol = 0.1;
 safetyHeight = 230;
 zOffset = 0;
@@ -50,17 +50,17 @@ for zOffset = zOffsetRng(1): sglWpHeight: zOffsetRng(2)
     pg.addCmd(";;;;;start a printing process;;;;;;;;;;");
     pg.changeMode(1);
     [pPathSeq, pwrSeq, feedOffset] = handle.genPrintingPath(radius, startCtr, tol, pLyrNum, lyrHeight, ...
-                                        pwr, zOffset, channel, step,0,0,0);
+                                        pwr, zOffset, channel, step,3,3,0);
     lenPosSeq = ones(length(pPathSeq),1) * lenPos;
     pg.setLaser(0, lenPos, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
     pg.startRTCP(safetyHeight, 16);
     pg.saftyToPt([nan, nan, safetyHeight], pPathSeq(1,:), 3000); % safety move the start pt
     pg.pauseProgram();% pause and wait for start (the button)
-    pg.enableLaser(1, 10);
+    pg.enableLaser(2, 5);
     %%% add path pts
     pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrate);
     %%% exist printing mode
-    pg.disableLaser(1);
+    pg.disableLaser(2);
     pg.stopRTCP(safetyHeight, 16);  
     pg.draw_ = false;
     pg.drawPath(pPathSeq, pPathSeq);
