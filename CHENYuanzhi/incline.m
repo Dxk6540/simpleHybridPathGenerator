@@ -25,8 +25,8 @@ pLyrNum = 40;
 lyrHeight = 0.5;
 wallLength = 10;
 lead = 2.5;
-inclineAngle = 0;
-channel = 2;
+inclineAngle = 5;
+channel = 1;
 
 % shape
 handle = inclineWall;
