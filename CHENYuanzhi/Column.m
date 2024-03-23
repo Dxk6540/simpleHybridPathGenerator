@@ -6,42 +6,41 @@
 %%%%%%%%%%%%%%%%%%
 
 % file param:
-hFilename = strcat('./Beam.txt');
+hFilename = strcat('./Column.txt');
 
 % printing process param
-pwr = 180; % 1.2KW / 4kw *1000;
+pwr = 160; % 1.2KW / 4kw *1000;
 lenPos = 900;
 flowL = 250; % 6 L/min / 20L/min * 1000;
 speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 400;% 6 L/min / 20L/min * 1000;
 speedR = 100;% 2 r/min / 10r/min * 1000;
-pFeedrate = 180; % mm/min
+pFeedrate = 500; % mm/min
 step = 0.8;
 safetyHeight = 25;
 
 %  geometry param
-startCtr = [0,60,18.5];
+startCtr = [-2.4,60];
 pLyrNum = 40;
 lyrHeight = 0.5;
 wallLength = 15;
-clearance=0.5;
-lead = 4;
-inclineAngle = 50;
+clearance=40;
+lead = 5;
+inclineAngle = 0;
 leanAngle = 5;
-channel = 1;
-dir=1;
+channel = 4;
 % shape
-handle = inclinePrintedBeam;
+handle = inclinePrintedWall;
 
 %%
 %%%%%%%%%%%%%% printing path
 %%%% the regular code for generate a script
 pg = cPathGen(hFilename); % create the path generator object
 pg.genNewScript();
-%totalPath=[];
-%%% Beam1
+totalPath=[];
+%%% Column1
 pg.changeMode(1); % change to printing mode
-[pPathSeq,pwrSeq] = handle.genPrintingPath(wallLength, startCtr, lead, pLyrNum, lyrHeight, pwr, inclineAngle, channel, step, dir, leanAngle);
+[pPathSeq,pwrSeq] = handle.genPrintingPath(wallLength, startCtr, lead, pLyrNum, lyrHeight, pwr, inclineAngle, channel, step, leanAngle);
 lenPosSeq = ones(length(pPathSeq),1) * lenPos;
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%% start printing mode
@@ -54,15 +53,13 @@ pg.enableLaser(1, 5);
 pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrate);
 %%% exist printing mode
 pg.disableLaser(1);
-pg.stopRTCP(200, 16);
+pg.stopRTCP(safetyHeight, 16);
 totalPath=[totalPath;pPathSeq];
 
-%%% Beam2
-startCtr = [40,60,18.5];
-inclineAngle = -50;
-dir=-1;
+%%% Column2
+startCtr(1) = startCtr(1)+clearance+step*(channel-1);
 pg.changeMode(1); % change to printing mode
-[pPathSeq,pwrSeq] = handle.genPrintingPath(wallLength, startCtr, lead, pLyrNum, lyrHeight, pwr, inclineAngle, channel, step, dir, leanAngle);
+[pPathSeq,pwrSeq] = handle.genPrintingPath(wallLength, startCtr, lead, pLyrNum, lyrHeight, pwr, inclineAngle, channel, step, leanAngle);
 lenPosSeq = ones(length(pPathSeq),1) * lenPos;
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%% start printing mode
@@ -75,9 +72,8 @@ pg.enableLaser(1, 5);
 pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrate);
 %%% exist printing mode
 pg.disableLaser(1);
-pg.stopRTCP(200, 16);
+pg.stopRTCP(safetyHeight, 16);
 totalPath=[totalPath;pPathSeq];
-
 
 %%% draw
 pg.draw_ = true;
