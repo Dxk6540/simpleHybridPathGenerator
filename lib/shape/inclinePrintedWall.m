@@ -47,6 +47,7 @@ classdef inclinePrintedWall
                     if rem(chnIdx,2)==0
                         tmpPath=flipud(tmpPath);
                         tmpPwrSeq=flipud(tmpPwrSeq);
+                        tmpAxisSeq=flipud(tmpAxisSeq);
                         lean = -lean;
                     end
                     cPathSeq = [cPathSeq; tmpPath];
@@ -57,6 +58,7 @@ classdef inclinePrintedWall
                     cPathSeq=flipud(cPathSeq);
                     cPwrSeq=flipud(cPwrSeq);
                     cAxisSeq=flipud(cAxisSeq);
+                    lean = -lean;
                 end
                 path = [path; cPathSeq, sequentialSolveBC(cAxisSeq, [0,0])];
                 pwrSeq = [pwrSeq; cPwrSeq];
