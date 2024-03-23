@@ -24,10 +24,10 @@ startCtr = [-30,20,30];
 pLyrNum = 40;
 lyrHeight = 0.5;
 wallLength = 10;
-clearance=10;
+clearance=0.5;
 lead = 2.5;
 inclineAngle = 30;
-channel = 1;
+channel = 2;
 
 % shape
 handle = inclinePrintedBeam;
@@ -55,7 +55,7 @@ for inclineAngle = 40:40
     pg.disableLaser(1);
     pg.stopRTCP(safetyHeight, 16);
     totalPath=[totalPath;pPathSeq];
-    startCtr(1)= startCtr(1)+clearance;
+    startCtr(3)= startCtr(3)+clearance;
 end
 pg.draw_ = true;
 pg.drawPath(totalPath, totalPath);
