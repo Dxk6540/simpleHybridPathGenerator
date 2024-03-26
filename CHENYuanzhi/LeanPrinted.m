@@ -21,7 +21,7 @@ safetyHeight = 25;
 traverse=2000;
 
 %  geometry param
-startCtr = [-77.5,-70];
+startCtr = [-85,-70];
 pLyrNum = 40;
 lyrHeight = 0.5;
 wallLength = 15;
@@ -43,7 +43,7 @@ pg.genNewScript();
 totalPath=[];
 for pFeedrate = 120:20:240
     startCtrTmp = startCtr;
-    for inclineAngle = 0:5:45
+    for inclineAngle = 0:5:60
         pg.changeMode(1); % change to printing mode
         [pPathSeq,pwrSeq,pFeedrateSeq] = handle.genPrintingPath(wallLength, startCtrTmp, lead, pLyrNum, lyrHeight, pwr, inclineAngle, channel, step, leanAngle, pFeedrate, traverse, offset);
         lenPosSeq = ones(length(pPathSeq),1) * lenPos;
