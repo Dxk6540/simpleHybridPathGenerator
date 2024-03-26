@@ -29,7 +29,8 @@ clearance=40;
 lead = 0.5;
 inclineAngle = 0;
 leanAngle = 5;
-channel = 4;
+channel = 2;
+offset=1;
 % shape
 handle = inclinePrintedWall;
 
@@ -41,7 +42,7 @@ pg.genNewScript();
 totalPath=[];
 %%% Column1
 pg.changeMode(1); % change to printing mode
-[pPathSeq,pwrSeq,pFeedrateSeq] = handle.genPrintingPath(wallLength, startCtr, lead, pLyrNum, lyrHeight, pwr, inclineAngle, channel, step, leanAngle ,pFeedrate, traverse);
+[pPathSeq,pwrSeq,pFeedrateSeq] = handle.genPrintingPath(wallLength, startCtr, lead, pLyrNum, lyrHeight, pwr, inclineAngle, channel, step, leanAngle ,pFeedrate, traverse, offset);
 lenPosSeq = ones(length(pPathSeq),1) * lenPos;
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%% start printing mode

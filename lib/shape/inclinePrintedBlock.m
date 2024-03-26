@@ -2,7 +2,7 @@
 % functions for incline single channel wall
 % author: Yuanzhi CHEN
 
-classdef inclinePrintedWall
+classdef inclinePrintedBlock
 	properties
         shape_="Wall";
     end
@@ -15,7 +15,7 @@ classdef inclinePrintedWall
             pwrSeq = [];
             feedSeq = [];
             y=startPoint(2);
-            lean=-lean;
+            inclineLeanAngle=incline+lean;
             for lyrIdx = 0 : lyrNum - 1
                 cPathSeq = [];
                 cPwrSeq = [];
@@ -28,39 +28,39 @@ classdef inclinePrintedWall
                     tmpPwrSeq = [];
                     tmpAxisSeq = [];
                     tmpFeedSeq = [];
+                    tmpLength = length + zValue*sin(incline/180*pi);
                     tmpPath = [tmpPath; x, startPoint(2)-lead, zValue];
                     tmpPwrSeq = [tmpPwrSeq; 0];
-                    tmpAxisSeq = [tmpAxisSeq;(roty(incline/180*pi)*rotx(lean/180*pi)*[0,0,1]')'];
+                    tmpAxisSeq = [tmpAxisSeq;(rotx(lean/180*pi)*[0,0,1]')'];
                     tmpFeedSeq = [tmpFeedSeq; traverse];
                     tmpPath = [tmpPath; x, startPoint(2)-0.1, zValue];
                     tmpPwrSeq = [tmpPwrSeq; 0];
-                    tmpAxisSeq = [tmpAxisSeq;(roty(incline/180*pi)*rotx(lean/180*pi)*[0,0,1]')'];
+                    tmpAxisSeq = [tmpAxisSeq;(rotx(lean/180*pi)*[0,0,1]')'];
                     tmpFeedSeq = [tmpFeedSeq; feedrate];
                     tmpPath = [tmpPath; x, startPoint(2), zValue];
                     tmpPwrSeq = [tmpPwrSeq; pwr];
-                    tmpAxisSeq = [tmpAxisSeq;(roty(incline/180*pi)*rotx(lean/180*pi)*[0,0,1]')'];
+                    tmpAxisSeq = [tmpAxisSeq;(rotx(lean/180*pi)*[0,0,1]')'];
                     tmpFeedSeq = [tmpFeedSeq; feedrate];
-                    tmpPath = [tmpPath; x, startPoint(2) + length/3, zValue];
+                    tmpPath = [tmpPath; x, startPoint(2) + tmpLength/3, zValue];
                     tmpPwrSeq = [tmpPwrSeq; pwr];
-                    tmpAxisSeq = [tmpAxisSeq;(roty(incline/180*pi)*rotx(0/180*pi)*[0,0,1]')'];
+                    tmpAxisSeq = [tmpAxisSeq;(rotx(0/180*pi)*[0,0,1]')'];
                     tmpFeedSeq = [tmpFeedSeq; feedrate];
-                    tmpPath = [tmpPath; x, startPoint(2) + 2*length/3, zValue];
+                    tmpPath = [tmpPath; x, startPoint(2) + 2*tmpLength/3, zValue];
                     tmpPwrSeq = [tmpPwrSeq; pwr];
-                    tmpAxisSeq = [tmpAxisSeq;(roty(incline/180*pi)*rotx(0/180*pi)*[0,0,1]')'];
+                    tmpAxisSeq = [tmpAxisSeq;(rotx(0/180*pi)*[0,0,1]')'];
                     tmpFeedSeq = [tmpFeedSeq; feedrate];
-                    tmpPath = [tmpPath; x, startPoint(2) + length, zValue];
+                    tmpPath = [tmpPath; x, startPoint(2) + tmpLength, zValue];
                     tmpPwrSeq = [tmpPwrSeq; pwr];
-                    tmpAxisSeq = [tmpAxisSeq;(roty(incline/180*pi)*rotx(-lean/180*pi)*[0,0,1]')'];
+                    tmpAxisSeq = [tmpAxisSeq;(rotx(-lean/180*pi)*[0,0,1]')'];
                     tmpFeedSeq = [tmpFeedSeq; feedrate];
-                    tmpPath = [tmpPath; x, startPoint(2) + length + 0.1, zValue];
+                    tmpPath = [tmpPath; x, startPoint(2) + tmpLength + 1, zValue];
                     tmpPwrSeq = [tmpPwrSeq; 0];
-                    tmpAxisSeq = [tmpAxisSeq;(roty(incline/180*pi)*rotx(-lean/180*pi)*[0,0,1]')'];
+                    tmpAxisSeq = [tmpAxisSeq;(rotx(-inclineLeanAngle/180*pi)*[0,0,1]')'];
                     tmpFeedSeq = [tmpFeedSeq; feedrate];
-                    tmpPath = [tmpPath; x, startPoint(2) + length + lead, zValue];
+                    tmpPath = [tmpPath; x, startPoint(2) + tmpLength + lead, zValue];
                     tmpPwrSeq = [tmpPwrSeq; 0];
-                    tmpAxisSeq = [tmpAxisSeq;(roty(incline/180*pi)*rotx(-lean/180*pi)*[0,0,1]')'];
+                    tmpAxisSeq = [tmpAxisSeq;(rotx(-inclineLeanAngle/180*pi)*[0,0,1]')'];
                     tmpFeedSeq = [tmpFeedSeq; traverse];
-                    lean = -lean;
                     if rem(chnIdx,2)==0
                         tmpPath=flipud(tmpPath);
                         tmpPwrSeq=flipud(tmpPwrSeq);

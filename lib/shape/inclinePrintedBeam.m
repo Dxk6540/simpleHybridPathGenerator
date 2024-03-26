@@ -54,11 +54,11 @@ classdef inclinePrintedBeam
                     tmpPath = [tmpPath; x, startPoint(2) + length/3, zValue];
                     tmpPwrSeq = [tmpPwrSeq; pwr];
                     tmpAxisSeq = [tmpAxisSeq;(roty(incline/180*pi)*rotx(0/180*pi)*[0,0,1]')'];
-                    tmpFeedSeq = [tmpFeedSeq; 1.0*feedrate];
+                    tmpFeedSeq = [tmpFeedSeq; feedrate];
                     tmpPath = [tmpPath; x, startPoint(2) + 2*length/3, zValue];
                     tmpPwrSeq = [tmpPwrSeq; pwr];
                     tmpAxisSeq = [tmpAxisSeq;(roty(incline/180*pi)*rotx(0/180*pi)*[0,0,1]')'];
-                    tmpFeedSeq = [tmpFeedSeq; 1.0*feedrate];
+                    tmpFeedSeq = [tmpFeedSeq; feedrate];
                     tmpPath = [tmpPath; x, startPoint(2) + length, zValue];
                     tmpPwrSeq = [tmpPwrSeq; pwr];
                     tmpAxisSeq = [tmpAxisSeq;(roty(incline/180*pi)*rotx(-lean/180*pi)*[0,0,1]')'];
