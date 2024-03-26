@@ -41,7 +41,7 @@ handle = inclinePrintedBeam;
 %%%% the regular code for generate a script
 pg = cPathGen(hFilename); % create the path generator object
 pg.genNewScript();
-%totalPath=[];
+totalPath=[];
 %%% Beam1
 pg.changeMode(1); % change to printing mode
 [pPathSeq,pwrSeq, pFeedrateSeq] = handle.genPrintingPath(wallLength, startCtr, lead, pLyrNum, lyrHeight, pwr, inclineAngle, channel, step, dir, leanAngle, pFeedrate, closure,traverse, offset);
