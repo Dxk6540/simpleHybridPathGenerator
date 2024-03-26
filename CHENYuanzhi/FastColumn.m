@@ -9,8 +9,8 @@
 hFilename = strcat('./Column.txt');
 
 % printing process param
-pwr = 160; % 1.2KW / 4kw *1000;
-lenPos = 900;
+pwr = 600; % 1.2KW / 4kw *1000;
+lenPos = 100;
 flowL = 250; % 6 L/min / 20L/min * 1000;
 speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 400;% 6 L/min / 20L/min * 1000;
@@ -21,7 +21,7 @@ safetyHeight = 25;
 traverse=2000;
 
 %  geometry param
-startCtr = [-2.4,-90];
+startCtr = [0,-90];
 pLyrNum = 40;
 lyrHeight = 0.5;
 wallLength = 180;
@@ -29,7 +29,7 @@ clearance=40;
 lead = 0.5;
 inclineAngle = 0;
 leanAngle = 5;
-channel = 4;
+channel = 1;
 % shape
 handle = inclinePrintedWall;
 
