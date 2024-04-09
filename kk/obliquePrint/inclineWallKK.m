@@ -27,7 +27,8 @@ classdef inclineWallKK
             pwrSeq = [];
             feedOffset = [];
             
-            cRot = atan((stPt(2)-edPt(2))/(stPt(1)-edPt(1)))/pi*180;
+%             cRot = atan((stPt(2)-edPt(2))/(stPt(1)-edPt(1)))/pi*180;
+            cRot = atan( (stPt(1)-edPt(1)) / (stPt(2)-edPt(2)) )/pi*180;
 
             for lyrIdx = 0 : lyrNum - 1
                 stPtTmp = [stPt, zOff+thickness*lyrIdx, agl, cRot];

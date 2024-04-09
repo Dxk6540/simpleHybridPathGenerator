@@ -21,7 +21,7 @@ hProc.sProcessParam_.usingRTCP = 1;
 %  geometry param
 wallGeo = inclineWallKK.getDefaultParam();
 wallGeo.startPt = [0,0];
-wallGeo.endPt = [10,10];
+wallGeo.endPt = [0,10];
 wallGeo.height = 5;
 wallGeo.Zoffset = 70;
 wallGeo.tol = 0.1;
