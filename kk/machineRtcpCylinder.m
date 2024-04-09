@@ -13,8 +13,8 @@ hProc.sProcessParam_.usingRTCP = 1;
 %  geometry param
 cylinderGeo = cRtcpCylinder.getDefaultParam();
 cylinderGeo.profileRadiu = 10;
-cylinderGeo.height = 20;
-cylinderGeo.center = [50,20,10];
+cylinderGeo.height = 12;
+cylinderGeo.center = [35,-60,4];
 cylinderGeo.tol = 0.1;
 cylinderGeo.lyrThickness = 0.5; % max rad?
 cylinderGeo.rollAgl = pi/6;  %the rot angle is the angle between the tool axis and tangent
