@@ -21,29 +21,29 @@ zOffset = 0.5;
 channel = 6;
 step = 1;
 
-% % shape
-% handle=contourPathCube;
-% 
-% 
-% 
-% %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
-% %%%% the regular code for generate a script
-% pg = cPathGen(pFilename); % create the path generator object
-% pg.genNewScript();
-% pg.draw_ = true;
-% 
-% % path = genMachiningPath(cubeLength, startPoint, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset,side)
-% wallOffset = 0.6;
-% side = 1;
-% mPathSeq = handle.genMachiningPath(radius, 5, startCtr, tol, pLyrNum * lyrHeight, ...
-%                                                 lyrHeight, hProc.sMachinParam_.toolRadiu, wallOffset, zOffset, side);
-% 
-% % hProc.genNormalPrintingProcess(pg, pPathSeq, pwrSeq, hProc.sPrintParam_.pFeedrate, hProc.sPrintParam_);
-% ret = hProc.genNormalMachiningProcess(pg, mPathSeq, hProc.sMachinParam_.mFeedrate, side, hProc.sMachinParam_);
-% pg.closeScript();
-% 
-% %%% draw the path
-% pg.drawPath(mPathSeq, mPathSeq);
+% shape
+handle=contourPathCube;
+
+
+
+%%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
+%%%% the regular code for generate a script
+pg = cPathGen(pFilename); % create the path generator object
+pg.genNewScript();
+pg.draw_ = true;
+
+% path = genMachiningPath(cubeLength, startPoint, tol, wpHeight, lyrThickness, toolRadiu, wallOffset, zOffset,side)
+wallOffset = 0.6;
+side = 1;
+mPathSeq = handle.genMachiningPath(radius, 5, startCtr, tol, pLyrNum * lyrHeight, ...
+                                                lyrHeight, hProc.sMachinParam_.toolRadiu, wallOffset, zOffset, side);
+
+% hProc.genNormalPrintingProcess(pg, pPathSeq, pwrSeq, hProc.sPrintParam_.pFeedrate, hProc.sPrintParam_);
+ret = hProc.genNormalMachiningProcess(pg, mPathSeq, hProc.sMachinParam_.mFeedrate, side, hProc.sMachinParam_);
+pg.closeScript();
+
+%%% draw the path
+pg.drawPath(mPathSeq, mPathSeq);
 
 
 
