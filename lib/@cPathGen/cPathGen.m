@@ -186,11 +186,11 @@ classdef cPathGen < handle
                 return;
             end                        
             if(length(pt) == 3)
-                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f I%d J%d F%.3f\r\n", pt(1), pt(2), pt(3), pwr, lenPos, feedrate);                  
+                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f I%.3f J%d F%.3f\r\n", pt(1), pt(2), pt(3), pwr, lenPos, feedrate);                  
                 ret = 1;
                 return;
             elseif (length(pt) == 5)
-                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f B%.3f C%.3f I%d J%d F%.3f\r\n", pt(1), pt(2), pt(3), pt(4), pt(5), pwr, lenPos, feedrate);                  
+                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f B%.3f C%.3f I%.3f J%d F%.3f\r\n", pt(1), pt(2), pt(3), pt(4), pt(5), pwr, lenPos, feedrate);                  
                 ret = 1;
                 return;
             else
@@ -217,12 +217,12 @@ classdef cPathGen < handle
                 return;
             end                
             if(length(pt) == 3)
-                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f I%d J%d V%d K%d W%d U%d F%.3f\r\n", ...
+                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f I%.3f J%d V%d K%d W%d U%d F%.3f\r\n", ...
                                   pt(1), pt(2), pt(3), pwr, lenPos, flowL, speedL, flowR, speedR, feedrate);                  
                 ret = 1;
                 return;
             elseif (length(pt) == 5)
-                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f B%.3f C%.3f I%d J%d V%d K%d W%d U%d F%.3f\r\n", ...
+                fprintf(obj.fid_, "G01 X%.3f Y%.3f Z%.3f B%.3f C%.3f I%.3f J%d V%d K%d W%d U%d F%.3f\r\n", ...
                     pt(1), pt(2), pt(3), pt(4), pt(5), pwr, lenPos, flowL, speedL, flowR, speedR, feedrate);                  
                 ret = 1;
                 return;
