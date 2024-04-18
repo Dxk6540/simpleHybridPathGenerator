@@ -48,6 +48,9 @@ classdef singlechannelsinglelayer
                     feedSeq = [feedSeq;cFeedSeq];
                 end
             end
+            EDR=(pwrSeq*4)./(feedSeq/60);
+            max(EDR)
+            min(EDR(EDR~=0))
         end
         
         function power = getPower(frequency, num)
@@ -59,19 +62,19 @@ classdef singlechannelsinglelayer
             power(3,:)=sin(t);
             power(4,:)=square(t);
             power(4,end)=power(4,end-1);
-            power=power*0.4/2+1;
+            power=power*0.3/2+1;
         end
         
         function feedrate = getFeedrate(frequency,num)
             feedrate=zeros(4,num);
             feedrate(1,:)=0;
             t=1:num;
-            t=t/num*(2*pi*frequency);
+            t=t/num*(2*pi*frequency)-0.3*pi;
             feedrate(2,:)=sawtooth(t,0.5);
             feedrate(3,:)=sin(t);
             feedrate(4,:)=square(t);
             feedrate(4,end)=feedrate(4,end-1);
-            feedrate=-feedrate*0.4/2+1;
+            feedrate=feedrate*0.4/2+1;
         end
     end
 end
