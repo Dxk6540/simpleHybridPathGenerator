@@ -117,7 +117,7 @@ classdef cPathGen < handle
 %             obj.addPathPt([0, 0, safetyHeight, 0, 0]);    
             fprintf(obj.fid_, "G49\r\n");   
             fprintf(obj.fid_, "G43H%d ;;¿ªµ¶²¹\r\n", toolNum);                   
-            obj.returnToSafety(safetyHeight, 1000);
+            obj.returnToSafety(safetyHeight, 3000);
             ret = 1;
         end
 

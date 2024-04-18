@@ -15,7 +15,7 @@ flowL = 250; % 6 L/min / 20L/min * 1000;
 speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 400;% 6 L/min / 20L/min * 1000;
 speedR = 100;% 2 r/min / 10r/min * 1000;
-pFeedrate = 500; % mm/min
+pFeedrate = 600; % mm/min
 step = 0.8;
 safetyHeight = 25;
 traverse=2000;
@@ -24,7 +24,7 @@ traverse=2000;
 startCtr = [-77.5,-70];
 pLyrNum = 40;
 lyrHeight = 0.5;
-wallLength = 15;
+wallLength = 5;
 clearanceX=15;
 clearanceY=30;
 lead = 5;
@@ -51,7 +51,7 @@ for inclineAngle = 0:5:45
     pg.setLaser(0, lenPos, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
     pg.addPathPts([0,0,safetyHeight,inclineAngle,0], 3000);
     pg.startRTCP(safetyHeight, 16);
-    pg.saftyToPt([nan, nan, safetyHeight], pPathSeq(1,:), 3000); % safety move the start pt
+    pg.saftyToPt([nan, nan, safetyHeight], pPathSeq(1,1:3), 3000); % safety move the start pt
     pg.enableLaser(1, 5);
     %%% add path pts
     pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrateSeq);

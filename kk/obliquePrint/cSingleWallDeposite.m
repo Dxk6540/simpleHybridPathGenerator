@@ -1,5 +1,4 @@
-
-classdef inclineWallKK
+classdef cSingleWallDeposite
 	properties
         shape_="Wall";
     end
@@ -17,7 +16,7 @@ classdef inclineWallKK
             thickness = geoParam.lyrThickness; % in WCS
             agl = geoParam.rollAgl;
             lyrNum = round(height/thickness);
-            
+            sideLyr = geoParam.sideLyrNum;
             pwr = procParam.sPrintParam_.pwr;
             
             path = [];
@@ -29,10 +28,39 @@ classdef inclineWallKK
             if geoParam.inverseC == 1
                 cRot = -cRot;
             end
-
+            
+            % one side             
+            for lyrIdx = 0 : sideLyr - 1
+                stPtTmp = [stPt(1),stPt(2)+lyrIdx*thickness, zOff, agl, cRot];
+                edPtTmp = [edPt(1),edPt(2)+lyrIdx*thickness, zOff, agl, cRot];
+                cPathSeq = [stPtTmp;
+                            edPtTmp;
+                            stPtTmp];
+                cPwrSeq = [0;pwr;0];
+                path = [path; cPathSeq];
+                pwrSeq = [pwrSeq; cPwrSeq];
+            end
+            % middle            
+            stPtTmp = [stPt, zOff, 0, cRot];
+            path = [path; stPtTmp];
+            pwrSeq = [pwrSeq; 0];            
+            
+            % another side                    
+            for lyrIdx = 0 : sideLyr - 1
+                stPtTmp = [stPt(1),stPt(2)-lyrIdx*thickness, zOff, agl, -cRot];
+                edPtTmp = [edPt(1),edPt(2)-lyrIdx*thickness, zOff, agl, -cRot];
+                cPathSeq = [stPtTmp;
+                            edPtTmp;
+                            stPtTmp];
+                cPwrSeq = [0;pwr;0];
+                path = [path; cPathSeq];
+                pwrSeq = [pwrSeq; cPwrSeq];
+            end
+                        
+            % ridge
             for lyrIdx = 0 : lyrNum - 1
-                stPtTmp = [stPt, zOff+thickness*lyrIdx, agl, cRot];
-                edPtTmp = [edPt, zOff+thickness*lyrIdx, agl, cRot];
+                stPtTmp = [stPt, zOff+thickness*lyrIdx, 0, 0];
+                edPtTmp = [edPt, zOff+thickness*lyrIdx, 0, 0];
                 cPathSeq = [stPtTmp;
                             edPtTmp;
                             stPtTmp];
@@ -52,6 +80,7 @@ classdef inclineWallKK
             geoParam.lyrThickness = 0.8; % max rad?
             geoParam.rollAgl = 15 / 180 * pi;
             geoParam.inverseC = 0;
+            geoParam.sideLyrNum = 3;
 %             geoParam.pitchAgl = 25 / 180 * pi;
             
         end                
