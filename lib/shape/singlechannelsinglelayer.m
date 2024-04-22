@@ -8,10 +8,11 @@ classdef singlechannelsinglelayer
     end
     
     methods(Static)
-        function [path, pwrSeq,feedSeq] = genPrintingPath(pwr, fr, traverse, frequency)
+        function [path, pwrSeq,feedSeq,vertices] = genPrintingPath(pwr, fr, traverse, frequency)
             path = [];
             pwrSeq = [];
             feedSeq = [];
+            vertices = [];
             lead = 1;
             length=36;
             xInterval=5;
@@ -30,11 +31,13 @@ classdef singlechannelsinglelayer
                     cPathSeq(1,:)=[skip*(length+xInterval)-length-0.5*xInterval-lead,(count-3.5)*yInterval,0,0,0];
                     cPwrSeq(1,:)=0;
                     cFeedSeq(1,:)=traverse;
+                    vertices=[vertices;skip*(length+xInterval)-length-0.5*xInterval,(count-3.5)*yInterval];
                     for point = 1:num
                         cPathSeq(point+1,:)=[skip*(length+xInterval)-length-0.5*xInterval+(point-1)*sample,(count-3.5)*yInterval,0,0,0];
                         cPwrSeq(point+1,:)=power(pIndex,point);
                         cFeedSeq(point+1,:)=feedrate(fIndex,point);
                     end
+                    vertices=[vertices;skip*(length+xInterval)-0.5*xInterval,(count-3.5)*yInterval];
                     cPathSeq(num+2,:)=[skip*(length+xInterval)-0.5*xInterval+lead,(count-3.5)*yInterval,0,0,0];
                     cPwrSeq(num+2,:)=0;
                     cFeedSeq(num+2,:)=traverse;

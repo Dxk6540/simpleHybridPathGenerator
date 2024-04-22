@@ -1,30 +1,27 @@
 %1. load all melt pool images of one plate
-file_path =  'E:\Code\simpleHybridPathGenerator\CHENYuanzhi\monitoring\meltpool_coaxial\2024_03_27\';% 图像文件夹路径  
+file_path =  'D:\code\simpleHybridPathGenerator\CHENYuanzhi\monitoring\2024_04_19\';% 图像文件夹路径  
 img_path_list = dir(strcat(file_path,'*.bmp'));
 
 %2. load cld data of one plate
-filename = strcat(file_path,'12');
+filename = strcat(file_path,'SelectedData.txt');
 cldData = importdata(filename);
 
 %3. seperate 16 lines
-open_power=cldData.data(:,3);
-AXIS_X=cldData.data(:,12);
-AXIS_Y=cldData.data(:,13);
-data_num=length(open_power);
-lines=cell(16,1);
-startIdx=1;
+cncTimer=cldData(:,1);
+AXIS_X=cldData(:,3);
+AXIS_Y=cldData(:,4);
+AXIS_Z=cldData(:,5);
+data_num=length(cncTimer);
+cncLines=zeros(16,2);
+Kd_tree = KDTreeSearcher([AXIS_X,AXIS_Y]);
 for lineIdx=1:16
     flag=0;
     lines{lineIdx,1}=[];
-    for i=startIdx:data_num
-        if open_power(i)<100 && flag==1
-            startIdx=i;
-            break;
-        elseif open_power(i)>100
-            lines{lineIdx,1}=[lines{lineIdx,1},i];
-            flag=1;
-        end
-    end
+    startIdx=knnsearch(Kd_tree,vertices(2*lineIdx-1,:));
+    startIdx=startIdx+(vertices(2*lineIdx-1,2)>AXIS_Y(startIdx));
+    endIdx=knnsearch(Kd_tree,vertices(2*lineIdx,:));
+    endIdx=endIdx-(vertices(2*lineIdx-1,2)<AXIS_Y(endIdx));
+    cncLines(lineIdx,:)=[startIdx,endIdx];
 end
 
 % for each line, choose 10 points; for each point, save 5(1) iamges, 

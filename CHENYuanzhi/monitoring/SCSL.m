@@ -32,7 +32,7 @@ pg = cPathGen(hFilename); % create the path generator object
 pg.genNewScript();
 %%% Beam1
 pg.changeMode(1); % change to printing mode
-[pPathSeq,pwrSeq, pFeedrateSeq] = handle.genPrintingPath(pwr, pFeedrate, traverse, frequency);
+[pPathSeq,pwrSeq, pFeedrateSeq,vertices] = handle.genPrintingPath(pwr, pFeedrate, traverse, frequency);
 lenPosSeq = ones(length(pPathSeq),1) * lenPos;
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%% start printing mode
