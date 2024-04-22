@@ -1,5 +1,5 @@
 %1. load all melt pool images of one plate
-file_path =  'D:\code\simpleHybridPathGenerator\CHENYuanzhi\monitoring\2024_04_19\';% 图像文件夹路径  
+file_path =  'D:\code\simpleHybridPathGenerator\CHENYuanzhi\monitoring\2024_04_19\';
 img_path_list = dir(strcat(file_path,'*.bmp'));
 
 %2. load cld data of one plate
@@ -42,7 +42,7 @@ for lineIdx=1:16
         dirName=strcat('E:\Code\simpleHybridPathGenerator\CHENYuanzhi\monitoring\',num2str(frequency),'_',num2str(high),num2str(lineIdx),'_',num2str(pointIdx),'\');
         mkdir(dirName);
         cd dirName
-        save parameters.m samplepoint
+        save parameters.mat samplepoint
         for T=-2*interval:interval:2*interval
             imageName=strcat(file_path,img_path_list(lines{lineIdx,1}(5+step*pointIdx)));
             imageNewName=strcat(dirName,'T',num2str(T));
