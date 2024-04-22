@@ -6,8 +6,8 @@
 %%%%%%%%%%%%%%%%%%
 
 % file param:
-frequency = 9;%1ï¼Œ3ï¼Œ6ï¼Œ9
-high = 1.2;%0.8ï¼Œ1ï¼Œ1.2
+frequency = 1;%1ï¼?3ï¼?6ï¼?9
+high = 1;%0.8ï¼?1ï¼?1.2
 hFilename = strcat('./SCSL_',num2str(frequency),'_',num2str(high),'.txt');
 
 % printing process param
@@ -21,7 +21,7 @@ speedR = 100;% 2 r/min / 10r/min * 1000;
 safetyHeight = 25;
 
 %  geometry param
-traverse=1000;
+traverse=2000;
 % shape
 handle = singlechannelsinglelayer;
 
@@ -37,17 +37,19 @@ lenPosSeq = ones(length(pPathSeq),1) * lenPos;
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%% start printing mode
 pg.setLaser(0, lenPos, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
-pg.addPathPts([0,0,safetyHeight,0,0], 3000);
-pg.addPathPts([0,0,safetyHeight,0,0], 3000);
-pg.saftyToPt([nan, nan, safetyHeight], pPathSeq(1,:), 3000); % safety move the start pt
-pg.enableLaser(1, 5);
+pg.addPathPts([0,0,safetyHeight,0,45], 3000);
+pg.addPathPts([0,0,safetyHeight,0,45], 3000);
+pg.saftyToPt([nan, nan, safetyHeight], pPathSeq(1,:), 500); % safety move the start pt
+pg.enableLaser(1, 20);
 %%% add path pts
 pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrateSeq);
 %%% exist printing mode
 pg.disableLaser(1);
-
+pg.addPathPts([-110,-5,120,0,45], 1000);
 %%% draw
-pg.draw_ = true;
+pg.draw_ = false;
 pg.drawPath(pPathSeq, pPathSeq);
+saveName=strcat('SCSL_',num2str(frequency),'_',num2str(high),'.mat');
+save(saveName,'pPathSeq','pwrSeq','pFeedrateSeq');
 %% end the script
 pg.closeScript();
