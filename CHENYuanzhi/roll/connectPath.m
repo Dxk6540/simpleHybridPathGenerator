@@ -1,7 +1,7 @@
 function [path,on_off,traverse]=connectPath(dxf,seq,reverse,group)
     num=length(seq);
     lead=3;
-    acute=110;
+    theta=120/180*pi;
     path=[];
     on_off=[];
     traverse=[];
@@ -11,6 +11,13 @@ function [path,on_off,traverse]=connectPath(dxf,seq,reverse,group)
         else
             initPath=dxf.entities(seq(i)).vertex;
         end
+        tmpPath=[];
+        for j=1:size(initPath,1)-1
+            if norm(initPath(j+1,:)-initPath(j,:))>0.00001
+                tmpPath=[tmpPath;initPath(j,:)];
+            end
+        end
+        initPath=[tmpPath;initPath(end,:)];
         if size(initPath,1)~=1
             % lead in
             if i==1 || group(i)~=group(i-1)
@@ -19,8 +26,20 @@ function [path,on_off,traverse]=connectPath(dxf,seq,reverse,group)
                 on_off=[on_off;0;0];
                 traverse=[traverse;0;0];
             end
-            % print path
+
             for j=1:size(initPath,1)-1
+                % fishtail
+                if on_off(end)==1
+                    p0=path(end,:);
+                    p1=initPath(j,:);
+                    p2=initPath(j+1,:);
+                    d1=(p0-p1)/norm(p0-p1);d2=(p2-p1)/norm(p2-p1);
+                    if acos(sum(d1.*d2)) < theta
+                        path=[path;path(end,:)-0.01*d1;path(end,:)-lead*d1;path(end,:)-lead*d2;path(end,:)-0.01*d2];
+                        on_off=[on_off;0;0;0;0];
+                    end
+                end
+                % print path
                 path=[path;initPath(j,:)];
                 on_off=[on_off;1];
                 traverse=[traverse;0];

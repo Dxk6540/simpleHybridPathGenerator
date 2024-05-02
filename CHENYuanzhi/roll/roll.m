@@ -1,23 +1,29 @@
 clc; close all;
 % file param:
-pFilename = strcat('./roll',date,'.txt');
+dxfFile='Drawing3.dxf';
+dxf = DXFtool(dxfFile);
+pFilename = strcat('./roll_',dxfFile,'_',date,'.txt');
 pg = cPathGen(pFilename); % create the path generator object
 pg.genNewScript();
 pg.draw_ = true;
 hProc = cHybridProcess(pFilename);
-hProc.sPrintParam_.pFeedrate = 700; % mm/min
+hProc.sPrintParam_.pFeedrate = 400; % mm/min
 hProc.sPrintParam_.powderMode = 1; % both powder are used (for mixing)
 hProc.sPrintParam_.pwr = 200;
-hProc.sProcessParam_.usingRTCP = 1;
+hProc.sProcessParam_.usingRTCP = 0;
 
-radius=100;
-offset=100;
+radius=38.1;
+offset=240;
 center=[150,100];
-dxf = DXFtool('Drawing3.dxf');
 [seq,reverse,group]=connectPoints(dxf.points);
 [path,on_off,traverse]=connectPath(dxf,seq,reverse,group);
+figure; plot(path(:,1),path(:,2));
 [point_3,angle,height]=convert2DPoint(path,center,radius,offset);
-pPathSeq = [point_3, -90*ones(length(angle),1),angle];
+i=cos(angle/180*pi);
+j=-sin(angle/180*pi);
+k=zeros(length(angle),1);
+bcSeq=sequentialSolveBC([i,j,k],[0,0]);
+pPathSeq = [point_3, bcSeq];
 pwrSeq=hProc.sPrintParam_.pwr*on_off;
 feedrateSeq=hProc.sPrintParam_.pFeedrate+traverse*1000;
 
