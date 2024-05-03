@@ -1,6 +1,6 @@
 clc; close all;
 % file param:
-dxfFile='Drawing3.dxf';
+dxfFile='Drawing4.dxf';
 dxf = DXFtool(dxfFile);
 pFilename = strcat('./roll_',dxfFile,'_',date,'.txt');
 pg = cPathGen(pFilename); % create the path generator object
@@ -15,6 +15,8 @@ hProc.sProcessParam_.usingRTCP = 0;
 radius=38.1;
 offset=240;
 center=[150,100];
+cylinderAxis=[0,0,1];
+cylinderOrin=[0,0,0];
 [seq,reverse,group]=connectPoints(dxf.points);
 [path,on_off,traverse]=connectPath(dxf,seq,reverse,group);
 figure; plot(path(:,1),path(:,2));
@@ -22,8 +24,9 @@ figure; plot(path(:,1),path(:,2));
 i=cos(angle/180*pi);
 j=-sin(angle/180*pi);
 k=zeros(length(angle),1);
-bcSeq=sequentialSolveBC([i,j,k],[0,0]);
-pPathSeq = [point_3, bcSeq];
+[transformedPts,transformedNorms] = cylinderCordTrans(point_3, [i,j,k], cylinderAxis, cylinderOrin);
+bcSeq=sequentialSolveBC(transformedNorms,[0,0]);
+pPathSeq = [transformedPts, bcSeq];
 pwrSeq=hProc.sPrintParam_.pwr*on_off;
 feedrateSeq=hProc.sPrintParam_.pFeedrate+traverse*1000;
 
