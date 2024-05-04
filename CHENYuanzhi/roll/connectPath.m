@@ -37,6 +37,7 @@ function [path,on_off,traverse]=connectPath(dxf,seq,reverse,group)
                     if acos(sum(d1.*d2)) < theta
                         path=[path;path(end,:)-0.01*d1;path(end,:)-lead*d1;path(end,:)-lead*d2;path(end,:)-0.01*d2];
                         on_off=[on_off;0;0;0;0];
+                        traverse=[traverse;1;1;1;1];
                     end
                 end
                 % print path

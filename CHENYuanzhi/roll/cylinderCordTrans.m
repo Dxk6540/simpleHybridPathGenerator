@@ -1,6 +1,6 @@
 function [transformedPts,transformedNorms] = cylinderCordTrans(pts, normals, cylinderAxis, cylinderOrin)
     zNew = cylinderAxis/norm(cylinderAxis);
-    x = [0,0,1];
+    x = [1,0,0];
     xNew = x - (x*zNew')*zNew;
     xNew = xNew/norm(xNew);
     yNew = cross(xNew, zNew);
