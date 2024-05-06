@@ -9,7 +9,9 @@
 
 function p=NIST_LevMar_Cylinder2(p0,M) %with normalization, but a is subtituted by A elements
 [n m]=size(M);
-lamda=0.0001;
+% lamda=0.001;
+lamda=1;
+
 firstStep=1;
 counter1=1;
 stop1=0;
@@ -89,15 +91,12 @@ while (~stop1)
     stop2=0;
     counter2=1;
     while (~stop2)
-        lamda=lamda+1000;
+        lamda=lamda+10;
         [n1 m1]=size(U);
         H=U+lamda*(eye(m1)+diag(diag(U)));
         %solving Hx=-v by using Cholesky decomposition
         R=chol(H);
         x=inv(R'*R)*-v;
-        %x=inv(H)*-v;
-        %%%size(x)
-        %%%size(p0')
         pnew=p0'+x;
         for i=1:n
             %calculate gi=a.(xi-x) --> scalar
