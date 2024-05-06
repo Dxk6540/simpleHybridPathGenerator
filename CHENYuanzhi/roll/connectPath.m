@@ -22,8 +22,8 @@ function [path,on_off,traverse]=connectPath(dxf,seq,reverse,group)
             % lead in
             if i==1 || group(i)~=group(i-1)
                 move=(initPath(1,:)-initPath(2,:))/norm(initPath(1,:)-initPath(2,:));
-                path=[path;initPath(1,:)+lead*move;initPath(1,:)+0.01*move];
-                on_off=[on_off;0;0];
+                path=[path;initPath(1,:)+lead*move;initPath(1,:)+1.01*move;initPath(1,:)+1*move];
+                on_off=[on_off;0;0;1];
                 traverse=[traverse;0;0];
             end
 
@@ -56,9 +56,9 @@ function [path,on_off,traverse]=connectPath(dxf,seq,reverse,group)
             %lead out
             if i==num || group(i)~=group(i+1)
                 move=(initPath(end,:)-initPath(end-1,:))/norm(initPath(end,:)-initPath(end-1,:));
-                path=[path;initPath(end,:);initPath(end,:)+0.01*move;initPath(end,:)+lead*move];
-                on_off=[on_off;1;0;0];
-                traverse=[traverse;0;0;0];
+                path=[path;initPath(end,:);initPath(end,:)+1*move;initPath(end,:)+1.01*move;initPath(end,:)+lead*move];
+                on_off=[on_off;1;1;0;0];
+                traverse=[traverse;0;0;0;0];
             end
         else
             % only one point
