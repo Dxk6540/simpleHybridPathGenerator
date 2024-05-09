@@ -52,5 +52,6 @@ classdef cHybridProcess < handle
         ret = genNormalMachiningProcess(obj, pg, mPathSeq, mFeedrate, side, machiningParam);
         ret = genGradMtrlPrintingProcess(obj, pg, processCell, printParam);
         ret = genCamMtPrintingProcess(obj, pg, safetyHeight, pPathSeq, pwrSeq, pFeedrate, printParam);
+        ret = genRollerPrintingProcess(obj, pg, safetyHeight, pPathSeq, pwrSeq, pFeedrate, printParam);
     end
 end
