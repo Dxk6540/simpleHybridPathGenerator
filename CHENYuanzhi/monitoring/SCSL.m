@@ -7,7 +7,7 @@
 
 % file param:
 frequency = 9;%1,3,6,9
-high = 1.2;%0.8,1,1.2
+high = 1;%0.8,1,1.2
 hFilename = strcat('./SCSL_',num2str(frequency),'_',num2str(high),'.txt');
 
 % printing process param

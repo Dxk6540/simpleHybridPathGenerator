@@ -29,32 +29,44 @@ classdef singlechannelsinglelayer
             skip=0;
             for pIndex = 1 : 4
                 for fIndex = 1 : 4
-                    cPathSeq = zeros(num+4,5);
-                    cPwrSeq = zeros(num+4,1);
-                    cFeedSeq = zeros(num+4,1);
+                    cPathSeq = zeros(num+8,5);
+                    cPwrSeq = zeros(num+8,1);
+                    cFeedSeq = zeros(num+8,1);
                     cPathSeq(1,:)=[skip*(length+xInterval)-length-0.5*xInterval-lead-6,(count-3.5)*yInterval,zoffset,0,45];
                     cPwrSeq(1,:)=0;
                     cFeedSeq(1,:)=traverse;
-                    cPathSeq(2,:)=[skip*(length+xInterval)-length-0.5*xInterval-lead,(count-3.5)*yInterval,zoffset,0,45];
+                    cPathSeq(2,:)=[skip*(length+xInterval)-length-0.5*xInterval-lead-3,(count-3.5)*yInterval,zoffset,0,45];
                     cPwrSeq(2,:)=0;
                     cFeedSeq(2,:)=feedrate(fIndex,1);
-                    vertices=[vertices;skip*(length+xInterval)-length-0.5*xInterval,(count-3.5)*yInterval];
+                    cPathSeq(3,:)=[skip*(length+xInterval)-length-0.5*xInterval-lead-1.5,(count-3.5)*yInterval,zoffset,0,45];
+                    cPwrSeq(3,:)=0;
+                    cFeedSeq(3,:)=feedrate(fIndex,1);
+                    cPathSeq(4,:)=[skip*(length+xInterval)-length-0.5*xInterval-lead,(count-3.5)*yInterval,zoffset,0,45];
+                    cPwrSeq(4,:)=0;
+                    cFeedSeq(4,:)=feedrate(fIndex,1);
+                    vertices=[vertices;(count-3.5)*yInterval,skip*(length+xInterval)-length-0.5*xInterval];
                     for point = 1:num
-                        cPathSeq(point+2,:)=[skip*(length+xInterval)-length-0.5*xInterval+(point-1)*sample,(count-3.5)*yInterval,zoffset,0,45];
+                        cPathSeq(point+4,:)=[skip*(length+xInterval)-length-0.5*xInterval+(point-1)*sample,(count-3.5)*yInterval,zoffset,0,45];
                         if point == 1
-                            cPwrSeq(point+2,:)=0;
+                            cPwrSeq(point+4,:)=0;
                         else
-                            cPwrSeq(point+2,:)=power(pIndex,point);
+                            cPwrSeq(point+4,:)=power(pIndex,point);
                         end
-                        cFeedSeq(point+2,:)=feedrate(fIndex,point);
+                        cFeedSeq(point+4,:)=feedrate(fIndex,point);
                     end
-                    vertices=[vertices;skip*(length+xInterval)-0.5*xInterval,(count-3.5)*yInterval];
-                    cPathSeq(num+3,:)=[skip*(length+xInterval)-0.5*xInterval+lead,(count-3.5)*yInterval,zoffset,0,45];
-                    cPwrSeq(num+3,:)=0;
-                    cFeedSeq(num+3,:)=feedrate(fIndex,point);
-                    cPathSeq(num+4,:)=[skip*(length+xInterval)-0.5*xInterval+lead+6,(count-3.5)*yInterval,zoffset,0,45];
-                    cPwrSeq(num+4,:)=0;
-                    cFeedSeq(num+4,:)=traverse;
+                    vertices=[vertices;(count-3.5)*yInterval,skip*(length+xInterval)-0.5*xInterval];
+                    cPathSeq(num+5,:)=[skip*(length+xInterval)-0.5*xInterval+lead,(count-3.5)*yInterval,zoffset,0,45];
+                    cPwrSeq(num+5,:)=0;
+                    cFeedSeq(num+5,:)=feedrate(fIndex,point);
+                    cPathSeq(num+6,:)=[skip*(length+xInterval)-0.5*xInterval+lead+1.5,(count-3.5)*yInterval,zoffset,0,45];
+                    cPwrSeq(num+6,:)=0;
+                    cFeedSeq(num+6,:)=feedrate(fIndex,point);
+                    cPathSeq(num+7,:)=[skip*(length+xInterval)-0.5*xInterval+lead+3,(count-3.5)*yInterval,zoffset,0,45];
+                    cPwrSeq(num+7,:)=0;
+                    cFeedSeq(num+7,:)=feedrate(fIndex,point);
+                    cPathSeq(num+8,:)=[skip*(length+xInterval)-0.5*xInterval+lead+6,(count-3.5)*yInterval,zoffset,0,45];
+                    cPwrSeq(num+8,:)=0;
+                    cFeedSeq(num+8,:)=traverse;
                     count=count+1;
                     if count==8
                         skip=1;
