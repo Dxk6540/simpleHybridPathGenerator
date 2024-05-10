@@ -1,15 +1,19 @@
 frequency = [1,3,6,9];
 high = [0.8,1,1.2];
-for i=1:4
-    for j=1:3
-        process(frequency(i),high(j));
+interval = 4;
+sampleNum = 400;
+for l=1:1
+    for i=1:4
+        for j=1:3
+            process(frequency(i),high(j),interval,sampleNum);
+        end
     end
 end
 
-function process(frequency,high)
-    cd('D:\code\simpleHybridPathGenerator\CHENYuanzhi\monitoring\');
+function process(frequency,high,interval,sampleNum)
+    cd('D:\LSTM\matlab\');
     %1. load all melt pool images of one plate
-    file_path =  strcat('D:\code\simpleHybridPathGenerator\CHENYuanzhi\monitoring\SCSL_',num2str(frequency),'_',num2str(high),'\');
+    file_path =  strcat('D:\LSTM\matlab\SCSL_',num2str(frequency),'_',num2str(high),'\');
     img_path_list = dir(strcat(file_path,'*.bmp'));
     
     %2. load cld data of one plate
@@ -112,12 +116,11 @@ function process(frequency,high)
     if max(abs(monitorTimeIntervals-cncTimeIntervals))<0.1
         % for each line, choose 10 points; for each point, save 5(1) iamges, 
         % real power, nominal power, real, feedrate, nominal feedrate
-        sampleNum=200;
         samplePoints=zeros(16,sampleNum+1,3);
         cncPoints=[AXIS_X,AXIS_Y,AXIS_Z];
-        interval=1;%1,2,4,8
         skip=40+4*interval;
         increment=0;
+        mkdir(strcat('E:\Code\LSTM\cnn-lstm\datasets\interval_',num2str(interval),'_',num2str(sampleNum+1),'\'));
         for lineIdx=1:16 
             pointNum=monitorLines(lineIdx,2)-monitorLines(lineIdx,1)+1;
             step=floor((pointNum-skip)/sampleNum);
@@ -130,7 +133,7 @@ function process(frequency,high)
                 [pointCNCIdx,D]=knnsearch(Kd_tree,pointTime,'k',2);
                 samplepoint=(cncPoints(pointCNCIdx(1),:)*D(2)+cncPoints(pointCNCIdx(2),:)*D(1))/(D(1)+D(2));
                 samplePoints(lineIdx,samplePointIdx+1,:)=samplepoint;
-                dirName=strcat('D:\code\simpleHybridPathGenerator\CHENYuanzhi\monitoring\dataProcess\',num2str(frequency),'_',num2str(high),'_',num2str(lineIdx),'_',num2str(samplePointIdx+1),'\');
+                dirName=strcat('E:\Code\LSTM\cnn-lstm\datasets\interval_',num2str(interval),'_',num2str(sampleNum+1),'\',num2str(frequency),'_',num2str(high),'_',num2str(lineIdx),'_',num2str(samplePointIdx+1),'\');
                 mkdir(dirName);
                 cd(dirName);
                 save parameters.mat samplepoint
