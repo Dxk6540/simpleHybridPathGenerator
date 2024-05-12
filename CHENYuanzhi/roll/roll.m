@@ -18,8 +18,8 @@ cylinderOrin = [0.89609233   2.27352335 596.64786352];
 radius = 39.4197776233156;
 cylinderOrin=cylinderOrin-cylinderOrin(3)/cylinderAxis(3)*cylinderAxis;
 radius=radius-2;
-lyrNum=3;
-remelt=1;
+lyrNum=4;
+remelt=0;
 lyrHeight=0.55;
 offset=180;
 center=[150,100];
@@ -37,10 +37,10 @@ pwrSeq=hProc.sPrintParam_.pwr*on_off;
 feedrateSeq=hProc.sPrintParam_.pFeedrate+traverse*1000;
 
 % generate process
-hProc.sPrintParam_.flowL = 250;
+hProc.sPrintParam_.flowL = 0;
 hProc.sPrintParam_.speedL = 0;
-hProc.sPrintParam_.flowR = 0;
-hProc.sPrintParam_.speedR = 0;
+hProc.sPrintParam_.flowR = 400;
+hProc.sPrintParam_.speedR = 100;
 % we just want to print one material, the normal printing process is enough.
 % (here, one material means the single mixing ratio)
 hProc.genNormalPrintingProcess(pg, pPathSeq, pwrSeq, feedrateSeq, hProc.sPrintParam_);
