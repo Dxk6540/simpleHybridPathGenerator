@@ -40,12 +40,12 @@ pg.setLaser(0, lenPos, flowL, speedL, flowR, speedR); % set a init process param
 pg.addPathPts([0,0,safetyHeight,0,45], 3000);
 pg.addPathPts([0,0,safetyHeight,0,45], 3000);
 pg.saftyToPt([nan, nan, safetyHeight], pPathSeq(1,:), 500); % safety move the start pt
-pg.enableLaser(1, 20);
+pg.enableLaser(1, 10);
 %%% add path pts
 pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrateSeq);
 %%% exist printing mode
 pg.disableLaser(1);
-pg.addPathPts([-110,-5,120,0,45], 1000);
+pg.addPathPts([-110,-10,120,0,45], 1000);
 %%% draw
 pg.draw_ = false;
 pg.drawPath(pPathSeq, pPathSeq);

@@ -1,7 +1,7 @@
 % printing a gradient material with fixed powder mixing ratio,
 
 % file param:
-pFilename = strcat('./usTestPrintingBlock',date,'.txt');
+pFilename = strcat('./usTestPrintingTwoBlock',date,'.txt');
 
 hProc = cHybridProcess(pFilename);
 hProc.sPrintParam_.pFeedrate = 720; % mm/min
@@ -10,9 +10,9 @@ hProc.sPrintParam_.pwr = 200;
 
 %  geometry param
 startPt = [0,0]; % (minX, minY
-cubeLen = 22; % length along X dir
-cubeChannel = 21; % channels when printing
-pLyrNum = 10;
+cubeLen = 32; % length along X dir
+cubeChannel = 31; % channels when printing
+pLyrNum = 20;
 lyrHeight = 0.5;
 tol = 0.1;
 zOffset = 0;
@@ -28,11 +28,27 @@ cubeShape = [cubeLen, cubeChannel];
 pg = cPathGen(pFilename); % create the path generator object
 pg.genNewScript();
 pg.draw_ = true;
-
+centerOff = [40,15];
 % gnerate printing path 
-[pPathSeq, pwrSeq] = handle.genPrintingPath(cubeShape, startPt, tol, pLyrNum, ...
+hProc.sPrintParam_.pFeedrate = 720; % mm/min
+hProc.sPrintParam_.pwr = 130;
+startPt = [0,0]-centerOff; % (minX, minY
+[pPathSeq1, pwrSeq1] = handle.genPrintingPath(cubeShape, startPt, tol, pLyrNum, ...
                                                 lyrHeight, hProc.sPrintParam_.pwr, zOffset, 0, step);
+                                            
+hProc.sPrintParam_.pFeedrate = 720; % mm/min
+hProc.sPrintParam_.pwr = 250;
+startPt = [45,0]-centerOff; % (minX, minY
+[pPathSeq2, pwrSeq2] = handle.genPrintingPath(cubeShape, startPt, tol, pLyrNum, ...
+                                                lyrHeight, hProc.sPrintParam_.pwr, zOffset, 0, step);
+                                            
 
+                                            
+
+pPathSeq = [pPathSeq1; pPathSeq2];                                            
+pwrSeq = [pwrSeq1; pwrSeq2];                                            
+                                            
+                                            
 % generate process
 hProc.sPrintParam_.flowL = 250;
 hProc.sPrintParam_.speedL = 100;
