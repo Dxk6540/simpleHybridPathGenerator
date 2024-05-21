@@ -6,3 +6,5 @@ experiment/
 *.zip
 *.bmp
 *.mat
+*.ply
+*.dxf
