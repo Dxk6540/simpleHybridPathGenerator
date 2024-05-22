@@ -6,7 +6,7 @@ filename = strcat('./rollMeasurement_',date,'.txt');
 heightSeq=[150;200;250;300];
 ptsPerCycle = 360;
 measuresPerCycle = 12;
-rollRadius=45;
+rollRadius=35;
 bAgl = -90;
 seekDist= 20;
 
