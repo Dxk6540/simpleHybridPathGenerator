@@ -17,18 +17,18 @@ classdef doublespiralsinglelayer
             lead = 0.01;
             
             %spiral generation
-            Length=900;
+            Length=400;
             sample=0.1;
             n=[0:sample:Length];
             w=2*pi;
-            b=4;            
-            a1=3;
+            b=1.8;            
+            a1=1;
             t1=(sqrt((w*a1)^2+2*b*w^2.*n)-a1*w)/(b*w^2);
             zeta1=w*t1;
             r1=a1+b*zeta1;
             x1=r1.*cos(zeta1);
             y1=r1.*sin(zeta1);
-            a2=15.5;
+            a2=a1+b*pi;
             t2=(sqrt((w*a2)^2+2*b*w^2.*n)-a2*w)/(b*w^2);
             zeta2=w*t2;
             r2=a2+b*zeta2;
@@ -36,8 +36,8 @@ classdef doublespiralsinglelayer
             y2=r2.*sin(zeta2);
             x2=fliplr(x2);
             y2=fliplr(y2);            
-%             plot(x1, y1); % 绘制螺旋线
-%             axis equal; % 保持坐标轴比例一致
+%             plot(x1, y1); % 绘制螺旋�?
+%             axis equal; % 保持坐标轴比例一�?
 %             hold on
 %             plot(x2,y2);
 
@@ -70,7 +70,7 @@ classdef doublespiralsinglelayer
             feedSeq=[feedSeq,feedrate];
             path=[path;x1(end)-lead,y1(end),zoffset,0,zeta1(end)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
-            feedSeq=[feedSeq,feedrate(end)];
+            feedSeq=[feedSeq,traverse];
             path=[path;x2(1)+lead,y2(1)+lead,zoffset,0,zeta2(1)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,feedrate(end)];

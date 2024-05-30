@@ -55,7 +55,7 @@ for i=1:4
         pg.addPathPts([-110,-5,120,0,45], 1000);
         %%% draw
         pg.draw_ = false;
-        pg.drawPath(pPathSeq, pPathSeq);
+        %pg.drawPath(pPathSeq, pPathSeq);
         saveName=strcat('DoubleSpiral_',P_pattern(i),'_',F_pattern(j),'.mat');
         save(saveName,'pPathSeq','pwrSeq','pFeedrateSeq');
         %% end the script
