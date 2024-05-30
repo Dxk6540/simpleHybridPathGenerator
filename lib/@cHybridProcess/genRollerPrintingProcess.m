@@ -15,14 +15,18 @@ function ret = genRollerPrintingProcess(obj, pg, processCell, interPt, printPara
     
     %%% start printing mode
     pg.changeMode(1); % change to printing mode
-    pg.setLaser(pwr, lenPos, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
+    pg.setLaser(0, lenPos, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
 %     pg.saftyToPt([nan, nan, safetyHeight], [startCtr(1) + radius, startCtr(2), 0], 3000); % safety move the start pt
 
+    % prepare RTCP (move to init point) 
+    firstPathSeq = processCell{1, 1};
+    pg.addCmd(sprintf("G01 B%f C%f", firstPathSeq(1,4), firstPathSeq(1,5))); % move BC first 
     if usingRTCP == 1
-        pg.startRTCP(safetyHeight, 16);        
+%         pg.startRTCP(safetyHeight, 16);        
+        pg.addCmd("G43.4H16");  
     end    
-    
-    pg.saftyToPt([nan, nan, safetyHeight], pPathSeq(1,:), obj.sProcessParam_.travelFeedrate); % safety move the start pt
+    pg.addPathPtFeed( firstPathSeq(1,:), obj.sProcessParam_.travelFeedrate);
+%     pg.saftyToPt([nan, nan, safetyHeight], firstPathSeq(1,:), obj.sProcessParam_.travelFeedrate); % safety move the start pt
 
 %     pg.enableLaser(printParam.powderMode, printParam.laserDelay);
 %     %%% add path pts
@@ -30,6 +34,11 @@ function ret = genRollerPrintingProcess(obj, pg, processCell, interPt, printPara
 %     %%% exist printing mode
 %     pg.disableLaser(printParam.powderMode);
 
+%         pg.setLaser(pwrSeq(1), lenPosSeq(1), mtrlParam(1), mtrlParam(2), mtrlParam(3), mtrlParam(4)); 
+
+    if obj.airRun_ == 0
+        pg.enableLaser(printParam.powderMode, printParam.laserDelay);        
+    end
     %%% add path pts
     for procIdx = 1 : procNum
         pPathSeq = processCell{procIdx, 1};
@@ -43,14 +52,15 @@ function ret = genRollerPrintingProcess(obj, pg, processCell, interPt, printPara
         
         % set material param
         mtrlParam = processCell{procIdx, 4};
-        pg.enableLaser(printParam.powderMode, printParam.laserDelay);        
         pg.changePowder(mtrlParam(1), mtrlParam(2), mtrlParam(3), mtrlParam(4), printParam.laserDelay); % delay 10s for change powder
-        pg.setLaser(pwrSeq(1), lenPosSeq(1), mtrlParam(1), mtrlParam(2), mtrlParam(3), mtrlParam(4)); 
+%         pg.setLaser(pwrSeq(1), lenPosSeq(1), mtrlParam(1), mtrlParam(2), mtrlParam(3), mtrlParam(4)); 
+
         % set the path
         pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrate); 
-        pg.disableLaser(printParam.powderMode);
     end
-
+    if obj.airRun_ == 0
+        pg.disableLaser(printParam.powderMode);
+    end    
     if usingRTCP == 1
         pg.stopRTCP(safetyHeight, 16);        
     end    

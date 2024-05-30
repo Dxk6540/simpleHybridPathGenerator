@@ -2,6 +2,9 @@ function ret = enableLaser(obj, powderMode, delay)
 % powerTurnOnMode = 0, close all; 1 = left powder, 2 = right, 3 = left + right;
 % delay: delay time, unit is second.
     fprintf(obj.fid_, "M351P610  ;;开启熔覆头位置调整(上升沿触发)\r\n");
+    if(powderMode == 0)
+%         fprintf(obj.fid_, "M351P602  ;;开启左路送粉\r\n"); % no powder
+    end
     if(powderMode == 1)
         fprintf(obj.fid_, "M351P602  ;;开启左路送粉\r\n");
     end

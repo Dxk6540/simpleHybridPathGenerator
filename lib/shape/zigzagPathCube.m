@@ -39,6 +39,7 @@ classdef zigzagPathCube
                     cPwrSeq = [cPwrSeq; tmpPwrSeq];
                 end
                 path = [path; cPathSeq];
+                cPwrSeq(1) = 0;
                 pwrSeq = [pwrSeq; cPwrSeq];
                 feedOffset = [feedOffset; ones(length(path),1)];
             end

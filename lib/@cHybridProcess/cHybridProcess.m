@@ -4,11 +4,11 @@ classdef cHybridProcess < handle
     
     properties
         filename_
+        airRun_
 
         sPrintParam_
         sMachinParam_
         sProcessParam_
-        
     end
     
     methods
