@@ -73,7 +73,7 @@ classdef doublespiralsinglelayer
             feedSeq=[feedSeq,traverse];
             path=[path;x2(1)+lead,y2(1)+lead,zoffset,0,zeta2(1)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
-            feedSeq=[feedSeq,feedrate(end)];
+            feedSeq=[feedSeq,traverse];
             path=[path;x2',y2',ones(num,1)*zoffset,zeros(num,1),ones(num,1).*zeta2/(2*pi)*360];
             vertices = [vertices;x2',y2',ones(num,1)*zoffset,zeros(num,1),ones(num,1).*zeta2/(2*pi)*360];
             pwrSeq=[pwrSeq,power];
