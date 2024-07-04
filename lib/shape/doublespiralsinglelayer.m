@@ -21,7 +21,7 @@ classdef doublespiralsinglelayer
             sample=0.1;
             n=[0:sample:Length];
             w=2*pi;
-            b=1.8;            
+            b=1.7;            
             a1=1;
             t1=(sqrt((w*a1)^2+2*b*w^2.*n)-a1*w)/(b*w^2);
             zeta1=w*t1;

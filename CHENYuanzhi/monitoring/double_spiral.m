@@ -47,10 +47,12 @@ for i=1:4
         pg.addPathPts([0,0,safetyHeight,0,45], 3000);
         pg.saftyToPt([nan, nan, safetyHeight], pPathSeq(1,:), 500); % safety move the start pt
         pg.enableLaser(1, 20);
+        pg.addCmd("M440");
         %%% add path pts
         pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrateSeq);
         %%% exist printing mode
         pg.disableLaser(1);
+        pg.addCmd("M441");
         pg.stopRTCP(safetyHeight, 16); 
         pg.addPathPts([-110,-5,120,0,45], 1000);
         %%% draw
