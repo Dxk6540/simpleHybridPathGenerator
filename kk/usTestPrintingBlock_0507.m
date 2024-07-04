@@ -4,16 +4,16 @@
 pFilename = strcat('./usTestPrintingBlock',date,'.txt');
 
 hProc = cHybridProcess(pFilename);
-hProc.sPrintParam_.pFeedrate = 720; % mm/min
+hProc.sPrintParam_.pFeedrate = 600; % mm/min
 hProc.sPrintParam_.powderMode = 1; % both powder are used (for mixing)
 hProc.sPrintParam_.pwr = 200;
 
 %  geometry param
-startPt = [0,0]; % (minX, minY
-cubeLen = 22; % length along X dir
-cubeChannel = 21; % channels when printing
-pLyrNum = 10;
-lyrHeight = 0.5;
+startPt = [-10,-10]; % (minX, minY
+cubeLen = 20; % length along X dir
+cubeChannel = 10; % channels when printing
+pLyrNum = 5;
+lyrHeight = 0.4;
 tol = 0.1;
 zOffset = 0;
 step = 1;
