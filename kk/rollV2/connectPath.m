@@ -1,4 +1,5 @@
 function [path,on_off,traverse]=connectPath(dxf,seq,reverse,group)
+    tol = 0.1;
     num=length(seq);
     lead=3;
     theta=120/180*pi;
@@ -23,9 +24,9 @@ function [path,on_off,traverse]=connectPath(dxf,seq,reverse,group)
             if i==1 || group(i)~=group(i-1)
                 move=(initPath(1,:)-initPath(2,:))/norm(initPath(1,:)-initPath(2,:));
                 if ~strcmp(dxf.entities(seq(i)).name,'CIRCLE') && ~strcmp(dxf.entities(seq(i)).name,'ARC')
-                    path=[path;initPath(1,:)+lead*move;initPath(1,:)+0.51*move;initPath(1,:)+0.5*move];
-                    on_off=[on_off;0;0;1];
-                    traverse=[traverse;0;0;0];
+                    path=[path;initPath(1,:)+lead*move;initPath(1,:)+0.51*move;initPath(1,:)+0.5*move;initPath(1,:)+0.25*move;initPath(1,:)+0.05*move];
+                    on_off=[on_off;0;0;1;1;1];
+                    traverse=[traverse;0;0;0;0;0];
                 else
                     path=[path;initPath(1,:)+lead*move;initPath(1,:)+0.01*move];
                     on_off=[on_off;0;0];
@@ -51,8 +52,8 @@ function [path,on_off,traverse]=connectPath(dxf,seq,reverse,group)
                 on_off=[on_off;1];
                 traverse=[traverse;0];
                 dist=norm(initPath(j+1,:)-initPath(j,:));
-                if dist>0.011
-                    count=floor(dist/0.01);
+                if dist>tol
+                    count=floor(dist/tol);
                     move=(initPath(j+1,:)-initPath(j,:))/count;
                     path=[path;initPath(j,:)+move.*(1:count-1)'];
                     on_off=[on_off;ones(count-1,1)];
@@ -90,8 +91,8 @@ function [path,on_off,traverse]=connectPath(dxf,seq,reverse,group)
                 tail=dxf.entities(seq(i+1)).vertex(1,:);
             end
             dist=norm(tail-head);
-            if dist>0.011
-                count=floor(dist/0.01);
+            if dist>tol
+                count=floor(dist/tol);
                 move=(tail-head)/count;
                 path=[path;head+move.*(1:count-1)'];
                 on_off=[on_off;zeros(count-1,1)];

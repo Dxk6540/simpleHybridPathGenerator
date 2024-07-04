@@ -53,6 +53,25 @@ classdef DXFtool < handle
         
             dxf.filename = filename;
             dxf.entities = read_dxf(filename);
+            invalid = [];
+            for i = 1:length(dxf.entities)
+                if strcmp(upper(dxf.entities(i).name), 'TEXT')
+                    invalid =[invalid;i];
+                end                    
+            end
+            tmp = [];
+            for i = 1:length(dxf.entities)
+                flag = 0;
+                for j = 1:length(invalid)
+                    if i == invalid(j)
+                        flag = 1;
+                    end     
+                end
+                if flag == 0
+                    tmp = [tmp;dxf.entities(i)];
+                end
+            end
+            dxf.entities = tmp;
             dxf.ne       = length(dxf.entities);
             plot(dxf);
             

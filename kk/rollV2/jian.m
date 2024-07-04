@@ -5,12 +5,13 @@ addpath('../../lib')
 % file param:
 % partIdx = P1
 dxfFile='sample0521/P1.dxf';
-pFilename = strcat('./rollAllProc_','P1','_',date,'.txt');
+pFilename = strcat('./shoulderProc_','P1','_',date,'.txt');
 % following: process parameters
 hProc = cHybridProcess(pFilename);
-hProc.sPrintParam_.pFeedrate = 400; % mm/min
-hProc.sPrintParam_.powderMode = 3; % both powder are used (for mixing)
-hProc.sPrintParam_.pwr = 208.3334;
+hProc.sPrintParam_.pFeedrate = 900; % mm/min
+% hProc.sPrintParam_.powderMode = 3; % both powder are used (for mixing)
+hProc.sPrintParam_.powderMode = 2; % 1 = left, 2 = right, 3 = left + right
+hProc.sPrintParam_.pwr = 275;
 hProc.sPrintParam_.lenPos = 600;
 hProc.sProcessParam_.usingRTCP = 1;
 hProc.sPrintParam_.flowL = 0;
@@ -18,9 +19,27 @@ hProc.sPrintParam_.speedL = 0;
 hProc.sPrintParam_.flowR = 400;
 hProc.sPrintParam_.speedR = 100;
 hProc.airRun_ = 0; % 1 for trail Run
-lyrHeight=-0.68;
+lyrHeight=0.4;
 preheat=1;
 remelt=0;
+
+% following: geometry parameters
+% cylinderAxis = -[6.75984479e-04  1.24140977e-03 -9.99999001e-01];
+% cylinderAxisPt = [0.54810408  -0.29722271 164.65590436];
+cylinderAxis = [0 0 1];
+cylinderAxisPt = [0 0 0];
+
+radius = 39.401665091629525; % CMM radius
+
+rollerTipHeight = 2;
+finalRadius = 39.6;
+adaptiveLyrNum = 0;
+
+offset=0;
+center=[143,0]; % axial start point,  radial start point
+lyrNum=2;
+margin = [0,0];
+
 
                 % flowL, speedL, flowR, speedR 
 % procParamMatrix = [250, 100, 400, 0;
@@ -28,47 +47,55 @@ remelt=0;
 %                    250, 50, 400, 50;
 %                    250, 25, 400, 75;
 %                    250, 0, 400, 100;];
-% procParamMatrix = [250, 100, 400, 0;
-%                    250, 50, 400, 50;
-%                    250, 0, 400, 100];
-procParamMatrix = [250, 0, 400, 100;
-                   250, 50, 400, 50;
-                   250, 100, 400, 0;];
-
-% following: geometry parameters
-cylinderAxis = [5.67515150e-04 -1.12342462e-03  9.99999208e-01];
-% cylinderAxis = [0 0 1];
-cylinderAxisPt = [3.12087160e+01 -6.04615482e+01  5.40207016e+04];
-radius = 39.251879512093094;
-% radius = 40.161879512093094;
-rollerTipHeight = 2;
-finalRadius = 39.6;
-
-offset=0;
-center=[149,0]; % axial start point,  radial start point
-lyrNum=3;
-margin = [0,0];
+motherProcParam = [0,0,400,100];
+procParamMatrix = repmat(motherProcParam,[lyrNum,1]);
 
 
-% gen 2D file path
-dxf = DXFtool(dxfFile); % read DXF
-[seq,reverse,group] = connectPoints(dxf.points);
-[path,on_off,traverse] = connectPath(dxf,seq,reverse,group);
+
+% % gen 2D file path
+minMaxX = [120,140];
+[path,on_off,traverse] = genRollShoulder(minMaxX, finalRadius, 1);
+
 offsetDxf = [min(path(:,1)), min(path(:,2))]-margin;
 path = path - offsetDxf;
 maxDxf = [max(path(:,1)), max(path(:,2))]
 figure; plot(path(:,1),path(:,2));
 [path,on_off,traverse] = pt2dTraverse(path,on_off,traverse);
 
+
 % gen printing 3D path
 cylinderAxis = cylinderAxis/norm(cylinderAxis);
 cylinderOrin = cylinderAxisPt - cylinderAxisPt(3)/cylinderAxis(3)*cylinderAxis;
-radius = radius - 2; % minus a radiu of probe
-radius = radius + rollerTipHeight;
 
+disp(strcat('command lyrNum: ', num2str(lyrNum)));
+actRadius = radius - 2; % minus a radiu of probe
+
+if adaptiveLyrNum == 1
+    estLyrNum = round((finalRadius - actRadius)/lyrHeight);
+    if lyrHeight*estLyrNum < finalRadius - actRadius
+        estLyrNum = estLyrNum + 1;
+    end
+    disp(strcat('estimated lyrNum: ', num2str(estLyrNum)));
+    lyrNum = estLyrNum;
+    procParamMatrix = repmat(motherProcParam,[lyrNum,1]);
+else
+    lyrNum = lyrNum;
+end
+disp(strcat('actRadius: ', num2str(actRadius), '  finalRadius: ', num2str(finalRadius)));
+
+radiusList = [actRadius];
+for i = 1:(lyrNum - 1)
+    radiusList = [radiusList, actRadius+i*lyrHeight];    
+end    
+
+disp(strcat('per layer radius: ', num2str(radiusList)));
+disp(strcat('last pattern radius: ', num2str(actRadius+lyrNum*lyrHeight)));
+
+[agl,height] = cylinderMapping(path,center, finalRadius, offset);
 procLyr = cell(lyrNum, 4);
 for i = 1:lyrNum
-    [point_3,ori_3,height] = convert2DPoint(path,center,radius,offset,lyrHeight,i);
+    [point_3,ori_3] = cylinderCord2CartesianCord(agl,height,radiusList(i));
+    
     [transformedPts, transformedNorms] = cylinderCordTrans(point_3, ori_3, cylinderAxis, cylinderOrin);
     bcSeq = sequentialSolveBC(transformedNorms,[0,0]);
     pPathSeq = [transformedPts, bcSeq];
@@ -80,12 +107,11 @@ for i = 1:lyrNum
 %     procLyr{i,4} = [hProc.sPrintParam_.flowL,hProc.sPrintParam_.speedL, hProc.sPrintParam_.flowR, hProc.sPrintParam_.speedR];% flowL, speedL, flowR, speedR            
     procLyr{i,4} = procParamMatrix(i,:);% flowL, speedL, flowR, speedR            
 end
-procLyr = flipud(procLyr);
+% procLyr = flipud(procLyr);
 
 if preheat == 1
     preHeatLyr = cell(1, 4);
-%     [prePoint_3,preOri_3,preH,preOn_off,preTraverse] = convert2DPoint(path,on_off,traverse,center,radius,offset,1,lyrHeight,remelt, preheat);
-    [prePoint_3,preOri_3,preH] = convert2DPoint(path,center,radius,offset,lyrHeight,1);
+    [prePoint_3,preOri_3] = cylinderCord2CartesianCord(agl,height,radiusList(1));
     [preTransformedPts, preTransformedNorms] = cylinderCordTrans(prePoint_3, preOri_3, cylinderAxis, cylinderOrin);
     preBcSeq = sequentialSolveBC(preTransformedNorms,[0,0]);
     prePathSeq = [preTransformedPts, preBcSeq];
@@ -97,6 +123,8 @@ if preheat == 1
     preHeatLyr{1,4} = [hProc.sPrintParam_.flowL, 0, hProc.sPrintParam_.flowR, 0];% flowL, speedL, flowR, speedR  
     
 end
+
+
 
 
 % generate process

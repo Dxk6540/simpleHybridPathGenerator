@@ -37,4 +37,5 @@ function [seq,reverse,group]=connectPoints(SE)
         end
     end
     plot(points(:,1),points(:,2));
+    axis equal
 end

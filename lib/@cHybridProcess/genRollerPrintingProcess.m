@@ -24,7 +24,11 @@ function ret = genRollerPrintingProcess(obj, pg, processCell, interPt, printPara
     if usingRTCP == 1
 %         pg.startRTCP(safetyHeight, 16);        
         pg.addCmd("G43.4H16");  
-    end    
+    end
+    pg.addPathPtFeed( firstPathSeq(1,:), obj.sProcessParam_.travelFeedrate);
+    disp(strcat('min Z pos: ', num2str(min(firstPathSeq(:,3)))));
+    pg.addCmd(sprintf("G01 Z%f", min(firstPathSeq(:,3)))); % move BC first    
+    pg.addCmd("G04X5");
     pg.addPathPtFeed( firstPathSeq(1,:), obj.sProcessParam_.travelFeedrate);
 %     pg.saftyToPt([nan, nan, safetyHeight], firstPathSeq(1,:), obj.sProcessParam_.travelFeedrate); % safety move the start pt
 

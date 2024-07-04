@@ -2,11 +2,11 @@ clear;clc;
 % Z=[120;160;200;240;280;310];
 filename = strcat('./rollMeasurement_',date,'.txt');
 % heightSeq = [120;160;200;240;280;310];
-% heightSeq=[150;270;200;250;270;300];
-heightSeq=[150;200;250;300];
+heightSeq=[143;200;250;300];
+% heightSeq=[150;200;250;300];
 ptsPerCycle = 360;
 measuresPerCycle = 12;
-rollRadius=35;
+rollRadius=40;
 bAgl = -90;
 seekDist= 20;
 
