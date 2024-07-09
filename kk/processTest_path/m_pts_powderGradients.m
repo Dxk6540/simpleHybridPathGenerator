@@ -2,7 +2,7 @@ clear;clc;
 addpath('1_resources');
 % load paras_powderGradients_selectedHRC55.mat;
 load paras_DC_ForHammer_mixPowder.mat
-%% 1-EDR, 2-EMS, 3-layerHeight, 4-layerNum, 5-6 intial powder ratio, 7-8 final powder ratio, 9- laser melting (1-首层熔覆，2-每层熔覆, 3-每层熔覆了顶层再熔覆), 10-mix powder at the first layer
+%% 1-EDR, 2-EMS, 3-layerHeight, 4-layerNum, 5-6 intial powder ratio, 7-8 final powder ratio, 9- laser melting (1-首层熔覆�?2-每层熔覆, 3-每层熔覆了顶层再熔覆), 10-mix powder at the first layer
 resultsPath='./2_results';
 expIndex=24052104;
 channelInfo={};
@@ -44,7 +44,7 @@ for k=1:length(channelInfo)
             pathSign(i,1:3);
             pathSign(i,1:3)+[0,halfLine,0];
             pathSign(i,1:3)+[0,halfLine+1,0];
-            pathSign(i,1:3)+[0,halfLine+8,0]
+            pathSign(i,1:3)+[0,halfLine+8,0
             ];
         tempPts=tempPts+[0 0 parasLayer(j,3)];
         tempEDR_EMS=[

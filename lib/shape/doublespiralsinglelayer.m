@@ -13,8 +13,8 @@ classdef doublespiralsinglelayer
             pwrSeq = [];
             feedSeq = [];
             vertices = [];
-            zoffset=5.8147;
-            lead = 0.01;
+            zoffset=0;
+            lead = 5;
             
             %spiral generation
             Length=400;
@@ -45,7 +45,7 @@ classdef doublespiralsinglelayer
             num=Length/sample+1;
             power=doublespiralsinglelayer.getPower(pPattern,num)*pwr;
             feedrate=doublespiralsinglelayer.getFeedrate(fPattern,num)*fr;
-            if strcmp(fPattern,"square")
+            if strcmp(fPattern,"square") || strcmp(fPattern,"noise")
                 tempFeedrate=feedrate/60;
                 tempFeedrate=timeSmooth(tempFeedrate');
                 feedrate=(tempFeedrate*60)';
@@ -64,20 +64,38 @@ classdef doublespiralsinglelayer
             path=[path;x1(1)-lead,y1(1)-lead,zoffset,0,zeta1(1)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,feedrate(1)];
+            path=[path;x1(1)-lead*0.01,y1(1)-lead*0.01,zoffset,0,zeta1(1)/(2*pi)*360];
+            pwrSeq=[pwrSeq,0];
+            feedSeq=[feedSeq,feedrate(1)];
             path=[path;x1',y1',ones(num,1)*zoffset,zeros(num,1),ones(num,1).*zeta1/(2*pi)*360];
             vertices = [vertices;x1',y1',ones(num,1)*zoffset,zeros(num,1),ones(num,1).*zeta1/(2*pi)*360];
             pwrSeq=[pwrSeq,power];
             feedSeq=[feedSeq,feedrate];
+            path=[path;x1(end)-lead*0.01,y1(end),zoffset,0,zeta1(end)/(2*pi)*360];
+            pwrSeq=[pwrSeq,0];
+            feedSeq=[feedSeq,traverse];
             path=[path;x1(end)-lead,y1(end),zoffset,0,zeta1(end)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,traverse];
             path=[path;x2(1)+lead,y2(1)+lead,zoffset,0,zeta2(1)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,traverse];
+            path=[path;x2(1)+lead,y2(1)+lead,zoffset,0,zeta2(1)/(2*pi)*360];
+            pwrSeq=[pwrSeq,0];
+            feedSeq=[feedSeq,feedrate(1)];
+            path=[path;x2(1)+lead*0.01,y2(1)+lead*0.01,zoffset,0,zeta2(1)/(2*pi)*360];
+            pwrSeq=[pwrSeq,0];
+            feedSeq=[feedSeq,feedrate(1)];
             path=[path;x2',y2',ones(num,1)*zoffset,zeros(num,1),ones(num,1).*zeta2/(2*pi)*360];
             vertices = [vertices;x2',y2',ones(num,1)*zoffset,zeros(num,1),ones(num,1).*zeta2/(2*pi)*360];
             pwrSeq=[pwrSeq,power];
             feedSeq=[feedSeq,feedrate]; 
+            path=[path;x2(end),y2(end)-lead*0.01,zoffset,0,zeta2(end)/(2*pi)*360];
+            pwrSeq=[pwrSeq,0];
+            feedSeq=[feedSeq,traverse];
+            path=[path;x2(end),y2(end)-lead,zoffset,0,zeta2(end)/(2*pi)*360];
+            pwrSeq=[pwrSeq,0];
+            feedSeq=[feedSeq,traverse];
             pwrSeq=pwrSeq';
             feedSeq=feedSeq';
             EDR=(pwrSeq*4)./(feedSeq/60);
@@ -85,10 +103,9 @@ classdef doublespiralsinglelayer
             min(EDR(EDR~=0))
         end
         
-        function power = getPower(pPattern, num)
-            power=zeros(4,num);           
+        function power = getPower(pPattern, num)           
             t=1:num;
-            t=t/num.*(2*pi*(1+0.001*t));
+            t=t/num.*(2*pi*(5+0.01*t));
             if strcmp(pPattern, "const")
                 power=zeros(1,num);  
             elseif strcmp(pPattern, "tooth")
@@ -98,13 +115,16 @@ classdef doublespiralsinglelayer
             elseif strcmp(pPattern, "square")
                 power=square(t);
                 power(end)=power(end-1);
+            elseif strcmp(pPattern, "noise")
+                power=generate_and_filter_signal(100, num);
+                power=power*(1/max(abs(min(power)),max(power)));
             end
             power=power*0.3/2+1;
         end
         
         function feedrate = getFeedrate(fPattern,num)        
             t=1:num;
-            t=t/num.*(2*pi*(1+0.001*t))-0.5*pi;
+            t=t/num.*(2*pi*(5+0.01*t))-0.5*pi;
             if strcmp(fPattern, "const")
                 feedrate=zeros(1,num);  
             elseif strcmp(fPattern, "tooth")
@@ -114,8 +134,31 @@ classdef doublespiralsinglelayer
             elseif strcmp(fPattern, "square")
                 feedrate=square(t);
                 feedrate(end)=feedrate(end-1);
+            elseif strcmp(fPattern, "noise")
+                feedrate=generate_and_filter_signal(100, num);
+                feedrate=feedrate*(1/max(abs(min(feedrate)),max(feedrate)));
             end
             feedrate=feedrate*0.3/2+1;
         end
     end
+end
+
+function filtered_signal = generate_and_filter_signal(sampling_rate, signal_length)
+    % 生成初始信号，以3Hz为上限做严格的低通滤波
+    
+    % 生成白噪声信号
+    noise_signal = randn(1, signal_length);
+    
+    % 计算频率轴
+    n = length(noise_signal);
+    f = (0:n-1) * sampling_rate / n;
+    
+    % 应用快速傅里叶变换（FFT）获取频谱
+    noise_fft = fft(noise_signal);
+    
+    % 将3Hz以上的频率成分设为0，以实现严格的低通滤波
+    noise_fft(f > 2) = 0;
+    
+    % 应用逆傅里叶变换（IFFT）获取处理后的信号
+    filtered_signal = ifft(noise_fft, 'symmetric');
 end

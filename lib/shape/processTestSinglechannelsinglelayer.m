@@ -19,14 +19,17 @@ classdef processTestSinglechannelsinglelayer
             yInterval=8;
             sample=1;
             num=length/sample;
-            power=[ones(1,num)*pwr;ones(1,num)*(pwr+12.5);ones(1,num)*(pwr+25);ones(1,num)*(pwr+37.5)];
-            feedrate=[ones(1,num)*fr;ones(1,num)*(fr+100);ones(1,num)*(fr+200);ones(1,num)*(fr+300)];
+            powerStep=12.5;
+            feedStep=50;
+            power=[ones(1,num)*pwr;ones(1,num)*(pwr+1*powerStep);ones(1,num)*(pwr+2*powerStep);ones(1,num)*(pwr+3*powerStep)];
+            feedrate=[ones(1,num)*fr;ones(1,num)*(fr+1*feedStep);ones(1,num)*(fr+2*feedStep);ones(1,num)*(fr+3*feedStep)];
             count=0;
             skip=0;
-            for pIndex = 1 : 4
-                for fIndex = 1 : 4
-                    for lyrIdx=1:lyrNum
-                        zoffset=(lyrIdx-1)*lyrHeight;
+            for lyrIdx=1:lyrNum
+                skip=0;
+                for pIndex = 1 : 4
+                    for fIndex = 1 : 4
+                        zoffset=(lyrIdx-1)*lyrHeight+3;
                         cPathSeq = zeros(num+8,5);
                         cPwrSeq = zeros(num+8,1);
                         cFeedSeq = zeros(num+8,1);
@@ -68,13 +71,14 @@ classdef processTestSinglechannelsinglelayer
                         path = [path;cPathSeq];
                         pwrSeq = [pwrSeq;cPwrSeq];
                         feedSeq = [feedSeq;cFeedSeq];
-                    end
-                    count=count+1;
-                    if count==8
-                        skip=1;
-                        count=0;
+                        count=count+1;
+                        if count==8 
+                            skip=1;
+                            count=0;
+                        end
                     end
                 end
+                %power=power-powerStep;
             end
             temp=path(:,1);
             path(:,1)=path(:,2);

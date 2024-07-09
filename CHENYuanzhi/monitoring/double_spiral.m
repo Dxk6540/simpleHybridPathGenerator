@@ -6,8 +6,10 @@
 %%%%%%%%%%%%%%%%%%
 
 % file param:
-P_pattern = ["const", "tooth", "sin", "square"];
-F_pattern = ["const", "tooth", "sin", "square"];
+P_pattern = ["const", "tooth", "sin", "square","noise"];
+F_pattern = ["const", "tooth", "sin", "square","noise"];
+enable=[0,1,0,0,0,1,0,0,1];
+count=0;
 
 % printing process param
 pwr = 200; % 1.2KW / 4kw *1000;
@@ -27,8 +29,14 @@ handle = doublespiralsinglelayer;
 %%
 %%%%%%%%%%%%%% printing path
 %%%% the regular code for generate a script
-for i=1:4
-    for j=1:4
+for i=1:length(P_pattern)
+    for j=1:length(F_pattern)
+        if strcmp(P_pattern(i),"noise") || strcmp(F_pattern(j),"noise")
+            count=count+1;
+            if enable(count)==0
+                continue;
+            end
+        end
         num1 = randi([0, 1], 1);
         num2 = mod(num1 + 1, 2); 
         Rtcp_use = [num1,num2];
@@ -43,10 +51,10 @@ for i=1:4
         %%% start printing mode
         pg.setLaser(0, lenPos, flowL, speedL, flowR, speedR); % set a init process param (in case of overshoot)
         pg.startRTCP(safetyHeight, 16); 
-        pg.addPathPts([0,0,safetyHeight,0,45], 3000);
-        pg.addPathPts([0,0,safetyHeight,0,45], 3000);
+        pg.addPathPts([0,0,safetyHeight,0,0], 3000);
+        pg.addPathPts([0,0,safetyHeight,0,0], 3000);
         pg.saftyToPt([nan, nan, safetyHeight], pPathSeq(1,:), 500); % safety move the start pt
-        pg.enableLaser(1, 20);
+        pg.enableLaser(1, 10);
         pg.addCmd("M440");
         %%% add path pts
         pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrateSeq);
@@ -54,7 +62,7 @@ for i=1:4
         pg.disableLaser(1);
         pg.addCmd("M441");
         pg.stopRTCP(safetyHeight, 16); 
-        pg.addPathPts([-110,-5,120,0,45], 1000);
+        pg.addPathPts([-120,0,120,0,0], 2000);
         %%% draw
         pg.draw_ = false;
         %pg.drawPath(pPathSeq, pPathSeq);

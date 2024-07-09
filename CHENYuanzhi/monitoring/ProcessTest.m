@@ -5,22 +5,22 @@
 %
 %%%%%%%%%%%%%%%%%%
 % printing process param
-pwr = 250; % 1.2KW / 4kw *1000;
-pFeedrate = 400; % mm/min
-lenPos = 400;
+pwr = 225; % 1.2KW / 4kw *1000;
+pFeedrate = 500; % mm/min
+lenPos = 800;
 
 % file param:
 hFilename = strcat('./ProcessTest_',num2str(pwr),'_',num2str(pFeedrate),'_',num2str(lenPos),'.txt');
 
 flowL = 250; % 6 L/min / 20L/min * 1000;
-speedL = 100;% 2 r/min / 10r/min * 1000;
+speedL = 50;% 2 r/min / 10r/min * 1000;
 flowR = 400;% 6 L/min / 20L/min * 1000;
 speedR = 100;% 2 r/min / 10r/min * 1000;
 safetyHeight = 25;
-lyrNum=4;
-lyrHeight=0.6;
+lyrNum=3;
+lyrHeight=0.7;
 
-powderMode = 2;
+powderMode = 1;
 %  geometry param
 traverse=2000;
 % shape
@@ -43,17 +43,17 @@ lenPosSeqHeat = ones(length(pPathSeqHeat),1) * lenPos;
 
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%% start printing mode
-pg.setLaser(0, lenPos, flowL, 0, flowR, 0); % set a init process param (in case of overshoot)
+pg.changePowder(flowL, speedL, flowR, speedR, 0); % set a init process param (in case of overshoot)
 pg.addPathPts([0,0,safetyHeight,0,0], 3000);
 pg.addPathPts([0,0,safetyHeight,0,0], 3000);
 pg.saftyToPt([nan, nan, safetyHeight], pPathSeqHeat(1,:), 500); % safety move the start pt
 pg.enableLaser(powderMode, 10);
 
 % preheat
-pg.addPathPtsWithPwr(pPathSeqHeat, pwrSeqHeat, lenPosSeqHeat, pFeedrateSeqHeat); 
+%pg.addPathPtsWithPwr(pPathSeqHeat, pwrSeqHeat, lenPosSeqHeat, pFeedrateSeqHeat); 
 
 %%% printing
-pg.changePowder(flowL, speedL, flowR, speedR, 30); % delay 10s for change powder
+%pg.changePowder(flowL, speedL, flowR, speedR, 10); % delay 10s for change powder
 pg.addPathPtsWithPwr(pPathSeq, pwrSeq, lenPosSeq, pFeedrateSeq);
 
 pg.disableLaser(powderMode);
