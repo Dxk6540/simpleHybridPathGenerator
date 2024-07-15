@@ -29,7 +29,7 @@ classdef processTestSinglechannelsinglelayer
                 skip=0;
                 for pIndex = 1 : 4
                     for fIndex = 1 : 4
-                        zoffset=(lyrIdx-1)*lyrHeight+3;
+                        zoffset=(lyrIdx-1)*lyrHeight;
                         cPathSeq = zeros(num+8,5);
                         cPwrSeq = zeros(num+8,1);
                         cFeedSeq = zeros(num+8,1);
