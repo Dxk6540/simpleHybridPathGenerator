@@ -64,7 +64,7 @@ classdef doublespiralMultiplelayer
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,feedrate(1)];
             path=[path;x1',y1',Z_coord(1:4001)',ones(num,1)*B_axis(1),ones(num,1).*zeta1/(2*pi)*360];
-            vertices = [vertices;x1(1),y1(1);x1(end),y1(end)];
+            vertices = [vertices;x1',y1'];
             pwrSeq=[pwrSeq,power];
             feedSeq=[feedSeq,feedrate];
             path=[path;x1(end)-lead*0.01,y1(end),zoffset,0,zeta1(end)/(2*pi)*360];
@@ -83,7 +83,7 @@ classdef doublespiralMultiplelayer
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,feedrate(1)];
             path=[path;x2',y2',Z_coord(4002:end)',ones(num,1)*B_axis(2),ones(num,1).*zeta2/(2*pi)*360];
-            vertices = [vertices;x2(1),y2(1);x2(end),y2(end)];
+            vertices = [vertices;x2',y2'];
             pwrSeq=[pwrSeq,power];
             feedSeq=[feedSeq,feedrate]; 
             path=[path;x2(end),y2(end)-lead*0.01,zoffset,0,zeta2(end)/(2*pi)*360];
