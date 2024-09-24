@@ -392,6 +392,10 @@ function entities = read_dxf(filename)
                 end
                 
                 % handle bulges
+                if entities(i).closed == 0 && isnan(verts(end,1))
+                    verts = verts(1:end-1,:);
+                end
+                
                 ib = find(isnan(verts(:,1)));
                 for j = length(ib):-1:1
                     P1 = verts(ib(j)-1,:)';

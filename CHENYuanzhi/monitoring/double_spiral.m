@@ -29,8 +29,8 @@ handle = doublespiralsinglelayer;
 %%
 %%%%%%%%%%%%%% printing path
 %%%% the regular code for generate a script
-for i=1:length(P_pattern)
-    for j=1:length(F_pattern)
+for i=3:length(P_pattern)
+    for j=3:length(F_pattern)
         if strcmp(P_pattern(i),"noise") || strcmp(F_pattern(j),"noise")
             count=count+1;
             if enable(count)==0
