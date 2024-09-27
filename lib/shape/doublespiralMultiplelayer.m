@@ -15,7 +15,6 @@ classdef doublespiralMultiplelayer
             vertices = [];
             zoffset=Z_coord(1);
             lead = 5;
-            
             %spiral generation
             Length=400;
             sample=0.1;
@@ -47,49 +46,52 @@ classdef doublespiralMultiplelayer
                 feedrate=(tempFeedrate*60)';
             end
             zeta1=zeta1';
-            zeta2=zeta2';
+            zeta2=flipud(zeta2');
             if Rtcp(1)==0
                 zeta1=zeros(num,1);
             end
             if Rtcp(2)==0
                 zeta2=zeros(num,1);
             end
-            path=[path;0,0,zoffset,0,0];
+            path=[path;0,0,zoffset,B_axis(1),zeta1(1)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,traverse];
-            path=[path;x1(1)-lead,y1(1)-lead,zoffset,0,zeta1(1)/(2*pi)*360];
+            path=[path;x1(1)-lead,y1(1)-lead,zoffset,B_axis(1),zeta1(1)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,feedrate(1)];
-            path=[path;x1(1)-lead*0.01,y1(1)-lead*0.01,zoffset,0,zeta1(1)/(2*pi)*360];
+            path=[path;x1(1)-lead*0.01,y1(1)-lead*0.01,zoffset,B_axis(1),zeta1(1)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,feedrate(1)];
             path=[path;x1',y1',Z_coord(1:4001)',ones(num,1)*B_axis(1),ones(num,1).*zeta1/(2*pi)*360];
             vertices = [vertices;x1',y1'];
             pwrSeq=[pwrSeq,power];
             feedSeq=[feedSeq,feedrate];
-            path=[path;x1(end)-lead*0.01,y1(end),zoffset,0,zeta1(end)/(2*pi)*360];
+            path=[path;x1(end)-lead*0.01,y1(end),zoffset,B_axis(1),zeta1(end)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,traverse];
-            path=[path;x1(end)-lead,y1(end),zoffset,0,zeta1(end)/(2*pi)*360];
+            path=[path;x1(end)-lead,y1(end),zoffset,B_axis(1),zeta1(end)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,traverse];
-            path=[path;x2(1)+lead,y2(1)+lead,zoffset,0,zeta2(1)/(2*pi)*360];
+            path=[path;0,0,100,B_axis(2),zeta2(1)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,traverse];
-            path=[path;x2(1)+lead,y2(1)+lead,zoffset,0,zeta2(1)/(2*pi)*360];
+            path=[path;x2(1)+lead,y2(1)+lead,zoffset,B_axis(2),zeta2(1)/(2*pi)*360];
+            pwrSeq=[pwrSeq,0];
+            feedSeq=[feedSeq,traverse];
+            path=[path;x2(1)+lead,y2(1)+lead,zoffset,B_axis(2),zeta2(1)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,feedrate(1)];
-            path=[path;x2(1)+lead*0.01,y2(1)+lead*0.01,zoffset,0,zeta2(1)/(2*pi)*360];
+            path=[path;x2(1)+lead*0.01,y2(1)+lead*0.01,zoffset,B_axis(2),zeta2(1)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,feedrate(1)];
             path=[path;x2',y2',Z_coord(4002:end)',ones(num,1)*B_axis(2),ones(num,1).*zeta2/(2*pi)*360];
             vertices = [vertices;x2',y2'];
             pwrSeq=[pwrSeq,power];
             feedSeq=[feedSeq,feedrate]; 
-            path=[path;x2(end),y2(end)-lead*0.01,zoffset,0,zeta2(end)/(2*pi)*360];
+            path=[path;x2(end),y2(end)-lead*0.01,zoffset,B_axis(2),zeta2(end)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,traverse];
-            path=[path;x2(end),y2(end)-lead,zoffset,0,zeta2(end)/(2*pi)*360];
+            path=[path;x2(end),y2(end)-lead,zoffset,B_axis(2),zeta2(end)/(2*pi)*360];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,traverse];
             pwrSeq=pwrSeq';
@@ -153,7 +155,7 @@ function filtered_signal = generate_and_filter_signal(sampling_rate, signal_leng
     noise_fft = fft(noise_signal);
     
     % 将3Hz以上的频率成分设为0，以实现严格的低通滤波
-    noise_fft(f > 2) = 0;
+    noise_fft(f > 1) = 0;
     
     % 应用逆傅里叶变换（IFFT）获取处理后的信号
     filtered_signal = ifft(noise_fft, 'symmetric');
