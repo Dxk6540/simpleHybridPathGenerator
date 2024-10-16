@@ -22,7 +22,12 @@ traverse=2000;
 B_axis=randB(2*length(P_pattern)*length(F_pattern));
 % shape
 handle = doublespiralMultiplelayer;
-load('Z');
+if exist('./Z.mat', 'file')
+    % 如果文件夹不存在，使用mkdir函数创建新的文件夹
+    load('Z');
+else
+    data=(1:8002)';
+end
 Z_coord=data'*3;
 % Z_coord = -0.98*ones(1,8002);
 %%
@@ -30,6 +35,18 @@ Z_coord=data'*3;
 %%%% the regular code for generate a script
 i=4;
 j=4;
+folderPath = strcat('./DSML_Data/DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j));
+if ~exist(folderPath, 'dir')
+    % 如果文件夹不存在，使用mkdir函数创建新的文件夹
+    mkdir(folderPath);
+end
+for k=1:5
+    folderPath = strcat('./DSML_Data/DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j),'/',num2str(k));
+    if ~exist(folderPath, 'dir')
+        % 如果文件夹不存在，使用mkdir函数创建新的文件夹
+        mkdir(folderPath);
+    end
+end
 Rtcp_use = [1,1];
 hFilename = strcat('./DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j),'.txt');
 pg = cPathGen(hFilename); % create the path generator object
