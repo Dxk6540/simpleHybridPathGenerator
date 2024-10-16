@@ -46,6 +46,26 @@ for k=1:5
         % 如果文件夹不存在，使用mkdir函数创建新的文件夹
         mkdir(folderPath);
     end
+    if k>1
+        csvfile = strcat('./DSML_Data/DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j),'/',num2str(k),'/','trace.csv');
+        orgfile = strcat('./DSML_Data/DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j),'/',num2str(k),'/','org.ply');
+        remeshfile = strcat('./DSML_Data/DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j),'/',num2str(k),'/','remesh.ply');
+        files = dir(fullfile(folderPath, '*.png'));
+
+        if isempty(files)
+            error('缺熔池图片');
+        end
+        if ~exist(csvfile, 'file')
+            error('缺CSV文件');
+        end
+        if ~exist(orgfile, 'file')
+            error('缺原始点云');
+        end
+        if ~exist(remeshfile, 'file')
+            error('缺合成点云');
+        end
+        
+    end
 end
 Rtcp_use = [1,1];
 hFilename = strcat('./DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j),'.txt');
