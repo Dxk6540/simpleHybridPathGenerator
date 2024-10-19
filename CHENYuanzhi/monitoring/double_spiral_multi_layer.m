@@ -22,19 +22,20 @@ traverse=2000;
 B_axis=randB(2*length(P_pattern)*length(F_pattern));
 % shape
 handle = doublespiralMultiplelayer;
+z_offset=-0.9262;
 if exist('./Z.mat', 'file')
     % 如果文件夹不存在，使用mkdir函数创建新的文件夹
     load('Z');
 else
-    data=(1:8002)';
+    data=zeros(8002,1);
 end
-Z_coord=data'*3;
+Z_coord=z_offset+data';
 % Z_coord = -0.98*ones(1,8002);
 %%
 %%%%%%%%%%%%%% printing path
 %%%% the regular code for generate a script
 i=4;
-j=4;
+j=3;
 folderPath = strcat('./DSML_Data/DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j));
 if ~exist(folderPath, 'dir')
     % 如果文件夹不存在，使用mkdir函数创建新的文件夹
@@ -47,23 +48,23 @@ for k=1:5
         mkdir(folderPath);
     end
     if k>1
-        csvfile = strcat('./DSML_Data/DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j),'/',num2str(k),'/','trace.csv');
-        orgfile = strcat('./DSML_Data/DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j),'/',num2str(k),'/','org.ply');
-        remeshfile = strcat('./DSML_Data/DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j),'/',num2str(k),'/','remesh.ply');
-        files = dir(fullfile(folderPath, '*.png'));
-
-        if isempty(files)
-            error('缺熔池图片');
-        end
-        if ~exist(csvfile, 'file')
-            error('缺CSV文件');
-        end
-        if ~exist(orgfile, 'file')
-            error('缺原始点云');
-        end
-        if ~exist(remeshfile, 'file')
-            error('缺合成点云');
-        end
+        % csvfile = strcat('./DSML_Data/DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j),'/',num2str(k),'/','trace.csv');
+        % orgfile = strcat('./DSML_Data/DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j),'/',num2str(k),'/','org.ply');
+        % remeshfile = strcat('./DSML_Data/DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j),'/',num2str(k),'/','remesh.ply');
+        % files = dir(fullfile(folderPath, '*.png'));
+        % 
+        % if isempty(files)
+        %     error('缺熔池图片');
+        % end
+        % if ~exist(csvfile, 'file')
+        %     error('缺CSV文件');
+        % end
+        % if ~exist(orgfile, 'file')
+        %     error('缺原始点云');
+        % end
+        % if ~exist(remeshfile, 'file')
+        %     error('缺合成点云');
+        % end
         
     end
 end
