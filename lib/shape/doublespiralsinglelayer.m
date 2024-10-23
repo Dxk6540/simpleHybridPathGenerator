@@ -24,6 +24,7 @@ classdef doublespiralsinglelayer
             b=1.7;            
             a1=1;
             t1=(sqrt((w*a1)^2+2*b*w^2.*n)-a1*w)/(b*w^2);
+            %t3=(sqrt(a1^2+2*b.*n)-a1)/(b*w);
             zeta1=w*t1;
             r1=a1+b*zeta1;
             x1=r1.*cos(zeta1);
@@ -45,6 +46,7 @@ classdef doublespiralsinglelayer
             num=Length/sample+1;
             power=doublespiralsinglelayer.getPower(pPattern,num)*pwr;
             feedrate=doublespiralsinglelayer.getFeedrate(fPattern,num)*fr;
+            power=power./(feedrate/60);
             if strcmp(fPattern,"square") || strcmp(fPattern,"noise")
                 tempFeedrate=feedrate/60;
                 tempFeedrate=timeSmooth(tempFeedrate');
@@ -105,7 +107,7 @@ classdef doublespiralsinglelayer
         
         function power = getPower(pPattern, num)           
             t=1:num;
-            t=t/num.*(2*pi*(5+0.01*t));
+            t=t/num.*(2*pi*(1+0.001*t));
             if strcmp(pPattern, "const")
                 power=zeros(1,num);  
             elseif strcmp(pPattern, "tooth")
@@ -124,7 +126,7 @@ classdef doublespiralsinglelayer
         
         function feedrate = getFeedrate(fPattern,num)        
             t=1:num;
-            t=t/num.*(2*pi*(5+0.01*t))-0.5*pi;
+            t=t/num.*(2*pi*(1+0.001*t))-0.5*pi;
             if strcmp(fPattern, "const")
                 feedrate=zeros(1,num);  
             elseif strcmp(fPattern, "tooth")

@@ -1,5 +1,5 @@
 % 指定包含txt文件的文件夹路径
-folderPath = 'C:\Users\ASUS\Desktop\test0'; % 替换为包含txt文件的文件夹路径
+folderPath = 'C:\Users\ASUS\Desktop\test1'; % 替换为包含txt文件的文件夹路径
 
 % 获取文件夹中所有txt文件的列表
 fileList = dir(fullfile(folderPath, '*.txt'));

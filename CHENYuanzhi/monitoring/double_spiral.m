@@ -12,7 +12,7 @@ enable=[0,1,0,0,0,1,0,0,1];
 count=0;
 
 % printing process param
-pwr = 200; % 1.2KW / 4kw *1000;
+pwr = 800; % 1.2KW / 4kw *1000;
 pFeedrate = 400; % mm/min
 lenPos = 600;
 flowL = 250; % 6 L/min / 20L/min * 1000;
@@ -29,8 +29,8 @@ handle = doublespiralsinglelayer;
 %%
 %%%%%%%%%%%%%% printing path
 %%%% the regular code for generate a script
-for i=3:length(P_pattern)
-    for j=3:length(F_pattern)
+for i=1:length(P_pattern)
+    for j=1:length(F_pattern)
         if strcmp(P_pattern(i),"noise") || strcmp(F_pattern(j),"noise")
             count=count+1;
             if enable(count)==0
