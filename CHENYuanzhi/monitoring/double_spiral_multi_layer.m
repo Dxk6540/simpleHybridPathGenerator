@@ -103,10 +103,10 @@ save('DoubleSpiralMultiLayer_vertices.mat','vertices');
 
 function B_axis=randB(numbers)
 % 设置随机种子
-rng(123); % 替换为你希望使用的种子
+rng(42); % 替换为你希望使用的种子
 
 % 定义可选数字
-options = [15, 15, 15, 15, 15];
+options = [0, 5, 10, 15];
 % options = [0, 0, 0, 0, 0];
 % 生成 20 个随机整数
 randNumbers = options(randi(length(options), 1, numbers));
