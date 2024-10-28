@@ -16,13 +16,13 @@ flowL = 250; % 6 L/min / 20L/min * 1000;
 speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 400;% 6 L/min / 20L/min * 1000;
 speedR = 100;% 2 r/min / 10r/min * 1000;
-safetyHeight = 35;
+safetyHeight = 45;
 traverse=2000;
 
 B_axis=randB(2*length(P_pattern)*length(F_pattern));
 % shape
 handle = doublespiralMultiplelayer;
-z_offset=-0.9262;
+z_offset=3.8;
 if exist('./Z.mat', 'file')
     % 如果文件夹不存在，使用mkdir函数创建新的文件夹
     load('Z');
@@ -34,7 +34,7 @@ Z_coord=z_offset+data';
 %%
 %%%%%%%%%%%%%% printing path
 %%%% the regular code for generate a script
-i=4;
+i=2;
 j=3;
 folderPath = strcat('./DSML_Data/DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j));
 if ~exist(folderPath, 'dir')
