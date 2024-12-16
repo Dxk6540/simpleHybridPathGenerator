@@ -1,4 +1,4 @@
-imgName='C:\Users\ASUS\Desktop\test1\Low_DoubleSpiral_noise_tooth_Speed.jpg';
+imgName='C:\Users\ASUS\Desktop\test1\High_DoubleSpiral_sin_square_Speed.jpg';
 img = imread(imgName);
 temp=img(:,:,1);
 img(:,:,1)=img(:,:,2);

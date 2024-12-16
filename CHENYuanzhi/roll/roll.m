@@ -1,6 +1,6 @@
 clc; close all;
 % file param:
-dxfFile='cuuter-71v3.dxf';
+dxfFile='Drawing3.dxf';
 dxf = DXFtool(dxfFile);
 pFilename = strcat('./roll_',dxfFile,'_',date,'.txt');
 pg = cPathGen(pFilename); % create the path generator object
