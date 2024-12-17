@@ -8,9 +8,19 @@
 % file param:
 P_pattern = ["const", "tooth", "sin", "noise"];
 F_pattern = ["const", "tooth", "sin", "noise"];
-Reverse = 0;
-dxfFile='Drawing7.dxf';
-i=1;j=3;B_axis=5;
+
+Reverse = 1;
+dxfFile='Drawing3.dxf';
+i=1;j=3;B_axis=0;
+
+% Reverse = 0;
+% dxfFile='Drawing4.dxf';
+% i=2;j=4;B_axis=10;
+% 
+% Reverse = 0;
+% dxfFile='Drawing6.dxf';
+% i=4;j=3;B_axis=15;
+
 skip=200;
 
 % printing process param
@@ -26,7 +36,7 @@ traverse=2000;
 
 % shape
 handle = CADMultiplelayer;
-z_offset=3.8;
+z_offset=-0.1495;
 if exist('./Z.mat', 'file')
     % 如果文件夹不存在，使用mkdir函数创建新的文件夹
     load('Z');

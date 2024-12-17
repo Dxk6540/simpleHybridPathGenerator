@@ -6,12 +6,23 @@
 %%%%%%%%%%%%%%%%%%
 
 % file param:
+Frequency = ["Low","High"];
 P_pattern = ["const", "tooth", "sin", "square","noise"];
 F_pattern = ["const", "tooth", "sin", "square","noise"];
 Rtcp_use = 0;
 Reverse = 1;
-dxfFile='Drawing6.dxf';
-i=1;j=2;
+dxfFile='Drawing3.dxf';
+i=1;j=2;h=1;
+
+% Rtcp_use = 1;
+% Reverse = 0;
+% dxfFile='Drawing4.dxf';
+% i=3;j=5;h=2;
+% 
+% Rtcp_use = 1;
+% Reverse = 1;
+% dxfFile='Drawing6.dxf';
+% i=5;j=3;h=1;
 skip=200;
 
 % printing process param
@@ -37,7 +48,7 @@ pg = cPathGen(hFilename); % create the path generator object
 pg.genNewScript();
 %%% Beam1
 pg.changeMode(1); % change to printing mode
-[pPathSeq,pwrSeq, pFeedrateSeq,vertices] = handle.genPrintingPath(pwr, pFeedrate, traverse, P_pattern(i), F_pattern(j), Rtcp_use, dxfFile, skip, Reverse);
+[pPathSeq,pwrSeq, pFeedrateSeq,vertices] = handle.genPrintingPath(pwr, pFeedrate, traverse, P_pattern(i), F_pattern(j), Rtcp_use, dxfFile, skip, Reverse, Frequency(h));
 lenPosSeq = ones(length(pPathSeq),1) * lenPos;
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%% start printing mode

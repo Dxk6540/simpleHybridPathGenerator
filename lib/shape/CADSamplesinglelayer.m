@@ -8,7 +8,7 @@ classdef CADSamplesinglelayer
     end
     
     methods(Static)
-        function [path, pwrSeq,feedSeq,vertices] = genPrintingPath(pwr, fr, traverse, pPattern, fPattern, Rtcp, dxfFile, skip, Reverse)
+        function [path, pwrSeq,feedSeq,vertices] = genPrintingPath(pwr, fr, traverse, pPattern, fPattern, Rtcp, dxfFile, skip, Reverse, Frequency)
             %dxfFile='Drawing3.dxf';
             dxf = DXFtool(dxfFile);
             [seq,reverse,group]=connectPoints(dxf.points);
@@ -37,8 +37,8 @@ classdef CADSamplesinglelayer
             if Rtcp==0
                 zeta=zeros(num,1);
             end
-            power=doublespiralsinglelayer.getPower(pPattern,num)*pwr;
-            feedrate=doublespiralsinglelayer.getFeedrate(fPattern,num)*fr;
+            power=CADSamplesinglelayer.getPower(pPattern,num,Frequency)*pwr;
+            feedrate=CADSamplesinglelayer.getFeedrate(fPattern,num,Frequency)*fr;
             %power=power./(feedrate/60);
             if strcmp(fPattern,"square") || strcmp(fPattern,"noise")
                 tempFeedrate=feedrate/60;
@@ -71,10 +71,13 @@ classdef CADSamplesinglelayer
             min(EDR(EDR~=0))
         end
         
-        function power = getPower(pPattern, num)           
+        function power = getPower(pPattern,num,Frequency)           
             t=1:num;
-            t=t/num.*(2*pi*(1+0.0001*t));
-            %t=t/num.*(2*pi*(5+0.001*t));
+            if strcmp(Frequency,"Low")
+                t=t/num.*(2*pi*(1+0.0001*t));
+            else
+                t=t/num.*(2*pi*(5+0.001*t));
+            end
             if strcmp(pPattern, "const")
                 power=zeros(1,num);  
             elseif strcmp(pPattern, "tooth")
@@ -91,10 +94,13 @@ classdef CADSamplesinglelayer
             power=power*0.3/2+1;
         end
         
-        function feedrate = getFeedrate(fPattern,num)        
+        function feedrate = getFeedrate(fPattern,num,Frequency)        
             t=1:num;
-            t=t/num.*(2*pi*(1+0.0001*t))-0.5*pi;
-            %t=t/num.*(2*pi*(5+0.001*t))-0.5*pi;
+            if strcmp(Frequency,"Low")
+                t=t/num.*(2*pi*(1+0.0001*t))-0.5*pi;
+            else    
+                t=t/num.*(2*pi*(5+0.001*t))-0.5*pi;
+            end
             if strcmp(fPattern, "const")
                 feedrate=zeros(1,num);  
             elseif strcmp(fPattern, "tooth")
