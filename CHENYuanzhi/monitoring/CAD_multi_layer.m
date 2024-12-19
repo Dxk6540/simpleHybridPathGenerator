@@ -9,17 +9,17 @@
 P_pattern = ["const", "tooth", "sin", "noise"];
 F_pattern = ["const", "tooth", "sin", "noise"];
 
-Reverse = 1;
-dxfFile='Drawing3.dxf';
-i=1;j=3;B_axis=0;
+% Reverse = 1;
+% dxfFile='Drawing3.dxf';
+% i=1;j=3;B_axis=0;
 
 % Reverse = 0;
 % dxfFile='Drawing4.dxf';
 % i=2;j=4;B_axis=10;
 % 
-% Reverse = 0;
-% dxfFile='Drawing6.dxf';
-% i=4;j=3;B_axis=15;
+Reverse = 0;
+dxfFile='Drawing6.dxf';
+i=4;j=3;B_axis=15;
 
 skip=200;
 
@@ -36,7 +36,7 @@ traverse=2000;
 
 % shape
 handle = CADMultiplelayer;
-z_offset=-0.1495;
+z_offset=4.2924;
 if exist('./Z.mat', 'file')
     % 如果文件夹不存在，使用mkdir函数创建新的文件夹
     load('Z');
@@ -44,9 +44,11 @@ else
     load(strcat('./',erase(dxfFile,'.dxf'),'_CADPrint_path.mat'));
     data=zeros(length(pPathSeq),1);
 end
-Z_coord=z_offset+data';
+%241701
+load(strcat('./',erase(dxfFile,'.dxf'),'_CADPrint_path.mat'));
+Z_coord=z_offset+smoothedData';
 
-%%
+%%h6
 %%%%%%%%%%%%%% printing path
 %%%% the regular code for generate a script
 hFilename = strcat('./',erase(dxfFile,'.dxf'),'_CADMLPrint_',P_pattern(i),'_',F_pattern(j),'.txt');
