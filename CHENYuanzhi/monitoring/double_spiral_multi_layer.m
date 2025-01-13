@@ -22,7 +22,7 @@ traverse=2000;
 B_axis=randB(2*length(P_pattern)*length(F_pattern));
 % shape
 handle = doublespiralMultiplelayer;
-z_offset=3.8;
+z_offset=4.1726;
 if exist('./Z.mat', 'file')
     % 如果文件夹不存在，使用mkdir函数创建新的文件夹
     load('Z');
@@ -34,8 +34,8 @@ Z_coord=z_offset+data';
 %%
 %%%%%%%%%%%%%% printing path
 %%%% the regular code for generate a script
-i=2;
-j=3;
+i=3;
+j=4;
 folderPath = strcat('./DSML_Data/DoubleSpiralMultiLayer_',P_pattern(i),'_',F_pattern(j));
 if ~exist(folderPath, 'dir')
     % 如果文件夹不存在，使用mkdir函数创建新的文件夹
@@ -112,4 +112,5 @@ options = [0, 5, 10, 15];
 randNumbers = options(randi(length(options), 1, numbers));
 
 B_axis=[randNumbers(1:numbers/2);randNumbers(numbers/2+1:end)]';
+B_axis(end,:)=[0,10];
 end
