@@ -22,7 +22,7 @@ traverse=2000;
 B_axis=randB(2*length(P_pattern)*length(F_pattern));
 % shape
 handle = doublespiralMultiplelayer;
-Z_coord = -0.031*ones(1,8002);
+Z_coord = -0.98*ones(1,8002);
 %%
 %%%%%%%%%%%%%% printing path
 %%%% the regular code for generate a script
@@ -63,12 +63,12 @@ save('DoubleSpiralMultiLayer_vertices.mat','vertices');
 
 function B_axis=randB(numbers)
 % 设置随机种子
-rng(123); % 替换为你希望使用的种子
+rng(123); % 替换为你希望使用的种�?
 
-% 定义可选数字
+% 定义可�?�数�?
 options = [15, 15, 15, 15, 15];
 
-% 生成 20 个随机整数
+% 生成 20 个随机整�?
 randNumbers = options(randi(length(options), 1, numbers));
 
 B_axis=[randNumbers(1:numbers/2);randNumbers(numbers/2+1:end)]';
