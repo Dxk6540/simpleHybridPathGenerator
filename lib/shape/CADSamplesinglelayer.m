@@ -12,8 +12,14 @@ classdef CADSamplesinglelayer
             %dxfFile='Drawing3.dxf';
             dxf = DXFtool(dxfFile);
             [seq,reverse,group]=connectPoints(dxf.points);
-            [Cpath,~,~]=connectPath(dxf,seq,reverse,group);
-            Cpath=Cpath(3:end-2,:);
+            [Cpath,on_off,~]=connectPath(dxf,seq,reverse,group);
+            tmpCpath=[];
+            for i=1:length(Cpath)
+                if on_off(i)==1
+                    tmpCpath=[tmpCpath;Cpath(i,:)];
+                end
+            end
+            Cpath=tmpCpath(3:end-2,:);
             Cpath=Cpath-mean(Cpath);
             Cpath = insertPointsEvenly(Cpath, 0.011);
             Cpath=Cpath(1:end-skip,:);

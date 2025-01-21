@@ -11,7 +11,7 @@ P_pattern = ["const", "tooth", "sin", "square","noise"];
 F_pattern = ["const", "tooth", "sin", "square","noise"];
 Rtcp_use = 0;
 Reverse = 1;
-dxfFile='Drawing3.dxf';
+dxfFile='Drawing8.dxf';
 i=1;j=1;h=1;
 
 % Rtcp_use = 1;
@@ -27,9 +27,9 @@ skip=0;
 shift=1200;
 
 % printing process param
-pwr = 200; % 1.2KW / 4kw *1000;
+pwr = 150; % 1.2KW / 4kw *1000;
 pFeedrate = 400; % mm/min
-lenPos = 600;
+lenPos = 800;
 flowL = 250; % 6 L/min / 20L/min * 1000;
 speedL = 100;% 2 r/min / 10r/min * 1000;
 flowR = 400;% 6 L/min / 20L/min * 1000;
@@ -37,6 +37,7 @@ speedR = 100;% 2 r/min / 10r/min * 1000;
 safetyHeight = 25;
 lyrNum=20;
 lyrHeight=0.5;
+size=1.15;
 
 %  geometry param
 traverse=2000;
@@ -69,15 +70,16 @@ for i=1:lyrNum
     pFeedrateSeq=[pFeedrateSeq;lyrFeedrateSeq(1,:);lyrFeedrateSeq(1,:);...
         lyrFeedrateSeq;lyrFeedrateSeq(end,:);lyrFeedrateSeq(end,:)];
     
-    tmpPathSeq=[tmpPathSeq(shift:end,:);tmpPathSeq(shift-1:-1:1,:)];
+    tmpPathSeq=[tmpPathSeq(shift:end,:);tmpPathSeq(1:shift-1,:)];
     tmpPathSeq(:,3)=tmpPathSeq(:,3)+lyrHeight;
-    tmppwrSeq=[tmppwrSeq(shift:end,:);tmppwrSeq(shift-1:-1:1,:)];
-    tmpFeedrateSeq=[tmpFeedrateSeq(shift:end,:);tmpFeedrateSeq(shift-1:-1:1,:)];
+    tmppwrSeq=[tmppwrSeq(shift:end,:);tmppwrSeq(1:shift-1,:)];
+    tmpFeedrateSeq=[tmpFeedrateSeq(shift:end,:);tmpFeedrateSeq(1:shift-1,:)];
+    
     lyrPathSeq=flipud(tmpPathSeq);
     lyrpwrSeq=flipud(tmppwrSeq);
     lyrFeedrateSeq=flipud(tmpFeedrateSeq);
 end
-
+pPathSeq(:,1:2)=pPathSeq(:,1:2)*size;
 lenPosSeq = ones(length(pPathSeq),1) * lenPos;
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%% start printing mode
