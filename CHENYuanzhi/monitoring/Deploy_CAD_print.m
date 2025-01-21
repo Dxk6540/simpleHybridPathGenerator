@@ -53,32 +53,37 @@ pg.genNewScript();
 %%% Beam1
 pg.changeMode(1); % change to printing mode
 [pPathSeq,pwrSeq, pFeedrateSeq,~] = handle.genPrintingPath(pwr, pFeedrate, traverse, P_pattern(i), F_pattern(j), Rtcp_use, dxfFile, skip, Reverse, Frequency(h));
-tmpPathSeq=pPathSeq(4:end-2,:);
-tmppwrSeq=pwrSeq(4:end-2,:);
-tmpFeedrateSeq=pFeedrateSeq(4:end-2,:);
-pPathSeq=[];pwrSeq=[];pFeedrateSeq=[];
-lyrPathSeq=tmpPathSeq;
-lyrpwrSeq=tmppwrSeq;
-lyrFeedrateSeq=tmpFeedrateSeq;
-for i=1:lyrNum
-    leadInVec=lyrPathSeq(2,:)-lyrPathSeq(1,:);
-    leadOutVec=lyrPathSeq(end,:)-lyrPathSeq(end-1,:);
-    pPathSeq=[pPathSeq;lyrPathSeq(1,:)-leadInVec*200;...
-        lyrPathSeq(1,:)-leadInVec;lyrPathSeq;lyrPathSeq(end,:)+leadOutVec*200;...
-        lyrPathSeq(end,:)+leadOutVec];
-    pwrSeq=[pwrSeq;0;0;lyrpwrSeq;0;0];
-    pFeedrateSeq=[pFeedrateSeq;lyrFeedrateSeq(1,:);lyrFeedrateSeq(1,:);...
-        lyrFeedrateSeq;lyrFeedrateSeq(end,:);lyrFeedrateSeq(end,:)];
-    
-    tmpPathSeq=[tmpPathSeq(shift:end,:);tmpPathSeq(1:shift-1,:)];
-    tmpPathSeq(:,3)=tmpPathSeq(:,3)+lyrHeight;
-    tmppwrSeq=[tmppwrSeq(shift:end,:);tmppwrSeq(1:shift-1,:)];
-    tmpFeedrateSeq=[tmpFeedrateSeq(shift:end,:);tmpFeedrateSeq(1:shift-1,:)];
-    
-    lyrPathSeq=flipud(tmpPathSeq);
-    lyrpwrSeq=flipud(tmppwrSeq);
-    lyrFeedrateSeq=flipud(tmpFeedrateSeq);
-end
+
+% tmpPathSeq=pPathSeq(4:end-2,:);
+% tmppwrSeq=pwrSeq(4:end-2,:);
+% tmpFeedrateSeq=pFeedrateSeq(4:end-2,:);
+% pPathSeq=[];pwrSeq=[];pFeedrateSeq=[];
+% lyrPathSeq=tmpPathSeq;
+% lyrpwrSeq=tmppwrSeq;
+% lyrFeedrateSeq=tmpFeedrateSeq;
+% for i=1:lyrNum
+%     leadInVec=lyrPathSeq(2,:)-lyrPathSeq(1,:);
+%     leadOutVec=lyrPathSeq(end,:)-lyrPathSeq(end-1,:);
+%     pPathSeq=[pPathSeq;lyrPathSeq(1,:)-leadInVec*200;...
+%         lyrPathSeq(1,:)-leadInVec;lyrPathSeq;lyrPathSeq(end,:)+leadOutVec*200;...
+%         lyrPathSeq(end,:)+leadOutVec];
+%     pwrSeq=[pwrSeq;0;0;lyrpwrSeq;0;0];
+%     pFeedrateSeq=[pFeedrateSeq;lyrFeedrateSeq(1,:);lyrFeedrateSeq(1,:);...
+%         lyrFeedrateSeq;lyrFeedrateSeq(end,:);lyrFeedrateSeq(end,:)];
+%     
+%     tmpPathSeq=[tmpPathSeq(shift:end,:);tmpPathSeq(shift-1:-1:1,:)];
+%     tmpPathSeq(:,3)=tmpPathSeq(:,3)+lyrHeight;
+%     tmppwrSeq=[tmppwrSeq(shift:end,:);tmppwrSeq(shift-1:-1:1,:)];
+%     tmpFeedrateSeq=[tmpFeedrateSeq(shift:end,:);tmpFeedrateSeq(shift-1:-1:1,:)];
+%     lyrPathSeq=flipud(tmpPathSeq);
+%     lyrpwrSeq=flipud(tmppwrSeq);
+%     lyrFeedrateSeq=flipud(tmpFeedrateSeq);
+% end
+
+pPathSeq = repmat(pPathSeq(4:end-2,:), lyrNum, 1);
+pwrSeq = repmat(pwrSeq(4:end-2,:), lyrNum, 1);
+pFeedrateSeq = repmat(pFeedrateSeq(4:end-2,:), lyrNum, 1);
+pPathSeq(:,3)=linspace(0,(lyrNum-1)*lyrHeight,length(pPathSeq(:,3)));
 pPathSeq(:,1:2)=pPathSeq(:,1:2)*size;
 lenPosSeq = ones(length(pPathSeq),1) * lenPos;
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
