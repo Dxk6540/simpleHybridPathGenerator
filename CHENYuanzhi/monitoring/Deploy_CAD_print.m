@@ -37,8 +37,9 @@ speedR = 100;% 2 r/min / 10r/min * 1000;
 safetyHeight = 25;
 lyrNum=20;
 lyrHeight=0.5;
-size=0.6;
-
+size=0.45;% 0.3为step进行调整
+xOffset=-15;
+yOffset=15;
 %  geometry param
 traverse=2000;
 % shape
@@ -80,11 +81,24 @@ pg.changeMode(1); % change to printing mode
 %     lyrFeedrateSeq=flipud(tmpFeedrateSeq);
 % end
 
+powerOffest=[linspace(0,0,500)';linspace(150,0,500)'];
+pFeedrateSeq=pFeedrateSeq(4:end-2,:);
+pFeedrateSeq(3501:4500,:)=pFeedrateSeq(3501:4500,:)+powerOffest;
+pFeedrateSeq(7501:8500,:)=pFeedrateSeq(7501:8500,:)+powerOffest;
+pFeedrateSeq(11501:12500,:)=pFeedrateSeq(11501:12500,:)+powerOffest;
+%pFeedrateSeq(15500:end,:)=pFeedrateSeq(15500:end,:)+linspace(0,150,499)';
+pFeedrateSeq(1:500,:)=pFeedrateSeq(1:500,:)+linspace(150,0,500)';
+pFeedrateSeq(4001:8000,:)=pFeedrateSeq(4001:8000,:)*1.1;
+pFeedrateSeq(8001:12000,:)=pFeedrateSeq(8001:12000,:)*1.25;
+pFeedrateSeq = repmat(pFeedrateSeq, lyrNum, 1);
+% pFeedrateSeq = repmat(pFeedrateSeq(4:end-2,:), lyrNum, 1);
+
 pPathSeq = repmat(pPathSeq(4:end-2,:), lyrNum, 1);
 pwrSeq = repmat(pwrSeq(4:end-2,:), lyrNum, 1);
-pFeedrateSeq = repmat(pFeedrateSeq(4:end-2,:), lyrNum, 1);
 pPathSeq(:,3)=linspace(0,(lyrNum-1)*lyrHeight,length(pPathSeq(:,3)));
 pPathSeq(:,1:2)=pPathSeq(:,1:2)*size;
+pPathSeq(:,1)=pPathSeq(:,1)+xOffset;
+pPathSeq(:,2)=pPathSeq(:,2)+yOffset;
 lenPosSeq = ones(length(pPathSeq),1) * lenPos;
 %%%%%%%%%%%%% following for path Gen %%%%%%%%%%%%%%%%%%%%%
 %%% start printing mode
