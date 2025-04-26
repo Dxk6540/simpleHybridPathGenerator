@@ -8,12 +8,11 @@ classdef CADMultiplelayer
     end
     
     methods(Static)
-        function [path, pwrSeq,feedSeq,vertices] = genPrintingPath(pPathSeq, pwr, fr, traverse, pPattern, fPattern, Reverse, B_axis, Z_coord)
+        function [path, pwrSeq,feedSeq,vertices] = genPrintingPath(pPathSeq, pwr, fr, traverse, pPattern, fPattern, Reverse, B_axis, Z_coord, Z_offset, incline)
             path = [];
             pwrSeq = [];
             feedSeq = [];
             vertices = [];
-            zoffset=Z_coord(1);
             lead = 5;
             x=pPathSeq(:,1);
             y=pPathSeq(:,2);
@@ -33,23 +32,27 @@ classdef CADMultiplelayer
                 zeta=flipud(zeta);
             end
             
-            path=[path;0,0,zoffset,B_axis,zeta(1)];
+            path=[path;0,0,Z_offset,B_axis,zeta(1)];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,traverse];
-            path=[path;x(1)-lead,y(1)-lead,zoffset,B_axis,zeta(1)];
+            path=[path;x(1)-lead,y(1)-lead,Z_offset,B_axis,zeta(1)];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,feedrate(1)];
-            path=[path;x(1)-lead*0.01,y(1)-lead*0.01,zoffset,B_axis,zeta(1)];
+            path=[path;x(1)-lead*0.01,y(1)-lead*0.01,Z_offset,B_axis,zeta(1)];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,feedrate(1)];
-            path=[path;x,y,Z_coord',ones(num,1)*B_axis,ones(num,1).*zeta];
+            if incline
+                x=(x./sqrt(x.*x+y.*y)).*(Z_coord-Z_offset)./tan(B_axis/180*pi)+x;
+                y=(y./sqrt(x.*x+y.*y)).*(Z_coord-Z_offset)./tan(B_axis/180*pi)+y;
+            end
+            path=[path;x,y,Z_coord,ones(num,1)*B_axis,ones(num,1).*zeta];
             vertices = [vertices;x',y'];
             pwrSeq=[pwrSeq,power];
             feedSeq=[feedSeq,feedrate];
-            path=[path;x(end)-lead*0.01,y(end),zoffset,B_axis,zeta(end)];
+            path=[path;x(end)-lead*0.01,y(end),Z_offset,B_axis,zeta(end)];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,traverse];
-            path=[path;x(end)-lead,y(end),zoffset,B_axis,zeta(end)];
+            path=[path;x(end)-lead,y(end),Z_offset,B_axis,zeta(end)];
             pwrSeq=[pwrSeq,0];
             feedSeq=[feedSeq,traverse];
             pwrSeq=pwrSeq';

@@ -11,7 +11,7 @@ P_pattern = ["const", "tooth", "sin", "square","noise"];
 F_pattern = ["const", "tooth", "sin", "square","noise"];
 Rtcp_use = 0;
 Reverse = 1;
-dxfFile='Drawing8.dxf';
+dxfFile='Drawing3.dxf';
 i=1;j=1;h=1;
 
 % Rtcp_use = 1;
@@ -37,7 +37,7 @@ speedR = 100;% 2 r/min / 10r/min * 1000;
 safetyHeight = 25;
 lyrNum=20;
 lyrHeight=0.5;
-size=1.15;
+size=0.6;
 
 %  geometry param
 traverse=2000;
