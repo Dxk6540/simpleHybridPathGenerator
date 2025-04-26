@@ -9,20 +9,20 @@
 Frequency = ["Low","High"];
 P_pattern = ["const", "tooth", "sin", "square","noise"];
 F_pattern = ["const", "tooth", "sin", "square","noise"];
-Rtcp_use = 0;
-Reverse = 1;
-dxfFile='Drawing3.dxf';
-i=1;j=1;h=1;
+% Rtcp_use = 0;
+% Reverse = 1;
+% dxfFile='Drawing3.dxf';
+% i=1;j=1;h=1;
 
 % Rtcp_use = 1;
 % Reverse = 0;
 % dxfFile='Drawing4.dxf';
 % i=3;j=5;h=2;
 % 
-% Rtcp_use = 1;
-% Reverse = 1;
-% dxfFile='Drawing6.dxf';
-% i=5;j=3;h=1;
+Rtcp_use = 1;
+Reverse = 1;
+dxfFile='Drawing6.dxf';
+i=5;j=3;h=1;
 skip=0;
 shift=1200;
 
@@ -81,21 +81,22 @@ pg.changeMode(1); % change to printing mode
 %     lyrFeedrateSeq=flipud(tmpFeedrateSeq);
 % end
 
-powerOffest=[linspace(0,0,500)';linspace(150,0,500)'];
-pFeedrateSeq=pFeedrateSeq(4:end-2,:);
-pFeedrateSeq(3501:4500,:)=pFeedrateSeq(3501:4500,:)+powerOffest;
-pFeedrateSeq(7501:8500,:)=pFeedrateSeq(7501:8500,:)+powerOffest;
-pFeedrateSeq(11501:12500,:)=pFeedrateSeq(11501:12500,:)+powerOffest;
-%pFeedrateSeq(15500:end,:)=pFeedrateSeq(15500:end,:)+linspace(0,150,499)';
-pFeedrateSeq(1:500,:)=pFeedrateSeq(1:500,:)+linspace(150,0,500)';
-pFeedrateSeq(4001:8000,:)=pFeedrateSeq(4001:8000,:)*1.1;
-pFeedrateSeq(8001:12000,:)=pFeedrateSeq(8001:12000,:)*1.25;
-pFeedrateSeq = repmat(pFeedrateSeq, lyrNum, 1);
+%% 正方形打印的速度调节
+% powerOffest=[linspace(0,0,500)';linspace(150,0,500)'];
+% pFeedrateSeq=pFeedrateSeq(4:end-2,:);
+% pFeedrateSeq(3501:4500,:)=pFeedrateSeq(3501:4500,:)+powerOffest;
+% pFeedrateSeq(7501:8500,:)=pFeedrateSeq(7501:8500,:)+powerOffest;
+% pFeedrateSeq(11501:12500,:)=pFeedrateSeq(11501:12500,:)+powerOffest;
+% %pFeedrateSeq(15500:end,:)=pFeedrateSeq(15500:end,:)+linspace(0,150,499)';
+% pFeedrateSeq(1:500,:)=pFeedrateSeq(1:500,:)+linspace(150,0,500)';
+% pFeedrateSeq(4001:8000,:)=pFeedrateSeq(4001:8000,:)*1.1;
+% pFeedrateSeq(8001:12000,:)=pFeedrateSeq(8001:12000,:)*1.25;
+% pFeedrateSeq = repmat(pFeedrateSeq, lyrNum, 1);
 % pFeedrateSeq = repmat(pFeedrateSeq(4:end-2,:), lyrNum, 1);
 
 pPathSeq = repmat(pPathSeq(4:end-2,:), lyrNum, 1);
-pwrSeq = repmat(pwrSeq(4:end-2,:), lyrNum, 1);
-pPathSeq(:,3)=linspace(0,(lyrNum-1)*lyrHeight,length(pPathSeq(:,3)));
+pwrSeq = repmat(pwrSeq(4:end-2,:), lyrNum, 1);%%螺旋线叠加
+pPathSeq(:,3)=linspace(0,(lyrNum-1)*lyrHeight,length(pPathSeq(:,3)));%%修改高度
 pPathSeq(:,1:2)=pPathSeq(:,1:2)*size;
 pPathSeq(:,1)=pPathSeq(:,1)+xOffset;
 pPathSeq(:,2)=pPathSeq(:,2)+yOffset;
